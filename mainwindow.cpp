@@ -313,6 +313,7 @@ void MainWindow::on_actionOpen_triggered()
 
     videoParameters->parameters.clear();
 
+    ui->timeHorizontalSlider->setValue(0);
     if (!loadVideoFile(fileName)) return;
     allocateDecodingFrameBuffers();
 
@@ -453,10 +454,10 @@ void MainWindow::videoFrameSeek(double targetPts, uint64_t targetDts){
     int64_t seek_target = (targetPts - gop_duration) * AV_TIME_BASE;
     seek_target = av_rescale_q(seek_target, AV_TIME_BASE_Q, pFormatCtx->streams[videoStream]->time_base);
 
-    if (av_seek_frame(pFormatCtx, videoStream, seek_target, AVSEEK_FLAG_BACKWARD) < 0){
-        //error
-    }
-    else{
+    if (seek_target < 0) seek_target = 0; // workaround for mjpeg - seek before start failed
+
+    int result = av_seek_frame(pFormatCtx, videoStream, seek_target, AVSEEK_FLAG_BACKWARD);
+    if (result >= 0){
         avcodec_flush_buffers(pFormatCtx->streams[videoStream]->codec);
         // flush imagesBuffer
         imagesBufferCurrent = imagesBufferNewest = imagesBufferOldest = -1;
