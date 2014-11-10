@@ -70,7 +70,7 @@ private:
     void showCurrentImage();
     double synchronizeVideo(AVFrame *src_frame, double pts);
     void videoFrameSeek(double targetPts, uint64_t targetDts);
-    void showNextImage();
+    bool showNextImage();
     void saveIntervals();
 
 private slots:

@@ -101,7 +101,8 @@ MainWindow::~MainWindow()
 }
 
 void MainWindow::on_playTimerTimeout(){
-    showNextImage();
+    if (!showNextImage())
+        playTimer->stop();
 }
 
 void MainWindow::showError(QString text){
@@ -113,9 +114,13 @@ void MainWindow::showError(QString text){
 
 bool MainWindow::loadVideoFile(QString fileName){
     // Open video file
-    char* filename = fileName.toLocal8Bit().data();
-    if(avformat_open_input(&pFormatCtx,filename, NULL, options)!=0){
-        showError(tr("Couldn't open file"));
+    QByteArray fileNameByteArray = fileName.toLocal8Bit();
+    //if(int result = avformat_open_input(&pFormatCtx,filename, NULL, options)!=0){
+    int result = avformat_open_input(&pFormatCtx,fileNameByteArray.data(), NULL, options);
+    if(result < 0){
+        char error_string[200];
+        av_strerror(result, error_string, 200);
+        showError(tr("Couldn't open file %1: %2").arg(fileName).arg(QString(error_string)));
         return FALSE;
     }
 
@@ -124,7 +129,7 @@ bool MainWindow::loadVideoFile(QString fileName){
         return FALSE;
     }
 
-    av_dump_format(pFormatCtx, 0, filename, 0);
+    av_dump_format(pFormatCtx, 0, fileNameByteArray.data(), 0);
 
     // Find the first video stream
     videoStream=-1;
@@ -394,9 +399,10 @@ void MainWindow::showCurrentImage(){
                                .arg(imagesBuffer[imagesBufferCurrent].pts)
                                .arg(imagesBuffer[imagesBufferCurrent].dts));
 
-        double contextPositionDelta = imagesBuffer[imagesBufferCurrent].pts - firstImagePts;
+        //double contextPositionDelta = imagesBuffer[imagesBufferCurrent].pts - firstImagePts;
+        double contextPositionDelta = imagesBuffer[imagesBufferCurrent].pts;
         double durationSeconds = pFormatCtx->duration * av_q2d(AV_TIME_BASE_Q);
-        double sliderValue = contextPositionDelta / durationSeconds * 100;
+        double sliderValue = (contextPositionDelta / durationSeconds) * ui->timeHorizontalSlider->maximum();
         ui->timeHorizontalSlider->setValue(round(sliderValue));
 
         IntervalTimestamp timestamp;
@@ -409,13 +415,16 @@ void MainWindow::showCurrentImage(){
     }
 }
 
-void MainWindow::showNextImage()
+bool MainWindow::showNextImage()
 {
     if (imagesBufferCurrent != -1 && imagesBufferCurrent != imagesBufferNewest){
         imagesBufferCurrent = (imagesBufferCurrent + 1) % IMAGES_BUFFER_SIZE;
         showCurrentImage();
         if (imagesBufferCurrent == imagesBufferNewest) readNextFrame();
     }
+    else return false;
+
+    return true;
 }
 
 void MainWindow::on_nextImagePushButton_clicked()
@@ -451,6 +460,7 @@ void MainWindow::videoFrameSeek(double targetPts, uint64_t targetDts){
         avcodec_flush_buffers(pFormatCtx->streams[videoStream]->codec);
         // flush imagesBuffer
         imagesBufferCurrent = imagesBufferNewest = imagesBufferOldest = -1;
+        video_clock = 0;
         // read and buffer previous images
         while (readNextFrame() && imagesBuffer[imagesBufferNewest].dts <= targetDts);
         imagesBufferCurrent = (imagesBufferNewest -1 + IMAGES_BUFFER_SIZE) % IMAGES_BUFFER_SIZE;
@@ -468,9 +478,11 @@ void MainWindow::on_previousImagePushButton_clicked()
         showCurrentImage();
     }
     else{
-        videoFrameSeek(imagesBuffer[imagesBufferCurrent].pts, imagesBuffer[imagesBufferCurrent].dts);
-        imagesBufferCurrent = (imagesBufferCurrent -1 + IMAGES_BUFFER_SIZE) % IMAGES_BUFFER_SIZE;
-        showCurrentImage();
+        if (imagesBuffer[imagesBufferCurrent].dts > firstImageDts){
+            videoFrameSeek(imagesBuffer[imagesBufferCurrent].pts, imagesBuffer[imagesBufferCurrent].dts);
+            imagesBufferCurrent = (imagesBufferCurrent -1 + IMAGES_BUFFER_SIZE) % IMAGES_BUFFER_SIZE;
+            showCurrentImage();
+        }
     }
 }
 
@@ -479,14 +491,16 @@ void MainWindow::on_timeHorizontalSlider_sliderMoved(int position)
     if(pFormatCtx == NULL || videoStream == -1) return;
 
     double contextPositionDelta = pFormatCtx->duration * (double)position / (double)ui->timeHorizontalSlider->maximum();
-    int64_t target = av_rescale_q(round(contextPositionDelta), AV_TIME_BASE_Q, pFormatCtx->streams[videoStream]->time_base);
-    if (av_seek_frame(pFormatCtx, videoStream, target + firstImagePts, AVSEEK_FLAG_BACKWARD) < 0){
+    int64_t target = av_rescale_q(contextPositionDelta, AV_TIME_BASE_Q, pFormatCtx->streams[videoStream]->time_base);
+
+    if (av_seek_frame(pFormatCtx, videoStream, target, AVSEEK_FLAG_BACKWARD) < 0){
         //error
     }
     else{
         avcodec_flush_buffers(pFormatCtx->streams[videoStream]->codec);
         // flush imagesBuffer
         imagesBufferCurrent = imagesBufferNewest = imagesBufferOldest = -1;
+        video_clock = 0;
         if (readNextFrame()){
             showCurrentImage();
         }

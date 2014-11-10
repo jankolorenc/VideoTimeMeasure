@@ -75,7 +75,7 @@
         <item>
          <widget class="QSlider" name="timeHorizontalSlider">
           <property name="maximum">
-           <number>100</number>
+           <number>1000</number>
           </property>
           <property name="tracking">
            <bool>true</bool>
