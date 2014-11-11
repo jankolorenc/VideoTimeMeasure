@@ -18,6 +18,7 @@ extern "C" {
 #endif
 
 #define IMAGES_BUFFER_SIZE 10
+#define BACK_SEEK_FRAMES 12
 
 namespace Ui {
 class MainWindow;
@@ -49,6 +50,7 @@ private:
     uint8_t *buffer;
     struct SwsContext *sws_ctx;
     double video_clock;
+    int backSeekFactor;
     double pts;
 
     double firstImagePts;

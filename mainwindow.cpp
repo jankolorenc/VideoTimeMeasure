@@ -57,6 +57,8 @@ MainWindow::MainWindow(QWidget *parent) :
     imagesBufferOldest = -1;
     imagesBufferNewest = -1;
     imagesBufferCurrent = -1;
+    backSeekFactor = 1;
+
     for(int i = 0; i < IMAGES_BUFFER_SIZE; i++) imagesBuffer[i].image = NULL;
 
     ui->setupUi(this);
@@ -310,6 +312,7 @@ void MainWindow::on_actionOpen_triggered()
     closeVideoFile();
     freeDecodingFrameBuffers();
     imagesBufferCurrent = imagesBufferNewest = imagesBufferOldest = -1;
+    backSeekFactor = 1;
 
     videoParameters->parameters.clear();
 
@@ -460,11 +463,12 @@ void MainWindow::videoFrameSeek(double targetPts, uint64_t targetDts){
     //seek back before keyframe (gop size)
     // remember current dts
 
-    double gop_duration = (pCodecCtx->gop_size + 1) / av_q2d(pFormatCtx->streams[videoStream]->r_frame_rate);
-    int64_t seek_target = (targetPts - gop_duration) * AV_TIME_BASE;
+    double seek_duration = (BACK_SEEK_FRAMES * backSeekFactor) / av_q2d(pFormatCtx->streams[videoStream]->r_frame_rate);
+    int64_t seek_target = (targetPts - seek_duration) * AV_TIME_BASE;
     seek_target = av_rescale_q(seek_target, AV_TIME_BASE_Q, pFormatCtx->streams[videoStream]->time_base);
 
-    if (seek_target < 0) seek_target = 0; // workaround for mjpeg - seek before start failed
+    // todo limit by avformatcontext start time
+    //if (seek_target < 0) seek_target = 0; // workaround for mjpeg - seek before start failed
 
     int result = av_seek_frame(pFormatCtx, videoStream, seek_target, AVSEEK_FLAG_BACKWARD);
     if (result >= 0){
@@ -474,7 +478,10 @@ void MainWindow::videoFrameSeek(double targetPts, uint64_t targetDts){
         video_clock = 0;
         // read and buffer previous images
         while (readNextFrame() && imagesBuffer[imagesBufferNewest].dts <= targetDts);
-        imagesBufferCurrent = (imagesBufferNewest -1 + IMAGES_BUFFER_SIZE) % IMAGES_BUFFER_SIZE;
+        if (imagesBufferNewest != imagesBufferOldest){
+            imagesBufferCurrent = (imagesBufferNewest -1 + IMAGES_BUFFER_SIZE) % IMAGES_BUFFER_SIZE;
+        }
+        else backSeekFactor++;
     }
 }
 
@@ -491,7 +498,10 @@ void MainWindow::on_previousImagePushButton_clicked()
     else{
         if (imagesBuffer[imagesBufferCurrent].dts > firstImageDts){
             videoFrameSeek(imagesBuffer[imagesBufferCurrent].pts, imagesBuffer[imagesBufferCurrent].dts);
-            imagesBufferCurrent = (imagesBufferCurrent -1 + IMAGES_BUFFER_SIZE) % IMAGES_BUFFER_SIZE;
+            if (imagesBufferCurrent != imagesBufferOldest){
+                imagesBufferCurrent = (imagesBufferCurrent -1 + IMAGES_BUFFER_SIZE) % IMAGES_BUFFER_SIZE;
+            }
+            else backSeekFactor++;
             showCurrentImage();
         }
     }
