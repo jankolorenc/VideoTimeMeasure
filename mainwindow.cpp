@@ -102,7 +102,7 @@ MainWindow::~MainWindow()
 
 void MainWindow::on_playTimerTimeout(){
     if (!showNextImage())
-        playTimer->stop();
+        stopPlayer();
 }
 
 void MainWindow::showError(QString text){
@@ -430,8 +430,18 @@ bool MainWindow::showNextImage()
 
 void MainWindow::on_nextImagePushButton_clicked()
 {
-    playTimer->stop();
+    stopPlayer();
     showNextImage();
+}
+
+void MainWindow::startPlayer(double timeout){
+    ui->playPausePushButton->setText(tr("Pause"));
+    playTimer->start(timeout);
+}
+
+void MainWindow::stopPlayer(){
+    ui->playPausePushButton->setText(tr("Play"));
+    playTimer->stop();
 }
 
 void MainWindow::on_playPausePushButton_clicked()
@@ -441,9 +451,9 @@ void MainWindow::on_playPausePushButton_clicked()
     double timeout = 1 / av_q2d(pFormatCtx->streams[videoStream]->r_frame_rate) * 1000;
 
     if (!playTimer->isActive())
-        playTimer->start(timeout);
+        startPlayer(timeout);
     else
-        playTimer->stop();
+        stopPlayer();
 }
 
 void MainWindow::videoFrameSeek(double targetPts, uint64_t targetDts){
@@ -472,7 +482,7 @@ void MainWindow::on_previousImagePushButton_clicked()
 {
     if (imagesBufferCurrent == -1) return;
 
-    playTimer->stop();
+    stopPlayer();
 
     if (imagesBufferCurrent != imagesBufferOldest){
         imagesBufferCurrent = (imagesBufferCurrent - 1 + IMAGES_BUFFER_SIZE) % IMAGES_BUFFER_SIZE;
@@ -550,7 +560,7 @@ void MainWindow::on_selectionChanged(const QItemSelection &, const QItemSelectio
         QVariant data = timeIntervals->data(ui->intervalsTableView->selectionModel()->selectedIndexes()[0], Qt::UserRole);
         IntervalTimestamp timestamp = data.value<IntervalTimestamp>();
         if (timestamp.isValid){
-            playTimer->stop();
+            stopPlayer();
             videoFrameSeek(timestamp.pts, timestamp.dts);
             showCurrentImage();
         }

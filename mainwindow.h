@@ -72,6 +72,8 @@ private:
     void videoFrameSeek(double targetPts, uint64_t targetDts);
     bool showNextImage();
     void saveIntervals();
+    void startPlayer(double timeout);
+    void stopPlayer();
 
 private slots:
     void on_actionOpen_triggered();
