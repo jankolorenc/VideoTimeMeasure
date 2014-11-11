@@ -136,7 +136,7 @@ bool MainWindow::loadVideoFile(QString fileName){
     for(uint i=0; i<pFormatCtx->nb_streams; i++)
         if(pFormatCtx->streams[i]->codec->codec_type==AVMEDIA_TYPE_VIDEO) {
             videoStream=i;
-            //break;
+            break;
         }
     if(videoStream==-1){
         showError(tr("Didn't find a video stream"));
