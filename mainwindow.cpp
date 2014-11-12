@@ -459,30 +459,41 @@ void MainWindow::on_playPausePushButton_clicked()
         stopPlayer();
 }
 
-void MainWindow::videoFrameSeek(double targetPts, uint64_t targetDts){
-    //seek back before keyframe (gop size)
-    // remember current dts
+void MainWindow::videoFrameSeek(double targetPts, uint64_t targetDts, bool stopOnPreviousFrame = false){
 
-    double seek_duration = (BACK_SEEK_FRAMES * backSeekFactor) / av_q2d(pFormatCtx->streams[videoStream]->r_frame_rate);
-    int64_t seek_target = (targetPts - seek_duration) * AV_TIME_BASE;
-    seek_target = av_rescale_q(seek_target, AV_TIME_BASE_Q, pFormatCtx->streams[videoStream]->time_base);
+    //limit backseek factor for case when ffmpeg cannot seek
+    while(backSeekFactor < MAX_BACK_SEEK_FACTOR){
+        double seekDuration = (BACK_SEEK_FRAMES * backSeekFactor) / av_q2d(pFormatCtx->streams[videoStream]->r_frame_rate);
+        int64_t seekTarget = (targetPts - seekDuration) * AV_TIME_BASE;
 
-    // todo limit by avformatcontext start time
-    //if (seek_target < 0) seek_target = 0; // workaround for mjpeg - seek before start failed
+        // hope this is fix for mjpeg back seek causing crash
+        if (pFormatCtx->start_time >=0 && seekTarget < 0) seekTarget = 0;
 
-    int result = av_seek_frame(pFormatCtx, videoStream, seek_target, AVSEEK_FLAG_BACKWARD);
-    if (result >= 0){
-        avcodec_flush_buffers(pFormatCtx->streams[videoStream]->codec);
-        // flush imagesBuffer
-        imagesBufferCurrent = imagesBufferNewest = imagesBufferOldest = -1;
-        video_clock = 0;
-        // read and buffer previous images
-        while (readNextFrame() && imagesBuffer[imagesBufferNewest].dts <= targetDts);
-        if (imagesBufferNewest != imagesBufferOldest){
-            imagesBufferCurrent = (imagesBufferNewest -1 + IMAGES_BUFFER_SIZE) % IMAGES_BUFFER_SIZE;
+        seekTarget = av_rescale_q(seekTarget, AV_TIME_BASE_Q, pFormatCtx->streams[videoStream]->time_base);
+
+        int result = av_seek_frame(pFormatCtx, videoStream, seekTarget, AVSEEK_FLAG_BACKWARD);
+        if (result >= 0){
+            avcodec_flush_buffers(pFormatCtx->streams[videoStream]->codec);
+            // flush imagesBuffer
+            imagesBufferCurrent = imagesBufferNewest = imagesBufferOldest = -1;
+            video_clock = 0;
+
+            // read and buffer previous images
+            if (stopOnPreviousFrame) while (readNextFrame() && imagesBuffer[imagesBufferNewest].dts < targetDts);
+            else while (readNextFrame() && imagesBuffer[imagesBufferNewest].dts <= targetDts);
+
+            if (imagesBufferNewest != imagesBufferOldest){
+                imagesBufferCurrent = (imagesBufferNewest -1 + IMAGES_BUFFER_SIZE) % IMAGES_BUFFER_SIZE;
+                break;
+            }
+            else{
+                backSeekFactor++;
+            }
         }
-        else backSeekFactor++;
     }
+
+    // restart backseek factor to allow seek to another target
+    if (backSeekFactor >= MAX_BACK_SEEK_FACTOR) backSeekFactor = 1;
 }
 
 void MainWindow::on_previousImagePushButton_clicked()
@@ -497,11 +508,7 @@ void MainWindow::on_previousImagePushButton_clicked()
     }
     else{
         if (imagesBuffer[imagesBufferCurrent].dts > firstImageDts){
-            videoFrameSeek(imagesBuffer[imagesBufferCurrent].pts, imagesBuffer[imagesBufferCurrent].dts);
-            if (imagesBufferCurrent != imagesBufferOldest){
-                imagesBufferCurrent = (imagesBufferCurrent -1 + IMAGES_BUFFER_SIZE) % IMAGES_BUFFER_SIZE;
-            }
-            else backSeekFactor++;
+            videoFrameSeek(imagesBuffer[imagesBufferCurrent].pts, imagesBuffer[imagesBufferCurrent].dts, true);
             showCurrentImage();
         }
     }

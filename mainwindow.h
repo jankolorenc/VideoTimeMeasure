@@ -19,6 +19,7 @@ extern "C" {
 
 #define IMAGES_BUFFER_SIZE 10
 #define BACK_SEEK_FRAMES 12
+#define MAX_BACK_SEEK_FACTOR 20
 
 namespace Ui {
 class MainWindow;
@@ -71,7 +72,7 @@ private:
     void bufferCurrentFrame();
     void showCurrentImage();
     double synchronizeVideo(AVFrame *src_frame, double pts);
-    void videoFrameSeek(double targetPts, uint64_t targetDts);
+    void videoFrameSeek(double targetPts, uint64_t targetDts, bool stopOnPreviousFrame);
     bool showNextImage();
     void saveIntervals();
     void startPlayer(double timeout);
