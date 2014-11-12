@@ -58,6 +58,7 @@ MainWindow::MainWindow(QWidget *parent) :
     imagesBufferNewest = -1;
     imagesBufferCurrent = -1;
     backSeekFactor = 1;
+    sliderFactor = 1;
 
     for(int i = 0; i < IMAGES_BUFFER_SIZE; i++) imagesBuffer[i].image = NULL;
 
@@ -313,6 +314,7 @@ void MainWindow::on_actionOpen_triggered()
     freeDecodingFrameBuffers();
     imagesBufferCurrent = imagesBufferNewest = imagesBufferOldest = -1;
     backSeekFactor = 1;
+    sliderFactor = 1;
 
     videoParameters->parameters.clear();
 
@@ -321,6 +323,9 @@ void MainWindow::on_actionOpen_triggered()
     allocateDecodingFrameBuffers();
 
     if (!opennedVideoFile.isEmpty()) timeIntervals->loadIntervals(QString("%1.int").arg(opennedVideoFile));
+
+    int64_t streamDuration = av_rescale_q(pFormatCtx->duration, AV_TIME_BASE_Q, pFormatCtx->streams[videoStream]->time_base);
+    ui->timeHorizontalSlider->setMaximum(streamDuration / sliderFactor);
 
     // current image
     if (readNextFrame()){
@@ -345,10 +350,10 @@ void MainWindow::on_actionOpen_triggered()
                                        );
     videoParameters->parameters.append(rFramerate);
     QTime streamDurationTime(0,0,0);
-    QPair<QString, QString> streamDuration("stream duration", QString("%1 = %2 s")
+    QPair<QString, QString> streamDurationPair("stream duration", QString("%1 = %2 s")
                                            .arg(pFormatCtx->streams[videoStream]->duration)
                                            .arg(streamDurationTime.addSecs(pFormatCtx->streams[videoStream]->duration * av_q2d(pFormatCtx->streams[videoStream]->time_base)).toString("hh:mm:ss.zzz")));
-    videoParameters->parameters.append(streamDuration);
+    videoParameters->parameters.append(streamDurationPair);
 
     QTime formatDurationTime(0,0,0);
     QPair<QString, QString> formatDuration("format duration", QString("%1 = %2 s")
@@ -404,8 +409,7 @@ void MainWindow::showCurrentImage(){
                                .arg(imagesBuffer[imagesBufferCurrent].dts));
 
         // update slider
-        int64_t relativePosition = (imagesBuffer[imagesBufferCurrent].pts / av_q2d(AV_TIME_BASE_Q));
-        double sliderValue = (relativePosition - pFormatCtx->start_time) / pFormatCtx->duration * ui->timeHorizontalSlider->maximum();
+        double sliderValue = (imagesBuffer[imagesBufferCurrent].dts - pFormatCtx->streams[videoStream]->start_time) / sliderFactor;
         ui->timeHorizontalSlider->setValue(sliderValue);
 
         // update selected cell in intervals table
@@ -518,23 +522,10 @@ void MainWindow::on_timeHorizontalSlider_sliderMoved(int position)
 {
     if(pFormatCtx == NULL || videoStream == -1) return;
 
-    double contextPositionDelta = pFormatCtx->duration * (double)position / (double)ui->timeHorizontalSlider->maximum();
-    int64_t target = av_rescale_q(contextPositionDelta, AV_TIME_BASE_Q, pFormatCtx->streams[videoStream]->time_base);
+    int64_t streamPosition = (position * sliderFactor) + pFormatCtx->streams[videoStream]->start_time;
 
-    if (av_seek_frame(pFormatCtx, videoStream, target, AVSEEK_FLAG_BACKWARD) < 0){
-        //error
-    }
-    else{
-        avcodec_flush_buffers(pFormatCtx->streams[videoStream]->codec);
-        // flush imagesBuffer
-        imagesBufferCurrent = imagesBufferNewest = imagesBufferOldest = -1;
-        video_clock = 0;
-        if (readNextFrame()){
-            showCurrentImage();
-        }
-        //next image
-        readNextFrame();
-    }
+    videoFrameSeek(streamPosition * av_q2d(pFormatCtx->streams[videoStream]->time_base), streamPosition);
+    showCurrentImage();
 }
 
 void MainWindow::on_deleteIntervalRow()

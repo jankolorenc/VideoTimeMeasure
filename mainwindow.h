@@ -53,6 +53,7 @@ private:
     double video_clock;
     int backSeekFactor;
     double pts;
+    int sliderFactor;
 
     double firstImagePts;
     uint64_t firstImageDts;
