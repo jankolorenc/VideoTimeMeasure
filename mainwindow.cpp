@@ -403,12 +403,12 @@ void MainWindow::showCurrentImage(){
                                .arg(imagesBuffer[imagesBufferCurrent].pts)
                                .arg(imagesBuffer[imagesBufferCurrent].dts));
 
-        //double contextPositionDelta = imagesBuffer[imagesBufferCurrent].pts - firstImagePts;
-        double contextPositionDelta = imagesBuffer[imagesBufferCurrent].pts;
-        double durationSeconds = pFormatCtx->duration * av_q2d(AV_TIME_BASE_Q);
-        double sliderValue = (contextPositionDelta / durationSeconds) * ui->timeHorizontalSlider->maximum();
-        ui->timeHorizontalSlider->setValue(round(sliderValue));
+        // update slider
+        int64_t relativePosition = (imagesBuffer[imagesBufferCurrent].pts / av_q2d(AV_TIME_BASE_Q));
+        double sliderValue = (relativePosition - pFormatCtx->start_time) / pFormatCtx->duration * ui->timeHorizontalSlider->maximum();
+        ui->timeHorizontalSlider->setValue(sliderValue);
 
+        // update selected cell in intervals table
         IntervalTimestamp timestamp;
         timestamp.isValid = true;
         timestamp.pts = imagesBuffer[imagesBufferCurrent].pts;
