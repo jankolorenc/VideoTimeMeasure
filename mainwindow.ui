@@ -88,6 +88,13 @@
         <item>
          <layout class="QHBoxLayout" name="horizontalLayout_2">
           <item>
+           <widget class="QPushButton" name="previousJumpPushButton">
+            <property name="text">
+             <string>-10</string>
+            </property>
+           </widget>
+          </item>
+          <item>
            <widget class="QPushButton" name="previousImagePushButton">
             <property name="text">
              <string>Previous image</string>
@@ -105,6 +112,13 @@
            <widget class="QPushButton" name="nextImagePushButton">
             <property name="text">
              <string>Next image</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="nextJumpPushButton">
+            <property name="text">
+             <string>+10</string>
             </property>
            </widget>
           </item>

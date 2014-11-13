@@ -398,7 +398,7 @@ void MainWindow::bufferCurrentFrame(){
     if (imagesBufferOldest == -1) imagesBufferOldest = imagesBufferNewest;
 }
 
-void MainWindow::showCurrentImage(){
+void MainWindow::showCurrentImage(bool updateSlider = true){
     if (imagesBufferCurrent != -1 && imagesBuffer[imagesBufferCurrent].image != NULL){
         ui->videoLabel->setPixmap(QPixmap::fromImage(
                                       imagesBuffer[imagesBufferCurrent].image->scaled(ui->videoLabel->width(),
@@ -409,8 +409,10 @@ void MainWindow::showCurrentImage(){
                                .arg(imagesBuffer[imagesBufferCurrent].dts));
 
         // update slider
-        double sliderValue = (imagesBuffer[imagesBufferCurrent].dts - pFormatCtx->streams[videoStream]->start_time) / sliderFactor;
-        ui->timeHorizontalSlider->setValue(sliderValue);
+        if (updateSlider){
+            double sliderValue = (imagesBuffer[imagesBufferCurrent].dts - pFormatCtx->streams[videoStream]->start_time) / sliderFactor;
+            ui->timeHorizontalSlider->setValue(sliderValue);
+        }
 
         // update selected cell in intervals table
         IntervalTimestamp timestamp;
@@ -423,11 +425,12 @@ void MainWindow::showCurrentImage(){
     }
 }
 
-bool MainWindow::showNextImage()
+bool MainWindow::showNextImage(int jumpImages = 1)
 {
+    for(int i = 0; i < jumpImages; i++)
     if (imagesBufferCurrent != -1 && imagesBufferCurrent != imagesBufferNewest){
         imagesBufferCurrent = (imagesBufferCurrent + 1) % IMAGES_BUFFER_SIZE;
-        showCurrentImage();
+        if (i == jumpImages - 1) showCurrentImage();
         if (imagesBufferCurrent == imagesBufferNewest) readNextFrame();
     }
     else return false;
@@ -463,12 +466,12 @@ void MainWindow::on_playPausePushButton_clicked()
         stopPlayer();
 }
 
-void MainWindow::videoFrameSeek(double targetPts, uint64_t targetDts, bool stopOnPreviousFrame = false){
-
+void MainWindow::videoSeek(double targetPts, uint64_t targetDts, bool exactSeek, bool stayOneImageBack){
     //limit backseek factor for case when ffmpeg cannot seek
     while(backSeekFactor < MAX_BACK_SEEK_FACTOR){
-        double seekDuration = (BACK_SEEK_FRAMES * backSeekFactor) / av_q2d(pFormatCtx->streams[videoStream]->r_frame_rate);
-        int64_t seekTarget = (targetPts - seekDuration) * AV_TIME_BASE;
+        double backSeekDuration = 0;
+        if (exactSeek) backSeekDuration = (BACK_SEEK_FRAMES * backSeekFactor) / av_q2d(pFormatCtx->streams[videoStream]->r_frame_rate);
+        int64_t seekTarget = (targetPts - backSeekDuration) * AV_TIME_BASE;
 
         // hope this is fix for mjpeg back seek causing crash
         if (pFormatCtx->start_time >=0 && seekTarget < 0) seekTarget = 0;
@@ -483,15 +486,21 @@ void MainWindow::videoFrameSeek(double targetPts, uint64_t targetDts, bool stopO
             video_clock = 0;
 
             // read and buffer previous images
-            if (stopOnPreviousFrame) while (readNextFrame() && imagesBuffer[imagesBufferNewest].dts < targetDts);
-            else while (readNextFrame() && imagesBuffer[imagesBufferNewest].dts <= targetDts);
-
-            if (imagesBufferNewest != imagesBufferOldest){
-                imagesBufferCurrent = (imagesBufferNewest -1 + IMAGES_BUFFER_SIZE) % IMAGES_BUFFER_SIZE;
-                break;
+            if (exactSeek){
+                if (stayOneImageBack) while (readNextFrame() && imagesBuffer[imagesBufferNewest].dts < targetDts);
+                else while (readNextFrame() && imagesBuffer[imagesBufferNewest].dts <= targetDts);
+                if (imagesBufferNewest != imagesBufferOldest){
+                    imagesBufferCurrent = (imagesBufferNewest -1 + IMAGES_BUFFER_SIZE) % IMAGES_BUFFER_SIZE;
+                    break;
+                }
+                else{
+                    backSeekFactor++;
+                }
             }
             else{
-                backSeekFactor++;
+                readNextFrame();
+                readNextFrame();
+                break;
             }
         }
     }
@@ -500,22 +509,26 @@ void MainWindow::videoFrameSeek(double targetPts, uint64_t targetDts, bool stopO
     if (backSeekFactor >= MAX_BACK_SEEK_FACTOR) backSeekFactor = 1;
 }
 
-void MainWindow::on_previousImagePushButton_clicked()
+bool MainWindow::showPreviousImage(int jumpImages = 1)
 {
-    if (imagesBufferCurrent == -1) return;
-
-    stopPlayer();
-
-    if (imagesBufferCurrent != imagesBufferOldest){
-        imagesBufferCurrent = (imagesBufferCurrent - 1 + IMAGES_BUFFER_SIZE) % IMAGES_BUFFER_SIZE;
-        showCurrentImage();
-    }
-    else{
-        if (imagesBuffer[imagesBufferCurrent].dts > firstImageDts){
-            videoFrameSeek(imagesBuffer[imagesBufferCurrent].pts, imagesBuffer[imagesBufferCurrent].dts, true);
-            showCurrentImage();
+    for(int i = 0; i < jumpImages; i++){
+        if (imagesBufferCurrent == -1) return false;
+        if (imagesBufferCurrent != imagesBufferOldest){
+            imagesBufferCurrent = (imagesBufferCurrent - 1 + IMAGES_BUFFER_SIZE) % IMAGES_BUFFER_SIZE;
+        }
+        else{
+            if (imagesBuffer[imagesBufferCurrent].dts > firstImageDts){
+                videoSeek(imagesBuffer[imagesBufferCurrent].pts, imagesBuffer[imagesBufferCurrent].dts, true, true);
+            }
         }
     }
+    showCurrentImage();
+}
+
+void MainWindow::on_previousImagePushButton_clicked()
+{
+    stopPlayer();
+    showPreviousImage();
 }
 
 void MainWindow::on_timeHorizontalSlider_sliderMoved(int position)
@@ -524,8 +537,9 @@ void MainWindow::on_timeHorizontalSlider_sliderMoved(int position)
 
     int64_t streamPosition = (position * sliderFactor) + pFormatCtx->streams[videoStream]->start_time;
 
-    videoFrameSeek(streamPosition * av_q2d(pFormatCtx->streams[videoStream]->time_base), streamPosition);
-    showCurrentImage();
+    if (position) videoSeek(streamPosition * av_q2d(pFormatCtx->streams[videoStream]->time_base), streamPosition, false, false);
+    else videoSeek(streamPosition * av_q2d(pFormatCtx->streams[videoStream]->time_base), streamPosition, true, false);
+    showCurrentImage(false);
 }
 
 void MainWindow::on_deleteIntervalRow()
@@ -569,7 +583,7 @@ void MainWindow::on_selectionChanged(const QItemSelection &, const QItemSelectio
         IntervalTimestamp timestamp = data.value<IntervalTimestamp>();
         if (timestamp.isValid){
             stopPlayer();
-            videoFrameSeek(timestamp.pts, timestamp.dts);
+            videoSeek(timestamp.pts, timestamp.dts, true, false);
             showCurrentImage();
         }
     }
@@ -580,4 +594,14 @@ void MainWindow::closeEvent(QCloseEvent *event)
     saveIntervals();
 
     event->accept();
+}
+
+void MainWindow::on_previousJumpPushButton_clicked()
+{
+    showPreviousImage(10);
+}
+
+void MainWindow::on_nextJumpPushButton_clicked()
+{
+    showNextImage(10);
 }

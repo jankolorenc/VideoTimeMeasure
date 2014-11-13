@@ -17,7 +17,8 @@ extern "C" {
 }
 #endif
 
-#define IMAGES_BUFFER_SIZE 10
+//#define IMAGES_BUFFER_SIZE 10
+#define IMAGES_BUFFER_SIZE 20
 #define BACK_SEEK_FRAMES 12
 #define MAX_BACK_SEEK_FACTOR 20
 
@@ -71,10 +72,11 @@ private:
     void freeDecodingFrameBuffers();
     bool readNextFrame();
     void bufferCurrentFrame();
-    void showCurrentImage();
+    void showCurrentImage(bool updateSlider = true);
     double synchronizeVideo(AVFrame *src_frame, double pts);
-    void videoFrameSeek(double targetPts, uint64_t targetDts, bool stopOnPreviousFrame);
-    bool showNextImage();
+    void videoSeek(double targetPts, uint64_t targetDts, bool exactSeek, bool stayOneImageBack);
+    bool showNextImage(int jumpImages = 1);
+    bool showPreviousImage(int jumpImages = 1);
     void saveIntervals();
     void startPlayer(double timeout);
     void stopPlayer();
@@ -90,6 +92,8 @@ private slots:
     void on_addIntervalRow();
     void on_actionSave_triggered();
     void on_selectionChanged(const QItemSelection &, const QItemSelection &);
+    void on_previousJumpPushButton_clicked();
+    void on_nextJumpPushButton_clicked();
 };
 
 #endif // MAINWINDOW_H
