@@ -598,10 +598,12 @@ void MainWindow::closeEvent(QCloseEvent *event)
 
 void MainWindow::on_previousJumpPushButton_clicked()
 {
+    playTimer->stop();
     showPreviousImage(10);
 }
 
 void MainWindow::on_nextJumpPushButton_clicked()
 {
+    playTimer->stop();
     showNextImage(10);
 }

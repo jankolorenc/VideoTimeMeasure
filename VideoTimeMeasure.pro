@@ -16,14 +16,16 @@ SOURCES += main.cpp\
         mainwindow.cpp \
     timeintervalsmodel.cpp \
     timeinterval.cpp \
-    videoparametersmodel.cpp
+    videoparametersmodel.cpp \
+    aspectratiopixmaplabel.cpp
 
 HEADERS  += mainwindow.h \
     videoimage.h \
     timeintervalsmodel.h \
     timeinterval.h \
     intervaltimestamp.h \
-    videoparametersmodel.h
+    videoparametersmodel.h \
+    aspectratiopixmaplabel.h
 
 FORMS    += mainwindow.ui
 
