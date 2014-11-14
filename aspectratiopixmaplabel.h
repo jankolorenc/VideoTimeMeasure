@@ -12,6 +12,7 @@ public:
     explicit AspectRatioPixmapLabel(QWidget *parent = 0);
     virtual int heightForWidth( int width ) const;
     virtual QSize sizeHint() const;
+    void setImage (QImage *);
 signals:
 
 public slots:
@@ -19,6 +20,7 @@ public slots:
     void resizeEvent(QResizeEvent *);
 private:
     QPixmap pix;
+    QImage *img;
 };
 
 #endif // ASPECTRATIOPIXMAPLABEL_H

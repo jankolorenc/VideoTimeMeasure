@@ -400,10 +400,12 @@ void MainWindow::bufferCurrentFrame(){
 
 void MainWindow::showCurrentImage(bool updateSlider = true){
     if (imagesBufferCurrent != -1 && imagesBuffer[imagesBufferCurrent].image != NULL){
-        ui->videoLabel->setPixmap(QPixmap::fromImage(
-                                      imagesBuffer[imagesBufferCurrent].image->scaled(ui->videoLabel->width(),
-                                                                                      ui->videoLabel->height(),
-                                                                                      Qt::KeepAspectRatio)));
+//        ui->videoLabel->setPixmap(QPixmap::fromImage(
+//                                      imagesBuffer[imagesBufferCurrent].image->scaled(ui->videoLabel->width(),
+//                                                                                      ui->videoLabel->height(),
+//                                                                                      Qt::KeepAspectRatio)));
+        ui->videoLabel->setImage(imagesBuffer[imagesBufferCurrent].image);
+
         ui->timeLabel->setText(QString("PTS %1, DTS %2")
                                .arg(imagesBuffer[imagesBufferCurrent].pts)
                                .arg(imagesBuffer[imagesBufferCurrent].dts));
