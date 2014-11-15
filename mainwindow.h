@@ -61,6 +61,9 @@ private:
     int imagesBufferNewest;
     int imagesBufferCurrent;
 
+    uint64_t stopPlayerDts;
+    QModelIndex stopIndex;
+
     void closeEvent(QCloseEvent *event);
 
     void showError(QString text);
@@ -92,6 +95,8 @@ private slots:
     void on_selectionChanged(const QItemSelection &, const QItemSelection &);
     void on_previousJumpPushButton_clicked();
     void on_nextJumpPushButton_clicked();
+    void on_selectNextCell();
+    void on_playTillNextTimestampPushButton_clicked();
 };
 
 #endif // MAINWINDOW_H

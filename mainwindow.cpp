@@ -59,6 +59,7 @@ MainWindow::MainWindow(QWidget *parent) :
     imagesBufferCurrent = -1;
     backSeekFactor = 1;
     sliderFactor = 1;
+    stopPlayerDts = 0xffffffffffffffff;
 
     for(int i = 0; i < IMAGES_BUFFER_SIZE; i++) imagesBuffer[i].image = NULL;
 
@@ -86,6 +87,8 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(nextImageShortcut, SIGNAL(activated()), this, SLOT(on_nextImagePushButton_clicked()));
     QShortcut* previousImageShortcut = new QShortcut(QKeySequence(Qt::Key_Minus), this);
     connect(previousImageShortcut, SIGNAL(activated()), this, SLOT(on_previousImagePushButton_clicked()));
+    QShortcut* nextTimestampShortcut = new QShortcut(QKeySequence(QKeySequence::InsertParagraphSeparator), this);
+    connect(nextTimestampShortcut, SIGNAL(activated()), this, SLOT(on_selectNextCell()));
 
     QItemSelectionModel *selectionModel= ui->intervalsTableView->selectionModel();
     connect(selectionModel, SIGNAL(selectionChanged(QItemSelection,QItemSelection)),
@@ -104,7 +107,7 @@ MainWindow::~MainWindow()
 }
 
 void MainWindow::on_playTimerTimeout(){
-    if (!showNextImage())
+    if (!showNextImage() || (imagesBufferCurrent > -1 && imagesBuffer[imagesBufferCurrent].dts >= stopPlayerDts))
         stopPlayer();
 }
 
@@ -310,16 +313,17 @@ void MainWindow::on_actionOpen_triggered()
 
     lastDirectory = QFileInfo(fileName).absoluteDir().absolutePath();
 
+    // clear state
     closeVideoFile();
     freeDecodingFrameBuffers();
     imagesBufferCurrent = imagesBufferNewest = imagesBufferOldest = -1;
     backSeekFactor = 1;
     sliderFactor = 1;
-
+    stopPlayerDts = 0xffffffffffffffff;
     videoParameters->parameters.clear();
     timeIntervals->clear();
-
     ui->timeHorizontalSlider->setValue(0);
+
     if (!loadVideoFile(fileName)) return;
     allocateDecodingFrameBuffers();
 
@@ -453,14 +457,14 @@ void MainWindow::startPlayer(double timeout){
 void MainWindow::stopPlayer(){
     ui->playPausePushButton->setText(tr("Play"));
     playTimer->stop();
+    if(stopPlayerDts != 0xffffffffffffffff) ui->intervalsTableView->selectionModel()->select(stopIndex, QItemSelectionModel::SelectCurrent);
+    stopPlayerDts = 0xffffffffffffffff;
 }
 
 void MainWindow::on_playPausePushButton_clicked()
 {
     if (pFormatCtx == NULL) return;
-
     double timeout = 1 / av_q2d(pFormatCtx->streams[videoStream]->r_frame_rate) * 1000;
-
     if (!playTimer->isActive())
         startPlayer(timeout);
     else
@@ -554,18 +558,30 @@ void MainWindow::on_insertIntervalRow()
 {
     QModelIndex idx = ui->intervalsTableView->currentIndex();
     if (idx.isValid()){
-//        if (idx.row() == timeIntervals->rowCount(idx.parent()) - 1 ||
-//                (idx.row() == 0 && idx.column() == 0)){
-            ui->intervalsTableView->model()->insertRows(idx.row(), 1, idx.parent());
+        ui->intervalsTableView->model()->insertRows(idx.row(), 1, idx.parent());
 
-            QModelIndex nextIndex = ui->intervalsTableView->model()->index(idx.row(), 0);
-            ui->intervalsTableView->setCurrentIndex(nextIndex);
-//        }
-//        else{
-//            ui->intervalsTableView->model()->insertRows(idx.row() + 1, 1, idx.parent());
-//            QModelIndex nextIndex = ui->intervalsTableView->model()->index(idx.row() + 1, 0);
-//            ui->intervalsTableView->setCurrentIndex(nextIndex);
-//        }
+        QModelIndex nextIndex = ui->intervalsTableView->model()->index(idx.row(), 0);
+        ui->intervalsTableView->setCurrentIndex(nextIndex);
+    }
+}
+
+void MainWindow::on_selectNextCell()
+{
+    if (ui->intervalsTableView->selectionModel()->selectedIndexes().count() <= 0) return;
+
+    QModelIndex index = ui->intervalsTableView->selectionModel()->selectedIndexes()[0];
+    if (index.isValid()){
+        if (index.row() != timeIntervals->rowCount(index.parent()) - 1){
+            // add new row if last editable cell is selected
+            if (index.column() == 1 && index.row() == timeIntervals->rowCount(index.parent()) - 2){
+                ui->intervalsTableView->model()->insertRows(index.row() + 1, 1, index.parent());
+            }
+            int newColumn = (index.column() + 1) % 2;
+            int newRow = (!newColumn) ? index.row() + 1 : index.row();
+            QModelIndex nextIndex = ui->intervalsTableView->model()->index(newRow, newColumn);
+            ui->intervalsTableView->selectionModel()->clearSelection();
+            ui->intervalsTableView->selectionModel()->select(nextIndex, QItemSelectionModel::SelectCurrent);
+        }
     }
 }
 
@@ -578,9 +594,10 @@ void MainWindow::on_actionSave_triggered()
     saveIntervals();
 }
 
-void MainWindow::on_selectionChanged(const QItemSelection &, const QItemSelection &){
-    if (ui->intervalsTableView->selectionModel()->selectedIndexes().count() > 0){
-        QVariant data = timeIntervals->data(ui->intervalsTableView->selectionModel()->selectedIndexes()[0], Qt::UserRole);
+void MainWindow::on_selectionChanged(const QItemSelection & selected, const QItemSelection & deselected){
+    if (selected.count() > 0 && selected.indexes().count() > 0){
+        QModelIndex index = selected.indexes().first();
+        QVariant data = timeIntervals->data(index, Qt::UserRole);
         IntervalTimestamp timestamp = data.value<IntervalTimestamp>();
         if (timestamp.isValid){
             // jump to selected timestamp
@@ -597,7 +614,7 @@ void MainWindow::on_selectionChanged(const QItemSelection &, const QItemSelectio
                 currentTimestamp.isValid = true;
                 QVariant timestampValue;
                 timestampValue.setValue(currentTimestamp);
-                timeIntervals->setData(ui->intervalsTableView->selectionModel()->selectedIndexes()[0], timestampValue, Qt::EditRole);
+                timeIntervals->setData(index, timestampValue, Qt::EditRole);
             }
         }
     }
@@ -620,4 +637,33 @@ void MainWindow::on_nextJumpPushButton_clicked()
 {
     playTimer->stop();
     showNextImage(10);
+}
+
+void MainWindow::on_playTillNextTimestampPushButton_clicked()
+{
+    if (ui->intervalsTableView->selectionModel()->selectedIndexes().count() <= 0) return;
+
+    playTimer->stop();
+    QModelIndex index = ui->intervalsTableView->selectionModel()->selectedIndexes()[0];
+    if (index.isValid()){
+        if (index.row() != timeIntervals->rowCount(index.parent()) - 1){
+            // add new row if last editable cell is selected
+            int newColumn = (index.column() + 1) % 2;
+            int newRow = (!newColumn) ? index.row() + 1 : index.row();
+            stopIndex = ui->intervalsTableView->model()->index(newRow, newColumn);
+            if (stopIndex.isValid()){
+                QVariant data = timeIntervals->data(stopIndex, Qt::UserRole);
+                if (data.isValid()){
+                    IntervalTimestamp timestamp = data.value<IntervalTimestamp>();
+                    if (timestamp.isValid){
+                        ui->intervalsTableView->selectionModel()->clearSelection();
+                        if (pFormatCtx == NULL) return;
+                        double timeout = 1 / av_q2d(pFormatCtx->streams[videoStream]->r_frame_rate) * 1000;
+                        stopPlayerDts = timestamp.dts;
+                        startPlayer(timeout);
+                    }
+                }
+            }
+        }
+    }
 }
