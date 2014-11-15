@@ -56,8 +56,6 @@ private:
     double pts;
     int sliderFactor;
 
-    double firstImagePts;
-    uint64_t firstImageDts;
     VideoImage imagesBuffer[IMAGES_BUFFER_SIZE];
     int imagesBufferOldest;
     int imagesBufferNewest;

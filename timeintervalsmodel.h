@@ -22,6 +22,7 @@ public:
     bool setData(const QModelIndex &index, const QVariant &value, int role);
     void saveIntervals(QString fileName);
     void loadIntervals(QString fileName);
+    void clear();
     
 signals:
     

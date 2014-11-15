@@ -205,6 +205,14 @@ void xmlLoadTimestamp(QXmlStreamReader &stream, IntervalTimestamp &timestamp){
     }
 }
 
+void TimeIntervalsModel::clear(){
+        beginResetModel();
+        intervals.clear();
+        TimeInterval interval;
+        intervals.append(interval);
+        endResetModel();
+}
+
 void TimeIntervalsModel::loadIntervals(QString fileName){
     QFile file(fileName);
     if (file.open(QFile::ReadOnly | QFile::Text)){

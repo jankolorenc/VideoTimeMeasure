@@ -317,6 +317,7 @@ void MainWindow::on_actionOpen_triggered()
     sliderFactor = 1;
 
     videoParameters->parameters.clear();
+    timeIntervals->clear();
 
     ui->timeHorizontalSlider->setValue(0);
     if (!loadVideoFile(fileName)) return;
@@ -327,10 +328,14 @@ void MainWindow::on_actionOpen_triggered()
     int64_t streamDuration = av_rescale_q(pFormatCtx->duration, AV_TIME_BASE_Q, pFormatCtx->streams[videoStream]->time_base);
     ui->timeHorizontalSlider->setMaximum(streamDuration / sliderFactor);
 
+    QVariant data = timeIntervals->data(timeIntervals->index(0, 0), Qt::UserRole);
+    if (data.isValid()){
+        IntervalTimestamp timestamp = data.value<IntervalTimestamp>();
+        if (!timestamp.isValid) ui->intervalsTableView->selectionModel()->select(timeIntervals->index(0, 0), QItemSelectionModel::SelectCurrent);
+    }
+
     // current image
     if (readNextFrame()){
-        firstImagePts = imagesBuffer[imagesBufferNewest].pts;
-        firstImageDts = imagesBuffer[imagesBufferNewest].dts;
         showCurrentImage();
     }
     //next image
@@ -423,7 +428,9 @@ void MainWindow::showCurrentImage(bool updateSlider = true){
         timestamp.dts = imagesBuffer[imagesBufferCurrent].dts;
         QVariant timestampValue;
         timestampValue.setValue(timestamp);
-        timeIntervals->setData(ui->intervalsTableView->currentIndex(), timestampValue, Qt::EditRole);
+        foreach(const QModelIndex index, ui->intervalsTableView->selectionModel()->selectedIndexes()){
+            timeIntervals->setData(index, timestampValue, Qt::EditRole);
+        }
     }
 }
 
@@ -519,9 +526,9 @@ bool MainWindow::showPreviousImage(int jumpImages = 1)
             imagesBufferCurrent = (imagesBufferCurrent - 1 + IMAGES_BUFFER_SIZE) % IMAGES_BUFFER_SIZE;
         }
         else{
-            if (imagesBuffer[imagesBufferCurrent].dts > firstImageDts){
+            //if (imagesBuffer[imagesBufferCurrent].dts > firstImageDts){
                 videoSeek(imagesBuffer[imagesBufferCurrent].pts, imagesBuffer[imagesBufferCurrent].dts, true, true);
-            }
+            //}
         }
     }
     showCurrentImage();
@@ -584,9 +591,22 @@ void MainWindow::on_selectionChanged(const QItemSelection &, const QItemSelectio
         QVariant data = timeIntervals->data(ui->intervalsTableView->selectionModel()->selectedIndexes()[0], Qt::UserRole);
         IntervalTimestamp timestamp = data.value<IntervalTimestamp>();
         if (timestamp.isValid){
+            // jump to selected timestamp
             stopPlayer();
             videoSeek(timestamp.pts, timestamp.dts, true, false);
             showCurrentImage();
+        }
+        else{
+            // fill empry cell with current image timestamp
+            if (imagesBufferCurrent > -1){
+                IntervalTimestamp currentTimestamp;
+                currentTimestamp.dts = imagesBuffer[imagesBufferCurrent].dts;
+                currentTimestamp.pts = imagesBuffer[imagesBufferCurrent].pts;
+                currentTimestamp.isValid = true;
+                QVariant timestampValue;
+                timestampValue.setValue(currentTimestamp);
+                timeIntervals->setData(ui->intervalsTableView->selectionModel()->selectedIndexes()[0], timestampValue, Qt::EditRole);
+            }
         }
     }
 }
