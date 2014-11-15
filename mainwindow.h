@@ -87,7 +87,7 @@ private slots:
     void on_nextImagePushButton_clicked();
     void on_timeHorizontalSlider_sliderMoved(int position);
     void on_deleteIntervalRow();
-    void on_addIntervalRow();
+    void on_insertIntervalRow();
     void on_actionSave_triggered();
     void on_selectionChanged(const QItemSelection &, const QItemSelection &);
     void on_previousJumpPushButton_clicked();

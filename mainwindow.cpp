@@ -80,8 +80,8 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(playImageShortcut, SIGNAL(activated()), this, SLOT(on_playPausePushButton_clicked()));
     QShortcut* deleteTimeIntervalShortcut = new QShortcut(QKeySequence(QKeySequence::Delete), ui->intervalsTableView);
     connect(deleteTimeIntervalShortcut, SIGNAL(activated()), this, SLOT(on_deleteIntervalRow()));
-    QShortcut* addTimeIntervalShortcut = new QShortcut(QKeySequence(QKeySequence::InsertParagraphSeparator), ui->intervalsTableView);
-    connect(addTimeIntervalShortcut, SIGNAL(activated()), this, SLOT(on_addIntervalRow()));
+    QShortcut* insertTimeIntervalShortcut = new QShortcut(QKeySequence(Qt::Key_Insert), ui->intervalsTableView);
+    connect(insertTimeIntervalShortcut, SIGNAL(activated()), this, SLOT(on_insertIntervalRow()));
     QShortcut* nextImageShortcut = new QShortcut(QKeySequence(Qt::Key_Plus), this);
     connect(nextImageShortcut, SIGNAL(activated()), this, SLOT(on_nextImagePushButton_clicked()));
     QShortcut* previousImageShortcut = new QShortcut(QKeySequence(Qt::Key_Minus), this);
@@ -405,15 +405,7 @@ void MainWindow::bufferCurrentFrame(){
 
 void MainWindow::showCurrentImage(bool updateSlider = true){
     if (imagesBufferCurrent != -1 && imagesBuffer[imagesBufferCurrent].image != NULL){
-//        ui->videoLabel->setPixmap(QPixmap::fromImage(
-//                                      imagesBuffer[imagesBufferCurrent].image->scaled(ui->videoLabel->width(),
-//                                                                                      ui->videoLabel->height(),
-//                                                                                      Qt::KeepAspectRatio)));
         ui->videoLabel->setImage(imagesBuffer[imagesBufferCurrent].image);
-
-        ui->timeLabel->setText(QString("PTS %1, DTS %2")
-                               .arg(imagesBuffer[imagesBufferCurrent].pts)
-                               .arg(imagesBuffer[imagesBufferCurrent].dts));
 
         // update slider
         if (updateSlider){
@@ -558,22 +550,22 @@ void MainWindow::on_deleteIntervalRow()
         ui->intervalsTableView->model()->removeRows(idx.row(), 1, idx.parent());
 }
 
-void MainWindow::on_addIntervalRow()
+void MainWindow::on_insertIntervalRow()
 {
     QModelIndex idx = ui->intervalsTableView->currentIndex();
     if (idx.isValid()){
-        if (idx.row() == timeIntervals->rowCount(idx.parent()) - 1 ||
-                (idx.row() == 0 && idx.column() == 0)){
+//        if (idx.row() == timeIntervals->rowCount(idx.parent()) - 1 ||
+//                (idx.row() == 0 && idx.column() == 0)){
             ui->intervalsTableView->model()->insertRows(idx.row(), 1, idx.parent());
 
             QModelIndex nextIndex = ui->intervalsTableView->model()->index(idx.row(), 0);
             ui->intervalsTableView->setCurrentIndex(nextIndex);
-        }
-        else{
-            ui->intervalsTableView->model()->insertRows(idx.row() + 1, 1, idx.parent());
-            QModelIndex nextIndex = ui->intervalsTableView->model()->index(idx.row() + 1, 0);
-            ui->intervalsTableView->setCurrentIndex(nextIndex);
-        }
+//        }
+//        else{
+//            ui->intervalsTableView->model()->insertRows(idx.row() + 1, 1, idx.parent());
+//            QModelIndex nextIndex = ui->intervalsTableView->model()->index(idx.row() + 1, 0);
+//            ui->intervalsTableView->setCurrentIndex(nextIndex);
+//        }
     }
 }
 
