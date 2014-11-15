@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>557</width>
+    <width>592</width>
     <height>361</height>
    </rect>
   </property>
@@ -84,9 +84,9 @@
            </widget>
           </item>
           <item>
-           <widget class="QPushButton" name="playTillNextTimestampPushButton">
+           <widget class="QPushButton" name="playIntervalPushButton">
             <property name="text">
-             <string>Play timestamp</string>
+             <string>Play interval</string>
             </property>
            </widget>
           </item>
@@ -150,7 +150,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>557</width>
+     <width>592</width>
      <height>25</height>
     </rect>
    </property>

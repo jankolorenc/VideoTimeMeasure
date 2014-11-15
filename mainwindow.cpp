@@ -639,7 +639,7 @@ void MainWindow::on_nextJumpPushButton_clicked()
     showNextImage(10);
 }
 
-void MainWindow::on_playTillNextTimestampPushButton_clicked()
+void MainWindow::on_playIntervalPushButton_clicked()
 {
     if (ui->intervalsTableView->selectionModel()->selectedIndexes().count() <= 0) return;
 

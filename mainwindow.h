@@ -96,7 +96,7 @@ private slots:
     void on_previousJumpPushButton_clicked();
     void on_nextJumpPushButton_clicked();
     void on_selectNextCell();
-    void on_playTillNextTimestampPushButton_clicked();
+    void on_playIntervalPushButton_clicked();
 };
 
 #endif // MAINWINDOW_H
