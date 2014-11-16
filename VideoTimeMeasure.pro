@@ -16,14 +16,16 @@ SOURCES += main.cpp\
         mainwindow.cpp \
     timeintervalsmodel.cpp \
     timeinterval.cpp \
-    aspectratiopixmaplabel.cpp
+    aspectratiopixmaplabel.cpp \
+    navigationeventfilter.cpp
 
 HEADERS  += mainwindow.h \
     videoimage.h \
     timeintervalsmodel.h \
     timeinterval.h \
     intervaltimestamp.h \
-    aspectratiopixmaplabel.h
+    aspectratiopixmaplabel.h \
+    navigationeventfilter.h
 
 FORMS    += mainwindow.ui
 
