@@ -6,7 +6,6 @@
 #include <QItemSelection>
 #include "videoimage.h"
 #include "timeintervalsmodel.h"
-#include "videoparametersmodel.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -39,7 +38,6 @@ private:
     QTimer *playTimer;
 
     TimeIntervalsModel *timeIntervals;
-    VideoParametersModel *videoParameters;
     QString opennedVideoFile;
 
     AVDictionary **options;

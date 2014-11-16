@@ -16,7 +16,6 @@ SOURCES += main.cpp\
         mainwindow.cpp \
     timeintervalsmodel.cpp \
     timeinterval.cpp \
-    videoparametersmodel.cpp \
     aspectratiopixmaplabel.cpp
 
 HEADERS  += mainwindow.h \
@@ -24,7 +23,6 @@ HEADERS  += mainwindow.h \
     timeintervalsmodel.h \
     timeinterval.h \
     intervaltimestamp.h \
-    videoparametersmodel.h \
     aspectratiopixmaplabel.h
 
 FORMS    += mainwindow.ui

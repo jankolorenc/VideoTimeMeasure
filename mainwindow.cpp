@@ -7,7 +7,6 @@
 #include <QStandardItemModel>
 #include <QShortcut>
 #include "intervaltimestamp.h"
-#include "videoparametersmodel.h"
 #include <QTime>
 #include <QCloseEvent>
 #include <math.h>
@@ -93,9 +92,6 @@ MainWindow::MainWindow(QWidget *parent) :
     QItemSelectionModel *selectionModel= ui->intervalsTableView->selectionModel();
     connect(selectionModel, SIGNAL(selectionChanged(QItemSelection,QItemSelection)),
             this, SLOT(on_selectionChanged(QItemSelection,QItemSelection)));
-
-    videoParameters = new VideoParametersModel();
-    ui->videoParametersTableView->horizontalHeader()->setResizeMode(QHeaderView::Stretch);
 }
 
 MainWindow::~MainWindow()
@@ -320,9 +316,9 @@ void MainWindow::on_actionOpen_triggered()
     backSeekFactor = 1;
     sliderFactor = 1;
     stopPlayerDts = 0xffffffffffffffff;
-    videoParameters->parameters.clear();
     timeIntervals->clear();
     ui->timeHorizontalSlider->setValue(0);
+    statusBar()->showMessage("");
 
     if (!loadVideoFile(fileName)) return;
     allocateDecodingFrameBuffers();
@@ -345,37 +341,10 @@ void MainWindow::on_actionOpen_triggered()
     //next image
     readNextFrame();
 
-    //fill video info parameters - for debugging and visual check
-    QPair<QString, QString> avgFramerate("avg framerate", QString("%1 / %2 = %3 fps")
-                                         .arg(pFormatCtx->streams[videoStream]->avg_frame_rate.num)
-                                         .arg(pFormatCtx->streams[videoStream]->avg_frame_rate.den)
-                                         .arg(av_q2d(pFormatCtx->streams[videoStream]->avg_frame_rate))
-                                         );
-    videoParameters->parameters.append(avgFramerate);
-    QPair<QString, QString> rFramerate("r framerate", QString("%1 / %2 = %3 fps")
-                                       .arg(pFormatCtx->streams[videoStream]->r_frame_rate.num)
-                                       .arg(pFormatCtx->streams[videoStream]->r_frame_rate.den)
-                                       .arg(av_q2d(pFormatCtx->streams[videoStream]->r_frame_rate))
-                                       );
-    videoParameters->parameters.append(rFramerate);
-    QTime streamDurationTime(0,0,0);
-    QPair<QString, QString> streamDurationPair("stream duration", QString("%1 = %2 s")
-                                           .arg(pFormatCtx->streams[videoStream]->duration)
-                                           .arg(streamDurationTime.addSecs(pFormatCtx->streams[videoStream]->duration * av_q2d(pFormatCtx->streams[videoStream]->time_base)).toString("hh:mm:ss.zzz")));
-    videoParameters->parameters.append(streamDurationPair);
-
     QTime formatDurationTime(0,0,0);
-    QPair<QString, QString> formatDuration("format duration", QString("%1 = %2 s")
-                                           .arg(pFormatCtx->duration)
-                                           .arg(formatDurationTime.addSecs(pFormatCtx->duration * av_q2d(AV_TIME_BASE_Q)).toString("hh:mm:ss.zzz")));
-    videoParameters->parameters.append(formatDuration);
-
-    QPair<QString, QString> gop("gop", QString("%1")
-                                .arg(pFormatCtx->streams[videoStream]->codec->gop_size)
-                                );
-    videoParameters->parameters.append(gop);
-
-    ui->videoParametersTableView->setModel(videoParameters);
+    statusBar()->showMessage(QString("%1 fps, duration: %2")
+                             .arg(av_q2d(pFormatCtx->streams[videoStream]->r_frame_rate))
+                             .arg(formatDurationTime.addSecs(pFormatCtx->duration * av_q2d(AV_TIME_BASE_Q)).toString("hh:mm:ss.zzz")));
 }
 
 void MainWindow::bufferCurrentFrame(){
