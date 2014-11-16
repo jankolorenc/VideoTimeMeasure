@@ -74,20 +74,65 @@ MainWindow::MainWindow(QWidget *parent) :
 
     QShortcut* openFileShortcut = new QShortcut(QKeySequence(QKeySequence::Open), this);
     connect(openFileShortcut, SIGNAL(activated()), this, SLOT(on_actionOpen_triggered()));
+    ui->actionOpen->setShortcut(openFileShortcut->key());
+
     QShortcut* saveFileShortcut = new QShortcut(QKeySequence(QKeySequence::Save), this);
     connect(saveFileShortcut, SIGNAL(activated()), this, SLOT(on_actionSave_triggered()));
+    ui->actionSave->setShortcut(saveFileShortcut->key());
+
     QShortcut* playImageShortcut = new QShortcut(QKeySequence(Qt::Key_Space), this);
     connect(playImageShortcut, SIGNAL(activated()), this, SLOT(on_playPausePushButton_clicked()));
+    ui->playPausePushButton->setToolTip(QString("%1 [%2]")
+                                        .arg(ui->playPausePushButton->toolTip())
+                                        .arg(playImageShortcut->key().toString()));
+
     QShortcut* deleteTimeIntervalShortcut = new QShortcut(QKeySequence(QKeySequence::Delete), ui->intervalsTableView);
-    connect(deleteTimeIntervalShortcut, SIGNAL(activated()), this, SLOT(on_deleteIntervalRow()));
+    connect(deleteTimeIntervalShortcut, SIGNAL(activated()), this, SLOT(on_deletePushButton_clicked()));
+    ui->deletePushButton->setToolTip(QString("%1 [%2]")
+                                        .arg(ui->deletePushButton->toolTip())
+                                        .arg(deleteTimeIntervalShortcut->key().toString()));
+
     QShortcut* insertTimeIntervalShortcut = new QShortcut(QKeySequence(Qt::Key_Insert), ui->intervalsTableView);
-    connect(insertTimeIntervalShortcut, SIGNAL(activated()), this, SLOT(on_insertIntervalRow()));
+    connect(insertTimeIntervalShortcut, SIGNAL(activated()), this, SLOT(on_insertPushButton_clicked()));
+    ui->insertPushButton->setToolTip(QString("%1 [%2]")
+                                        .arg(ui->insertPushButton->toolTip())
+                                        .arg(insertTimeIntervalShortcut->key().toString()));
+
     QShortcut* nextImageShortcut = new QShortcut(QKeySequence(Qt::Key_Plus), this);
     connect(nextImageShortcut, SIGNAL(activated()), this, SLOT(on_nextImagePushButton_clicked()));
+    ui->nextImagePushButton->setToolTip(QString("%1 [%2]")
+                                        .arg(ui->nextImagePushButton->toolTip())
+                                        .arg(nextImageShortcut->key().toString()));
+
     QShortcut* previousImageShortcut = new QShortcut(QKeySequence(Qt::Key_Minus), this);
     connect(previousImageShortcut, SIGNAL(activated()), this, SLOT(on_previousImagePushButton_clicked()));
+    ui->previousImagePushButton->setToolTip(QString("%1 [%2]")
+                                        .arg(ui->previousImagePushButton->toolTip())
+                                        .arg(previousImageShortcut->key().toString()));
+
     QShortcut* nextTimestampShortcut = new QShortcut(QKeySequence(QKeySequence::InsertParagraphSeparator), this);
     connect(nextTimestampShortcut, SIGNAL(activated()), this, SLOT(on_selectNextCell()));
+    ui->nextCellPushButton->setToolTip(QString("%1 [%2]")
+                                        .arg(ui->nextCellPushButton->toolTip())
+                                        .arg(nextTimestampShortcut->key().toString()));
+
+    QShortcut* playIntervalShortcut = new QShortcut(QKeySequence(Qt::CTRL + Qt::Key_Enter), this);
+    connect(playIntervalShortcut, SIGNAL(activated()), this, SLOT(on_playIntervalPushButton_clicked()));
+    ui->playIntervalPushButton->setToolTip(QString("%1 [%2]")
+                                        .arg(ui->playIntervalPushButton->toolTip())
+                                        .arg(playIntervalShortcut->key().toString()));
+
+    QShortcut* reverseJumpShortcut = new QShortcut(QKeySequence(Qt::CTRL + Qt::Key_Minus), this);
+    connect(reverseJumpShortcut, SIGNAL(activated()), this, SLOT(on_reverseJumpPushButton_clicked()));
+    ui->reverseJumpPushButton->setToolTip(QString("%1 [%2]")
+                                        .arg(ui->reverseJumpPushButton->toolTip())
+                                        .arg(reverseJumpShortcut->key().toString()));
+
+    QShortcut* forwardJumpShortcut = new QShortcut(QKeySequence(Qt::CTRL + Qt::Key_Plus), this);
+    connect(forwardJumpShortcut, SIGNAL(activated()), this, SLOT(on_forwardJumpPushButton_clicked()));
+    ui->forwardJumpPushButton->setToolTip(QString("%1 [%2]")
+                                        .arg(ui->nextCellPushButton->toolTip())
+                                        .arg(forwardJumpShortcut->key().toString()));
 
     QItemSelectionModel *selectionModel= ui->intervalsTableView->selectionModel();
     connect(selectionModel, SIGNAL(selectionChanged(QItemSelection,QItemSelection)),
@@ -419,12 +464,14 @@ void MainWindow::on_nextImagePushButton_clicked()
 }
 
 void MainWindow::startPlayer(double timeout){
-    ui->playPausePushButton->setText(tr("Pause"));
+    //ui->playPausePushButton->setText(tr("Pause"));
+    ui->playPausePushButton->setIcon(QIcon(":/resources/graphics/pause.png"));
     playTimer->start(timeout);
 }
 
 void MainWindow::stopPlayer(){
-    ui->playPausePushButton->setText(tr("Play"));
+    //ui->playPausePushButton->setText(tr("Play"));
+    ui->playPausePushButton->setIcon(QIcon(":/resources/graphics/play.png"));
     playTimer->stop();
     if(stopPlayerDts != 0xffffffffffffffff) ui->intervalsTableView->selectionModel()->select(stopIndex, QItemSelectionModel::SelectCurrent);
     stopPlayerDts = 0xffffffffffffffff;
@@ -516,24 +563,6 @@ void MainWindow::on_timeHorizontalSlider_sliderMoved(int position)
     showCurrentImage(false);
 }
 
-void MainWindow::on_deleteIntervalRow()
-{
-    QModelIndex idx = ui->intervalsTableView->currentIndex();
-    if (idx.isValid())
-        ui->intervalsTableView->model()->removeRows(idx.row(), 1, idx.parent());
-}
-
-void MainWindow::on_insertIntervalRow()
-{
-    QModelIndex idx = ui->intervalsTableView->currentIndex();
-    if (idx.isValid()){
-        ui->intervalsTableView->model()->insertRows(idx.row(), 1, idx.parent());
-
-        QModelIndex nextIndex = ui->intervalsTableView->model()->index(idx.row(), 0);
-        ui->intervalsTableView->setCurrentIndex(nextIndex);
-    }
-}
-
 void MainWindow::on_selectNextCell()
 {
     if (ui->intervalsTableView->selectionModel()->selectedIndexes().count() <= 0) return;
@@ -596,18 +625,6 @@ void MainWindow::closeEvent(QCloseEvent *event)
     event->accept();
 }
 
-void MainWindow::on_previousJumpPushButton_clicked()
-{
-    playTimer->stop();
-    showPreviousImage(10);
-}
-
-void MainWindow::on_nextJumpPushButton_clicked()
-{
-    playTimer->stop();
-    showNextImage(10);
-}
-
 void MainWindow::on_playIntervalPushButton_clicked()
 {
     if (ui->intervalsTableView->selectionModel()->selectedIndexes().count() <= 0) return;
@@ -635,4 +652,68 @@ void MainWindow::on_playIntervalPushButton_clicked()
             }
         }
     }
+}
+
+void MainWindow::on_insertPushButton_clicked()
+{
+    QModelIndex idx = ui->intervalsTableView->currentIndex();
+    if (idx.isValid()){
+        ui->intervalsTableView->model()->insertRows(idx.row(), 1, idx.parent());
+
+        QModelIndex nextIndex = ui->intervalsTableView->model()->index(idx.row(), 0);
+        ui->intervalsTableView->setCurrentIndex(nextIndex);
+    }
+}
+
+void MainWindow::on_deletePushButton_clicked()
+{
+    QModelIndex idx = ui->intervalsTableView->currentIndex();
+    if (idx.isValid())
+        ui->intervalsTableView->model()->removeRows(idx.row(), 1, idx.parent());
+}
+
+void MainWindow::on_reverseJumpPushButton_clicked()
+{
+    playTimer->stop();
+    showPreviousImage(10);
+}
+
+void MainWindow::on_forwardJumpPushButton_clicked()
+{
+    playTimer->stop();
+    showNextImage(10);
+}
+
+void MainWindow::on_actionAbout_triggered()
+{
+    QMessageBox::about(this,
+                       "About Video Time Measure",
+                       tr(
+                       "<h1>Video Time Measure</h1>"
+                       "<p>"
+                       "This application is intended to measure time in a recorded video.<br />"
+                       "Main motivation was to measure and verify air time and synchronization for trampoline.<br />"
+                       "</p>"
+                       "<p>"
+                       "To measure time:"
+                       "<ol>"
+                       "<li>Open video file</li>"
+                       "<li>Select appropriate start or stop timestamp in the intervals table right to the video image.</li>"
+                       "<li>Navigate to desired video timestamp using buttons below the image.</li>"
+                       "</ol>"
+                       "Advanced usage for never seen video file:"
+                       "<ol>"
+                       "<li>Open video file</li>"
+                       "<li>Play the video</li>"
+                       "<li>Mark desired timestamps by pressing &quot;Enter&quot; during playing video.</li>"
+                       "<li>Fine tune created timestamp from the first start timestamp.</li>"
+                       "<li>&quot;Play interval&quot; button plays video until next timestamp.</li>"
+                       "</ol>"
+                       "</p>"
+                       "<p>"
+                       "Created by Jan Kolorenc</br>"
+                       "Source codes are on <a href=\"https://github.com/jankolorenc/VideoTimeMeasure\">GitHub</a><br/>"
+                       "Thanks to all people who created libraries, tutorials and tools, this application is based on. (see source code)"
+                       "</p>"
+                       ));
 }

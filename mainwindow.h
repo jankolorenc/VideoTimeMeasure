@@ -87,14 +87,15 @@ private slots:
     void on_previousImagePushButton_clicked();
     void on_nextImagePushButton_clicked();
     void on_timeHorizontalSlider_sliderMoved(int position);
-    void on_deleteIntervalRow();
-    void on_insertIntervalRow();
     void on_actionSave_triggered();
     void on_selectionChanged(const QItemSelection &, const QItemSelection &);
-    void on_previousJumpPushButton_clicked();
-    void on_nextJumpPushButton_clicked();
     void on_selectNextCell();
     void on_playIntervalPushButton_clicked();
+    void on_insertPushButton_clicked();
+    void on_deletePushButton_clicked();
+    void on_reverseJumpPushButton_clicked();
+    void on_forwardJumpPushButton_clicked();
+    void on_actionAbout_triggered();
 };
 
 #endif // MAINWINDOW_H

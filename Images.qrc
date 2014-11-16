@@ -1,0 +1,14 @@
+<RCC>
+    <qresource prefix="/">
+        <file>resources/graphics/forwardJump.png</file>
+        <file>resources/graphics/insert.png</file>
+        <file>resources/graphics/nextCell.png</file>
+        <file>resources/graphics/nextImage.png</file>
+        <file>resources/graphics/playInterval.png</file>
+        <file>resources/graphics/previousImage.png</file>
+        <file>resources/graphics/remove.png</file>
+        <file>resources/graphics/reverseJump.png</file>
+        <file>resources/graphics/pause.png</file>
+        <file>resources/graphics/play.png</file>
+    </qresource>
+</RCC>

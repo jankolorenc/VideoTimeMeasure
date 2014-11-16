@@ -63,44 +63,80 @@
         <item>
          <layout class="QHBoxLayout" name="horizontalLayout_2">
           <item>
-           <widget class="QPushButton" name="previousJumpPushButton">
-            <property name="text">
-             <string>-10</string>
+           <widget class="QPushButton" name="reverseJumpPushButton">
+            <property name="toolTip">
+             <string>Reverse long jump</string>
+            </property>
+            <property name="icon">
+             <iconset resource="Images.qrc">
+              <normaloff>:/resources/graphics/reverseJump.png</normaloff>:/resources/graphics/reverseJump.png</iconset>
             </property>
            </widget>
           </item>
           <item>
            <widget class="QPushButton" name="previousImagePushButton">
-            <property name="text">
-             <string>Previous image</string>
+            <property name="toolTip">
+             <string>Previous picture</string>
+            </property>
+            <property name="icon">
+             <iconset resource="Images.qrc">
+              <normaloff>:/resources/graphics/previousImage.png</normaloff>:/resources/graphics/previousImage.png</iconset>
             </property>
            </widget>
           </item>
           <item>
            <widget class="QPushButton" name="playPausePushButton">
+            <property name="toolTip">
+             <string>Play / pause</string>
+            </property>
             <property name="text">
-             <string>Play</string>
+             <string/>
+            </property>
+            <property name="icon">
+             <iconset resource="Images.qrc">
+              <normaloff>:/resources/graphics/play.png</normaloff>:/resources/graphics/play.png</iconset>
             </property>
            </widget>
           </item>
           <item>
            <widget class="QPushButton" name="playIntervalPushButton">
+            <property name="toolTip">
+             <string>Play selected interval</string>
+            </property>
             <property name="text">
-             <string>Play interval</string>
+             <string/>
+            </property>
+            <property name="icon">
+             <iconset resource="Images.qrc">
+              <normaloff>:/resources/graphics/playInterval.png</normaloff>:/resources/graphics/playInterval.png</iconset>
             </property>
            </widget>
           </item>
           <item>
            <widget class="QPushButton" name="nextImagePushButton">
-            <property name="text">
+            <property name="toolTip">
              <string>Next image</string>
+            </property>
+            <property name="text">
+             <string/>
+            </property>
+            <property name="icon">
+             <iconset resource="Images.qrc">
+              <normaloff>:/resources/graphics/nextImage.png</normaloff>:/resources/graphics/nextImage.png</iconset>
             </property>
            </widget>
           </item>
           <item>
-           <widget class="QPushButton" name="nextJumpPushButton">
+           <widget class="QPushButton" name="forwardJumpPushButton">
+            <property name="toolTip">
+             <string>Forward long lump</string>
+            </property>
             <property name="text">
-             <string>+10</string>
+             <string/>
+            </property>
+            <property name="icon">
+             <iconset resource="Images.qrc">
+              <normaloff>:/resources/graphics/forwardJump.png</normaloff>:/resources/graphics/forwardJump.png</iconset>
             </property>
            </widget>
           </item>
@@ -123,6 +159,52 @@
           </property>
          </widget>
         </item>
+        <item>
+         <layout class="QHBoxLayout" name="horizontalLayout">
+          <item>
+           <widget class="QPushButton" name="insertPushButton">
+            <property name="toolTip">
+             <string>Insert row</string>
+            </property>
+            <property name="text">
+             <string/>
+            </property>
+            <property name="icon">
+             <iconset resource="Images.qrc">
+              <normaloff>:/resources/graphics/insert.png</normaloff>:/resources/graphics/insert.png</iconset>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="deletePushButton">
+            <property name="toolTip">
+             <string>Delete row</string>
+            </property>
+            <property name="text">
+             <string/>
+            </property>
+            <property name="icon">
+             <iconset resource="Images.qrc">
+              <normaloff>:/resources/graphics/remove.png</normaloff>:/resources/graphics/remove.png</iconset>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="nextCellPushButton">
+            <property name="toolTip">
+             <string>Next cell</string>
+            </property>
+            <property name="text">
+             <string/>
+            </property>
+            <property name="icon">
+             <iconset resource="Images.qrc">
+              <normaloff>:/resources/graphics/nextCell.png</normaloff>:/resources/graphics/nextCell.png</iconset>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
        </layout>
       </widget>
      </widget>
@@ -140,16 +222,15 @@
    </property>
    <widget class="QMenu" name="menuOpen">
     <property name="title">
-     <string>File</string>
+     <string>&amp;File</string>
     </property>
     <addaction name="actionOpen"/>
     <addaction name="actionSave"/>
    </widget>
    <widget class="QMenu" name="menuHelp">
     <property name="title">
-     <string>Help</string>
+     <string>&amp;Help</string>
     </property>
-    <addaction name="actionVideo_info"/>
     <addaction name="actionAbout"/>
    </widget>
    <addaction name="menuOpen"/>
@@ -166,22 +247,20 @@
   <widget class="QStatusBar" name="statusBar"/>
   <action name="actionOpen">
    <property name="text">
-    <string>Open</string>
+    <string>&amp;Open</string>
+   </property>
+   <property name="shortcutContext">
+    <enum>Qt::WindowShortcut</enum>
    </property>
   </action>
   <action name="actionSave">
    <property name="text">
-    <string>Save</string>
-   </property>
-  </action>
-  <action name="actionVideo_info">
-   <property name="text">
-    <string>Video info</string>
+    <string>&amp;Save</string>
    </property>
   </action>
   <action name="actionAbout">
    <property name="text">
-    <string>About</string>
+    <string>&amp;About</string>
    </property>
   </action>
  </widget>
@@ -193,6 +272,8 @@
    <header>aspectratiopixmaplabel.h</header>
   </customwidget>
  </customwidgets>
- <resources/>
+ <resources>
+  <include location="Images.qrc"/>
+ </resources>
  <connections/>
 </ui>
