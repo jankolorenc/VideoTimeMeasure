@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>592</width>
+    <width>641</width>
     <height>361</height>
    </rect>
   </property>
@@ -71,6 +71,12 @@
              <iconset resource="Images.qrc">
               <normaloff>:/resources/graphics/reverseJump.png</normaloff>:/resources/graphics/reverseJump.png</iconset>
             </property>
+            <property name="iconSize">
+             <size>
+              <width>52</width>
+              <height>24</height>
+             </size>
+            </property>
            </widget>
           </item>
           <item>
@@ -81,6 +87,12 @@
             <property name="icon">
              <iconset resource="Images.qrc">
               <normaloff>:/resources/graphics/previousImage.png</normaloff>:/resources/graphics/previousImage.png</iconset>
+            </property>
+            <property name="iconSize">
+             <size>
+              <width>26</width>
+              <height>24</height>
+             </size>
             </property>
            </widget>
           </item>
@@ -96,6 +108,12 @@
              <iconset resource="Images.qrc">
               <normaloff>:/resources/graphics/play.png</normaloff>:/resources/graphics/play.png</iconset>
             </property>
+            <property name="iconSize">
+             <size>
+              <width>26</width>
+              <height>24</height>
+             </size>
+            </property>
            </widget>
           </item>
           <item>
@@ -109,6 +127,12 @@
             <property name="icon">
              <iconset resource="Images.qrc">
               <normaloff>:/resources/graphics/playInterval.png</normaloff>:/resources/graphics/playInterval.png</iconset>
+            </property>
+            <property name="iconSize">
+             <size>
+              <width>31</width>
+              <height>24</height>
+             </size>
             </property>
            </widget>
           </item>
@@ -124,6 +148,12 @@
              <iconset resource="Images.qrc">
               <normaloff>:/resources/graphics/nextImage.png</normaloff>:/resources/graphics/nextImage.png</iconset>
             </property>
+            <property name="iconSize">
+             <size>
+              <width>26</width>
+              <height>24</height>
+             </size>
+            </property>
            </widget>
           </item>
           <item>
@@ -137,6 +167,12 @@
             <property name="icon">
              <iconset resource="Images.qrc">
               <normaloff>:/resources/graphics/forwardJump.png</normaloff>:/resources/graphics/forwardJump.png</iconset>
+            </property>
+            <property name="iconSize">
+             <size>
+              <width>52</width>
+              <height>24</height>
+             </size>
             </property>
            </widget>
           </item>
@@ -173,6 +209,12 @@
              <iconset resource="Images.qrc">
               <normaloff>:/resources/graphics/insert.png</normaloff>:/resources/graphics/insert.png</iconset>
             </property>
+            <property name="iconSize">
+             <size>
+              <width>24</width>
+              <height>24</height>
+             </size>
+            </property>
            </widget>
           </item>
           <item>
@@ -187,6 +229,12 @@
              <iconset resource="Images.qrc">
               <normaloff>:/resources/graphics/remove.png</normaloff>:/resources/graphics/remove.png</iconset>
             </property>
+            <property name="iconSize">
+             <size>
+              <width>24</width>
+              <height>24</height>
+             </size>
+            </property>
            </widget>
           </item>
           <item>
@@ -200,6 +248,12 @@
             <property name="icon">
              <iconset resource="Images.qrc">
               <normaloff>:/resources/graphics/nextCell.png</normaloff>:/resources/graphics/nextCell.png</iconset>
+            </property>
+            <property name="iconSize">
+             <size>
+              <width>40</width>
+              <height>24</height>
+             </size>
             </property>
            </widget>
           </item>
@@ -216,7 +270,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>592</width>
+     <width>641</width>
      <height>25</height>
     </rect>
    </property>

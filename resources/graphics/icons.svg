@@ -24,9 +24,9 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="5.6"
-     inkscape:cx="85.420505"
-     inkscape:cy="541.47908"
+     inkscape:zoom="2.8"
+     inkscape:cx="138.50012"
+     inkscape:cy="522.79988"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="false"
@@ -53,183 +53,6 @@
      id="layer1">
     <text
        xml:space="preserve"
-       style="font-size:20px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;text-align:start;line-height:125%;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans;-inkscape-font-specification:Sans Bold"
-       x="52.500004"
-       y="471.82648"
-       id="text2993"
-       sodipodi:linespacing="125%"
-       inkscape:export-filename="/home/kolik/VideoTimeMeasure/VideoTimeMeasure/graphics/nextImage.png"
-       inkscape:export-xdpi="300.95001"
-       inkscape:export-ydpi="300.95001"><tspan
-         sodipodi:role="line"
-         id="tspan2995"
-         x="52.500004"
-         y="471.82648">&gt;</tspan></text>
-    <text
-       xml:space="preserve"
-       style="font-size:20px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;text-align:start;line-height:125%;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans;-inkscape-font-specification:Sans Bold"
-       x="106.78571"
-       y="472.36218"
-       id="text2997"
-       sodipodi:linespacing="125%"
-       inkscape:export-filename="/home/kolik/VideoTimeMeasure/VideoTimeMeasure/graphics/previousImage.png"
-       inkscape:export-xdpi="300.95001"
-       inkscape:export-ydpi="300.95001"><tspan
-         sodipodi:role="line"
-         id="tspan2999"
-         x="106.78571"
-         y="472.36218">&lt;</tspan></text>
-    <text
-       xml:space="preserve"
-       style="font-size:20px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;text-align:start;line-height:125%;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans;-inkscape-font-specification:Sans Bold"
-       x="52.32143"
-       y="488.96933"
-       id="text3001"
-       sodipodi:linespacing="125%"
-       inkscape:export-filename="/home/kolik/VideoTimeMeasure/VideoTimeMeasure/graphics/forwardJump.png"
-       inkscape:export-xdpi="300.95001"
-       inkscape:export-ydpi="300.95001"><tspan
-         sodipodi:role="line"
-         id="tspan3003"
-         x="52.32143"
-         y="488.96933">&gt;&gt;</tspan></text>
-    <text
-       xml:space="preserve"
-       style="font-size:20px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;text-align:start;line-height:125%;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans;-inkscape-font-specification:Sans Bold"
-       x="105.71429"
-       y="488.07648"
-       id="text3005"
-       sodipodi:linespacing="125%"
-       inkscape:export-filename="/home/kolik/VideoTimeMeasure/VideoTimeMeasure/graphics/reverseJump.png"
-       inkscape:export-xdpi="300.95001"
-       inkscape:export-ydpi="300.95001"><tspan
-         sodipodi:role="line"
-         x="105.71429"
-         y="488.07648"
-         id="tspan3009">&lt;&lt;</tspan></text>
-    <text
-       xml:space="preserve"
-       style="font-size:20px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;text-align:start;line-height:125%;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans;-inkscape-font-specification:Sans Bold"
-       x="61.607143"
-       y="532.89789"
-       id="text3021"
-       sodipodi:linespacing="125%"
-       inkscape:export-filename="/home/kolik/VideoTimeMeasure/VideoTimeMeasure/graphics/insert.png"
-       inkscape:export-xdpi="300.95001"
-       inkscape:export-ydpi="300.95001"><tspan
-         sodipodi:role="line"
-         id="tspan3023"
-         x="61.607143"
-         y="532.89789">+</tspan></text>
-    <text
-       xml:space="preserve"
-       style="font-size:24.45400047px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;text-align:start;line-height:125%;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans;-inkscape-font-specification:Sans Bold"
-       x="52.284065"
-       y="668.38641"
-       id="text3025"
-       sodipodi:linespacing="125%"
-       transform="scale(1.2227001,0.81786205)"
-       inkscape:export-filename="/home/kolik/VideoTimeMeasure/VideoTimeMeasure/graphics/remove.png"
-       inkscape:export-xdpi="300.95001"
-       inkscape:export-ydpi="300.95001"><tspan
-         sodipodi:role="line"
-         id="tspan3027"
-         x="52.284065"
-         y="668.38641">-</tspan></text>
-    <g
-       id="g3919"
-       transform="translate(-27.274119,-21.213203)"
-       inkscape:export-filename="/home/kolik/VideoTimeMeasure/VideoTimeMeasure/graphics/nextCell.png"
-       inkscape:export-xdpi="300.95001"
-       inkscape:export-ydpi="300.95001">
-      <path
-         d="m 141.24649,537.78147 19.39107,0 0,2.33671 -19.39107,0 0,-2.33671"
-         style="font-size:20px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;text-align:start;line-height:125%;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans;-inkscape-font-specification:Sans Bold"
-         id="path3894"
-         inkscape:connector-curvature="0" />
-      <path
-         d="m 148.11803,535.71741 0,-2.44141 12.51953,4.52149 0,2.30468 -12.51953,4.52149 0,-2.44141 9.42382,-3.22266 -9.42382,-3.24218"
-         style="font-size:20px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;text-align:start;line-height:125%;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans;-inkscape-font-specification:Sans Bold"
-         id="path3896"
-         inkscape:connector-curvature="0" />
-    </g>
-    <g
-       id="g3836"
-       inkscape:export-filename="/home/kolik/VideoTimeMeasure/VideoTimeMeasure/graphics/Play.png"
-       inkscape:export-xdpi="300.95001"
-       inkscape:export-ydpi="300.95001">
-      <path
-         d="m 54.261997,503.21741 0,-2.44141 12.519531,4.52149 0,2.30468 -12.519531,4.52149 0,-2.44141 9.423828,-3.22266 -9.423828,-3.24218"
-         style="font-size:20px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;text-align:start;line-height:125%;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none;font-family:Sans;-inkscape-font-specification:Sans Bold"
-         id="path3034"
-         inkscape:connector-curvature="0" />
-      <text
-         transform="matrix(0,-1.2227001,0.81786205,0,0,0)"
-         sodipodi:linespacing="125%"
-         id="text3025-0"
-         y="75.122368"
-         x="-419.29672"
-         style="font-size:24.45400047px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;text-align:start;line-height:125%;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans;-inkscape-font-specification:Sans Bold"
-         xml:space="preserve"><tspan
-           y="75.122368"
-           x="-419.29672"
-           id="tspan3027-6"
-           sodipodi:role="line">-</tspan></text>
-      <path
-         inkscape:connector-curvature="0"
-         id="path3831"
-         d="m 56.22223,506.24365 0,-3.08337 4.204752,1.53236 c 2.312612,0.84281 4.239382,1.54562 4.281707,1.56181 0.07182,0.0275 -8.286615,3.0779 -8.423701,3.07423 -0.03451,-9.1e-4 -0.06276,-1.3892 -0.06276,-3.08503 z"
-         style="fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none" />
-    </g>
-    <g
-       id="g3923"
-       inkscape:export-filename="/home/kolik/VideoTimeMeasure/VideoTimeMeasure/graphics/playInterval.png"
-       inkscape:export-xdpi="300.95001"
-       inkscape:export-ydpi="300.95001">
-      <g
-         id="g3836-9"
-         transform="translate(19.217261,1.6764095)">
-        <path
-           inkscape:connector-curvature="0"
-           id="path3034-2"
-           style="font-size:20px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;text-align:start;line-height:125%;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none;font-family:Sans;-inkscape-font-specification:Sans Bold"
-           d="m 54.261997,503.21741 0,-2.44141 12.519531,4.52149 0,2.30468 -12.519531,4.52149 0,-2.44141 9.423828,-3.22266 -9.423828,-3.24218" />
-        <text
-           xml:space="preserve"
-           style="font-size:24.45400047px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;text-align:start;line-height:125%;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans;-inkscape-font-specification:Sans Bold"
-           x="-419.29672"
-           y="75.122368"
-           id="text3025-0-9"
-           sodipodi:linespacing="125%"
-           transform="matrix(0,-1.2227001,0.81786205,0,0,0)"><tspan
-             sodipodi:role="line"
-             id="tspan3027-6-9"
-             x="-419.29672"
-             y="75.122368">-</tspan></text>
-        <path
-           style="fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none"
-           d="m 56.22223,506.24365 0,-3.08337 4.204752,1.53236 c 2.312612,0.84281 4.239382,1.54562 4.281707,1.56181 0.07182,0.0275 -8.286615,3.0779 -8.423701,3.07423 -0.03451,-9.1e-4 -0.06276,-1.3892 -0.06276,-3.08503 z"
-           id="path3831-6"
-           inkscape:connector-curvature="0" />
-      </g>
-      <text
-         inkscape:export-ydpi="300.95001"
-         inkscape:export-xdpi="300.95001"
-         inkscape:export-filename="/home/kolik/VideoTimeMeasure/VideoTimeMeasure/graphics/playInterval.png"
-         transform="matrix(0,-1.4802458,0.67556347,0,0,0)"
-         sodipodi:linespacing="125%"
-         id="text3025-7"
-         y="132.71947"
-         x="-348.45972"
-         style="font-size:25.00090981px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;text-align:start;line-height:125%;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans;-inkscape-font-specification:Sans Bold"
-         xml:space="preserve"><tspan
-           y="132.71947"
-           x="-348.45972"
-           id="tspan3027-4"
-           sodipodi:role="line">-</tspan></text>
-    </g>
-    <text
-       xml:space="preserve"
        style="font-size:20px;font-style:normal;font-weight:bold;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans;-inkscape-font-specification:Sans Bold"
        x="28.928572"
        y="494.50504"
@@ -239,19 +62,473 @@
          id="tspan3107"
          x="28.928572"
          y="494.50504" /></text>
-    <text
-       xml:space="preserve"
-       style="font-size:20px;font-style:normal;font-weight:bold;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans;-inkscape-font-specification:Sans Bold"
-       x="14.642857"
-       y="496.11218"
-       id="text3109"
-       sodipodi:linespacing="125%"
+    <g
+       id="g3396"
+       inkscape:export-filename="/home/kolik/VideoTimeMeasure/VideoTimeMeasure/resources/graphics/nextImage.png"
+       inkscape:export-xdpi="182.31454"
+       inkscape:export-ydpi="182.31454"
+       transform="translate(36.785714,-0.35714286)">
+      <text
+         inkscape:export-ydpi="300.95001"
+         inkscape:export-xdpi="300.95001"
+         inkscape:export-filename="/home/kolik/VideoTimeMeasure/VideoTimeMeasure/resources/graphics/nextImage.png"
+         sodipodi:linespacing="125%"
+         id="text2993-2"
+         y="455.42471"
+         x="117.53462"
+         style="font-size:20px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;text-align:start;line-height:125%;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#808080;fill-opacity:1;stroke:none;font-family:Sans;-inkscape-font-specification:Sans Bold"
+         xml:space="preserve"><tspan
+           y="455.42471"
+           x="117.53462"
+           id="tspan2995-9"
+           sodipodi:role="line">&gt;</tspan></text>
+      <text
+         inkscape:export-ydpi="300.95001"
+         inkscape:export-xdpi="300.95001"
+         inkscape:export-filename="/home/kolik/VideoTimeMeasure/VideoTimeMeasure/resources/graphics/nextImage.png"
+         sodipodi:linespacing="125%"
+         id="text2993"
+         y="454.92471"
+         x="117.03483"
+         style="font-size:20px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;text-align:start;line-height:125%;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans;-inkscape-font-specification:Sans Bold"
+         xml:space="preserve"><tspan
+           y="454.92471"
+           x="117.03483"
+           id="tspan2995"
+           sodipodi:role="line">&gt;</tspan></text>
+    </g>
+    <g
+       id="g3354"
+       inkscape:export-filename="/home/kolik/VideoTimeMeasure/VideoTimeMeasure/resources/graphics/previousImage.png"
+       inkscape:export-xdpi="182.31454"
+       inkscape:export-ydpi="182.31454"
+       transform="translate(36.785714,-0.35714286)">
+      <text
+         inkscape:export-ydpi="300.95001"
+         inkscape:export-xdpi="300.95001"
+         inkscape:export-filename="/home/kolik/VideoTimeMeasure/VideoTimeMeasure/resources/graphics/previousImage.png"
+         sodipodi:linespacing="125%"
+         id="text2997-2"
+         y="455.42471"
+         x="23.230215"
+         style="font-size:20px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;text-align:start;line-height:125%;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#808080;fill-opacity:1;stroke:none;font-family:Sans;-inkscape-font-specification:Sans Bold"
+         xml:space="preserve"><tspan
+           y="455.42471"
+           x="23.230215"
+           id="tspan2999-8"
+           sodipodi:role="line">&lt;</tspan></text>
+      <text
+         inkscape:export-ydpi="300.95001"
+         inkscape:export-xdpi="300.95001"
+         inkscape:export-filename="/home/kolik/VideoTimeMeasure/VideoTimeMeasure/resources/graphics/previousImage.png"
+         sodipodi:linespacing="125%"
+         id="text2997"
+         y="454.92471"
+         x="22.730423"
+         style="font-size:20px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;text-align:start;line-height:125%;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans;-inkscape-font-specification:Sans Bold"
+         xml:space="preserve"><tspan
+           y="454.92471"
+           x="22.730423"
+           id="tspan2999"
+           sodipodi:role="line">&lt;</tspan></text>
+    </g>
+    <g
+       id="g3402"
+       inkscape:export-filename="/home/kolik/VideoTimeMeasure/VideoTimeMeasure/resources/graphics/forwardJump.png"
+       inkscape:export-xdpi="182.31454"
+       inkscape:export-ydpi="182.31454"
+       transform="translate(36.785714,-0.35714286)">
+      <text
+         inkscape:export-ydpi="300.95001"
+         inkscape:export-xdpi="300.95001"
+         inkscape:export-filename="/home/kolik/VideoTimeMeasure/VideoTimeMeasure/resources/graphics/forwardJump.png"
+         sodipodi:linespacing="125%"
+         id="text3001-2"
+         y="455.42471"
+         x="141.59216"
+         style="font-size:20px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;text-align:start;line-height:125%;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#808080;fill-opacity:1;stroke:none;font-family:Sans;-inkscape-font-specification:Sans Bold"
+         xml:space="preserve"><tspan
+           style="letter-spacing:-4px;fill:#808080"
+           y="455.42471"
+           x="141.59216"
+           id="tspan3003-3"
+           sodipodi:role="line">&gt;&gt;</tspan></text>
+      <text
+         inkscape:export-ydpi="300.95001"
+         inkscape:export-xdpi="300.95001"
+         inkscape:export-filename="/home/kolik/VideoTimeMeasure/VideoTimeMeasure/resources/graphics/forwardJump.png"
+         sodipodi:linespacing="125%"
+         id="text3001"
+         y="454.92471"
+         x="141.09238"
+         style="font-size:20px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;text-align:start;line-height:125%;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans;-inkscape-font-specification:Sans Bold"
+         xml:space="preserve"><tspan
+           style="letter-spacing:-4px"
+           y="454.92471"
+           x="141.09238"
+           id="tspan3003"
+           sodipodi:role="line">&gt;&gt;</tspan></text>
+    </g>
+    <g
+       id="g3348"
+       inkscape:export-filename="/home/kolik/VideoTimeMeasure/VideoTimeMeasure/resources/graphics/reverseJump.png"
+       inkscape:export-xdpi="181.55626"
+       inkscape:export-ydpi="181.55626"
+       transform="translate(36.785714,-0.35714286)">
+      <text
+         inkscape:export-ydpi="300.95001"
+         inkscape:export-xdpi="300.95001"
+         inkscape:export-filename="/home/kolik/VideoTimeMeasure/VideoTimeMeasure/resources/graphics/reverseJump.png"
+         sodipodi:linespacing="125%"
+         id="text3005-9"
+         y="455.42471"
+         x="-13.58514"
+         style="font-size:20px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;text-align:start;line-height:125%;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#808080;fill-opacity:1;stroke:none;font-family:Sans;-inkscape-font-specification:Sans Bold"
+         xml:space="preserve"><tspan
+           style="letter-spacing:-4px;fill:#808080"
+           id="tspan3009-8"
+           y="455.42471"
+           x="-13.58514"
+           sodipodi:role="line">&lt;&lt;</tspan></text>
+      <text
+         inkscape:export-ydpi="300.95001"
+         inkscape:export-xdpi="300.95001"
+         inkscape:export-filename="/home/kolik/VideoTimeMeasure/VideoTimeMeasure/resources/graphics/reverseJump.png"
+         sodipodi:linespacing="125%"
+         id="text3005"
+         y="454.92471"
+         x="-14.084931"
+         style="font-size:20px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;text-align:start;line-height:125%;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans;-inkscape-font-specification:Sans Bold"
+         xml:space="preserve"><tspan
+           style="letter-spacing:-4px"
+           id="tspan3009"
+           y="454.92471"
+           x="-14.084931"
+           sodipodi:role="line">&lt;&lt;</tspan></text>
+    </g>
+    <g
+       id="g3408"
+       inkscape:export-filename="/home/kolik/VideoTimeMeasure/VideoTimeMeasure/resources/graphics/insert.png"
+       inkscape:export-xdpi="182.3089"
+       inkscape:export-ydpi="182.3089"
+       transform="translate(36.785714,-0.35714286)">
+      <text
+         inkscape:export-ydpi="300.95001"
+         inkscape:export-xdpi="300.95001"
+         inkscape:export-filename="/home/kolik/VideoTimeMeasure/VideoTimeMeasure/resources/graphics/insert.png"
+         sodipodi:linespacing="125%"
+         id="text3021-2"
+         y="454.82919"
+         x="178.60881"
+         style="font-size:18.10023689px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;text-align:start;line-height:125%;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#808080;fill-opacity:1;stroke:none;font-family:Sans;-inkscape-font-specification:Sans Bold"
+         xml:space="preserve"><tspan
+           y="454.82919"
+           x="178.60881"
+           id="tspan3023-5"
+           sodipodi:role="line">+</tspan></text>
+      <text
+         inkscape:export-ydpi="300.95001"
+         inkscape:export-xdpi="300.95001"
+         inkscape:export-filename="/home/kolik/VideoTimeMeasure/VideoTimeMeasure/resources/graphics/insert.png"
+         sodipodi:linespacing="125%"
+         id="text3021"
+         y="454.32919"
+         x="178.10902"
+         style="font-size:18.10023689px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;text-align:start;line-height:125%;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans;-inkscape-font-specification:Sans Bold"
+         xml:space="preserve"><tspan
+           y="454.32919"
+           x="178.10902"
+           id="tspan3023"
+           sodipodi:role="line">+</tspan></text>
+    </g>
+    <g
+       id="g3414"
+       inkscape:export-filename="/home/kolik/VideoTimeMeasure/VideoTimeMeasure/resources/graphics/remove.png"
+       inkscape:export-xdpi="215.44902"
+       inkscape:export-ydpi="215.44902"
+       transform="translate(36.785714,-0.35714286)">
+      <text
+         inkscape:export-ydpi="300.95001"
+         inkscape:export-xdpi="300.95001"
+         inkscape:export-filename="/home/kolik/VideoTimeMeasure/VideoTimeMeasure/resources/graphics/remove.png"
+         transform="scale(1.2227001,0.81786205)"
+         sodipodi:linespacing="125%"
+         id="text3025-6"
+         y="556.22101"
+         x="165.02365"
+         style="font-size:24.45400047px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;text-align:start;line-height:125%;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#808080;fill-opacity:1;stroke:none;font-family:Sans;-inkscape-font-specification:Sans Bold"
+         xml:space="preserve"><tspan
+           y="556.22101"
+           x="165.02365"
+           id="tspan3027-3"
+           sodipodi:role="line">-</tspan></text>
+      <text
+         inkscape:export-ydpi="300.95001"
+         inkscape:export-xdpi="300.95001"
+         inkscape:export-filename="/home/kolik/VideoTimeMeasure/VideoTimeMeasure/resources/graphics/remove.png"
+         transform="scale(1.2227001,0.81786205)"
+         sodipodi:linespacing="125%"
+         id="text3025"
+         y="555.60962"
+         x="164.61488"
+         style="font-size:24.45400047px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;text-align:start;line-height:125%;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans;-inkscape-font-specification:Sans Bold"
+         xml:space="preserve"><tspan
+           y="555.60962"
+           x="164.61488"
+           id="tspan3027"
+           sodipodi:role="line">-</tspan></text>
+    </g>
+    <g
+       id="g3420"
+       inkscape:export-filename="/home/kolik/VideoTimeMeasure/VideoTimeMeasure/resources/graphics/nextCell.png"
+       inkscape:export-xdpi="180.98756"
+       inkscape:export-ydpi="180.98756"
+       transform="translate(36.785714,-0.35714286)">
+      <g
+         inkscape:export-ydpi="300.95001"
+         inkscape:export-xdpi="300.95001"
+         inkscape:export-filename="/home/kolik/VideoTimeMeasure/VideoTimeMeasure/resources/graphics/nextCell.png"
+         transform="translate(82.855037,-89.794649)"
+         id="g3919-5"
+         style="fill:#808080">
+        <path
+           inkscape:connector-curvature="0"
+           id="path3894-7"
+           style="font-size:20px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;text-align:start;line-height:125%;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#808080;fill-opacity:1;stroke:none;font-family:Sans;-inkscape-font-specification:Sans Bold"
+           d="m 141.24649,537.78147 19.39107,0 0,2.33671 -19.39107,0 0,-2.33671" />
+        <path
+           inkscape:connector-curvature="0"
+           id="path3896-2"
+           style="font-size:20px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;text-align:start;line-height:125%;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#808080;fill-opacity:1;stroke:none;font-family:Sans;-inkscape-font-specification:Sans Bold"
+           d="m 148.11803,535.71741 0,-2.44141 12.51953,4.52149 0,2.30468 -12.51953,4.52149 0,-2.44141 9.42382,-3.22266 -9.42382,-3.24218" />
+      </g>
+      <g
+         inkscape:export-ydpi="300.95001"
+         inkscape:export-xdpi="300.95001"
+         inkscape:export-filename="/home/kolik/VideoTimeMeasure/VideoTimeMeasure/resources/graphics/nextCell.png"
+         transform="translate(82.355246,-90.294645)"
+         id="g3919">
+        <path
+           inkscape:connector-curvature="0"
+           id="path3894"
+           style="font-size:20px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;text-align:start;line-height:125%;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans;-inkscape-font-specification:Sans Bold"
+           d="m 141.24649,537.78147 19.39107,0 0,2.33671 -19.39107,0 0,-2.33671" />
+        <path
+           inkscape:connector-curvature="0"
+           id="path3896"
+           style="font-size:20px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;text-align:start;line-height:125%;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans;-inkscape-font-specification:Sans Bold"
+           d="m 148.11803,535.71741 0,-2.44141 12.51953,4.52149 0,2.30468 -12.51953,4.52149 0,-2.44141 9.42382,-3.22266 -9.42382,-3.24218" />
+      </g>
+    </g>
+    <g
+       id="g3360"
+       inkscape:export-filename="/home/kolik/VideoTimeMeasure/VideoTimeMeasure/resources/graphics/play.png"
+       inkscape:export-xdpi="182.31454"
+       inkscape:export-ydpi="182.31454"
+       transform="translate(36.785714,-0.35714286)">
+      <g
+         transform="translate(-4.855101,-57.294649)"
+         inkscape:export-ydpi="300.95001"
+         inkscape:export-xdpi="300.95001"
+         inkscape:export-filename="/home/kolik/VideoTimeMeasure/VideoTimeMeasure/resources/graphics/play.png"
+         id="g3836-2"
+         style="fill:#808080">
+        <path
+           inkscape:connector-curvature="0"
+           id="path3034-9"
+           style="font-size:20px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;text-align:start;line-height:125%;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#808080;fill-opacity:1;fill-rule:nonzero;stroke:none;font-family:Sans;-inkscape-font-specification:Sans Bold"
+           d="m 54.261997,503.21741 0,-2.44141 12.519531,4.52149 0,2.30468 -12.519531,4.52149 0,-2.44141 9.423828,-3.22266 -9.423828,-3.24218" />
+        <text
+           xml:space="preserve"
+           style="font-size:24.45400047px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;text-align:start;line-height:125%;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#808080;fill-opacity:1;stroke:none;font-family:Sans;-inkscape-font-specification:Sans Bold"
+           x="-419.29672"
+           y="75.122368"
+           id="text3025-0-6"
+           sodipodi:linespacing="125%"
+           transform="matrix(0,-1.2227001,0.81786205,0,0,0)"><tspan
+             sodipodi:role="line"
+             id="tspan3027-6-7"
+             x="-419.29672"
+             y="75.122368">-</tspan></text>
+        <path
+           style="fill:#808080;fill-opacity:1;fill-rule:nonzero;stroke:none"
+           d="m 56.22223,506.24365 0,-3.08337 4.204752,1.53236 c 2.312612,0.84281 4.239382,1.54562 4.281707,1.56181 0.07182,0.0275 -8.286615,3.0779 -8.423701,3.07423 -0.03451,-9.1e-4 -0.06276,-1.3892 -0.06276,-3.08503 z"
+           id="path3831-63"
+           inkscape:connector-curvature="0" />
+      </g>
+      <g
+         transform="translate(-5.354892,-57.794645)"
+         inkscape:export-ydpi="300.95001"
+         inkscape:export-xdpi="300.95001"
+         inkscape:export-filename="/home/kolik/VideoTimeMeasure/VideoTimeMeasure/resources/graphics/play.png"
+         id="g3836">
+        <path
+           inkscape:connector-curvature="0"
+           id="path3034"
+           style="font-size:20px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;text-align:start;line-height:125%;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none;font-family:Sans;-inkscape-font-specification:Sans Bold"
+           d="m 54.261997,503.21741 0,-2.44141 12.519531,4.52149 0,2.30468 -12.519531,4.52149 0,-2.44141 9.423828,-3.22266 -9.423828,-3.24218" />
+        <text
+           xml:space="preserve"
+           style="font-size:24.45400047px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;text-align:start;line-height:125%;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans;-inkscape-font-specification:Sans Bold"
+           x="-419.29672"
+           y="75.122368"
+           id="text3025-0"
+           sodipodi:linespacing="125%"
+           transform="matrix(0,-1.2227001,0.81786205,0,0,0)"><tspan
+             sodipodi:role="line"
+             id="tspan3027-6"
+             x="-419.29672"
+             y="75.122368">-</tspan></text>
+        <path
+           style="fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none"
+           d="m 56.22223,506.24365 0,-3.08337 4.204752,1.53236 c 2.312612,0.84281 4.239382,1.54562 4.281707,1.56181 0.07182,0.0275 -8.286615,3.0779 -8.423701,3.07423 -0.03451,-9.1e-4 -0.06276,-1.3892 -0.06276,-3.08503 z"
+           id="path3831"
+           inkscape:connector-curvature="0" />
+      </g>
+    </g>
+    <g
+       id="g3378"
+       inkscape:export-filename="/home/kolik/VideoTimeMeasure/VideoTimeMeasure/resources/graphics/playInterval.png"
+       inkscape:export-xdpi="182.3089"
+       inkscape:export-ydpi="182.3089"
+       transform="translate(36.785714,-0.35714286)">
+      <g
+         inkscape:export-ydpi="300.95001"
+         inkscape:export-xdpi="300.95001"
+         inkscape:export-filename="/home/kolik/VideoTimeMeasure/VideoTimeMeasure/resources/graphics/playInterval.png"
+         transform="translate(-16.023394,-15.435864)"
+         id="g3039-8"
+         style="fill:#808080">
+        <g
+           id="g3033-7"
+           transform="translate(-2.1998744,0)"
+           style="fill:#808080">
+          <path
+             d="m 111.41964,461.35861 0,-2.44141 12.51953,4.52149 0,2.30468 -12.51953,4.52149 0,-2.44141 9.42383,-3.22266 -9.42383,-3.24218"
+             style="font-size:20px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;text-align:start;line-height:125%;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#808080;fill-opacity:1;fill-rule:nonzero;stroke:none;font-family:Sans;-inkscape-font-specification:Sans Bold"
+             id="path3034-2-0"
+             inkscape:connector-curvature="0" />
+          <text
+             transform="matrix(0,-1.2227001,0.81786205,0,0,0)"
+             sodipodi:linespacing="125%"
+             id="text3025-0-9-4"
+             y="145.00902"
+             x="-385.06201"
+             style="font-size:24.45400047px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;text-align:start;line-height:125%;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#808080;fill-opacity:1;stroke:none;font-family:Sans;-inkscape-font-specification:Sans Bold"
+             xml:space="preserve"><tspan
+               y="145.00902"
+               x="-385.06201"
+               id="tspan3027-6-9-6"
+               sodipodi:role="line">-</tspan></text>
+          <path
+             inkscape:connector-curvature="0"
+             id="path3831-6-1"
+             d="m 113.37987,464.38485 0,-3.08337 4.20476,1.53236 c 2.31261,0.84281 4.23938,1.54562 4.2817,1.56181 0.0718,0.0275 -8.28661,3.0779 -8.4237,3.07423 -0.0345,-9.1e-4 -0.0628,-1.3892 -0.0628,-3.08503 z"
+             style="fill:#808080;fill-opacity:1;fill-rule:nonzero;stroke:none" />
+        </g>
+        <text
+           xml:space="preserve"
+           style="font-size:25.00090981px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;text-align:start;line-height:125%;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#808080;fill-opacity:1;stroke:none;font-family:Sans;-inkscape-font-specification:Sans Bold"
+           x="-319.04892"
+           y="189.17657"
+           id="text3025-7-3"
+           sodipodi:linespacing="125%"
+           transform="matrix(0,-1.4802458,0.67556347,0,0,0)"
+           inkscape:export-filename="/home/kolik/VideoTimeMeasure/VideoTimeMeasure/graphics/playInterval.png"
+           inkscape:export-xdpi="300.95001"
+           inkscape:export-ydpi="300.95001"><tspan
+             sodipodi:role="line"
+             id="tspan3027-4-0"
+             x="-319.04892"
+             y="189.17657">-</tspan></text>
+      </g>
+      <g
+         inkscape:export-ydpi="300.95001"
+         inkscape:export-xdpi="300.95001"
+         inkscape:export-filename="/home/kolik/VideoTimeMeasure/VideoTimeMeasure/resources/graphics/playInterval.png"
+         transform="translate(-16.523185,-15.93586)"
+         id="g3039">
+        <g
+           id="g3033"
+           transform="translate(-2.1998744,0)">
+          <path
+             d="m 111.41964,461.35861 0,-2.44141 12.51953,4.52149 0,2.30468 -12.51953,4.52149 0,-2.44141 9.42383,-3.22266 -9.42383,-3.24218"
+             style="font-size:20px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;text-align:start;line-height:125%;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none;font-family:Sans;-inkscape-font-specification:Sans Bold"
+             id="path3034-2"
+             inkscape:connector-curvature="0" />
+          <text
+             transform="matrix(0,-1.2227001,0.81786205,0,0,0)"
+             sodipodi:linespacing="125%"
+             id="text3025-0-9"
+             y="145.00902"
+             x="-385.06201"
+             style="font-size:24.45400047px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;text-align:start;line-height:125%;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans;-inkscape-font-specification:Sans Bold"
+             xml:space="preserve"><tspan
+               y="145.00902"
+               x="-385.06201"
+               id="tspan3027-6-9"
+               sodipodi:role="line">-</tspan></text>
+          <path
+             inkscape:connector-curvature="0"
+             id="path3831-6"
+             d="m 113.37987,464.38485 0,-3.08337 4.20476,1.53236 c 2.31261,0.84281 4.23938,1.54562 4.2817,1.56181 0.0718,0.0275 -8.28661,3.0779 -8.4237,3.07423 -0.0345,-9.1e-4 -0.0628,-1.3892 -0.0628,-3.08503 z"
+             style="fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none" />
+        </g>
+        <text
+           xml:space="preserve"
+           style="font-size:25.00090981px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;text-align:start;line-height:125%;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans;-inkscape-font-specification:Sans Bold"
+           x="-319.04892"
+           y="189.17657"
+           id="text3025-7"
+           sodipodi:linespacing="125%"
+           transform="matrix(0,-1.4802458,0.67556347,0,0,0)"
+           inkscape:export-filename="/home/kolik/VideoTimeMeasure/VideoTimeMeasure/graphics/playInterval.png"
+           inkscape:export-xdpi="300.95001"
+           inkscape:export-ydpi="300.95001"><tspan
+             sodipodi:role="line"
+             id="tspan3027-4"
+             x="-319.04892"
+             y="189.17657">-</tspan></text>
+      </g>
+    </g>
+    <g
+       id="g3372"
        inkscape:export-filename="/home/kolik/VideoTimeMeasure/VideoTimeMeasure/resources/graphics/pause.png"
-       inkscape:export-xdpi="300.95001"
-       inkscape:export-ydpi="300.95001"><tspan
-         sodipodi:role="line"
-         id="tspan3111"
-         x="14.642857"
-         y="496.11218">||</tspan></text>
+       inkscape:export-xdpi="182.3089"
+       inkscape:export-ydpi="182.3089"
+       transform="translate(36.785714,-0.35714286)">
+      <text
+         transform="scale(1.3275636,0.75325958)"
+         inkscape:export-ydpi="300.95001"
+         inkscape:export-xdpi="300.95001"
+         inkscape:export-filename="/home/kolik/VideoTimeMeasure/VideoTimeMeasure/resources/graphics/pause.png"
+         sodipodi:linespacing="125%"
+         id="text3109-0"
+         y="600.26172"
+         x="53.42522"
+         style="font-size:15.06519127px;font-style:normal;font-weight:bold;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#808080;fill-opacity:1;stroke:none;font-family:Sans;-inkscape-font-specification:Sans Bold"
+         xml:space="preserve"><tspan
+           style="letter-spacing:-1px;fill:#808080"
+           y="600.26172"
+           x="53.42522"
+           id="tspan3111-2"
+           sodipodi:role="line">||</tspan></text>
+      <text
+         transform="scale(1.3275636,0.75325958)"
+         inkscape:export-ydpi="300.95001"
+         inkscape:export-xdpi="300.95001"
+         inkscape:export-filename="/home/kolik/VideoTimeMeasure/VideoTimeMeasure/resources/graphics/pause.png"
+         sodipodi:linespacing="125%"
+         id="text3109"
+         y="599.5979"
+         x="53.048748"
+         style="font-size:15.06519127px;font-style:normal;font-weight:bold;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans;-inkscape-font-specification:Sans Bold"
+         xml:space="preserve"><tspan
+           style="letter-spacing:-1px"
+           y="599.5979"
+           x="53.048748"
+           id="tspan3111"
+           sodipodi:role="line">||</tspan></text>
+    </g>
   </g>
 </svg>
