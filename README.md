@@ -1,7 +1,7 @@
 VideoTimeMeasure
 ================
 
-== Measure time interval in video
+Measure time interval in video
 
 This application is intended to measure time in video clip. Motivation was to create application that can measure / verify air time and synchronization for trampolines.
 Thanks to all people who created libraries, tutorials and tools used to create this application.
