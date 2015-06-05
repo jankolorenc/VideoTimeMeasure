@@ -9,10 +9,10 @@ Thanks to all people who created libraries, tutorials and tools used to create t
 Use video from camcoders or hardware encoders. Software encoders can damage time information in video even running on strong hardware.
 
 Usage:
- . Open video file
- . Select desired timestamp cell in table right to the video image.
- . Navigate to time using buttons below video.
- . Continue to next timestamp (Press enter on insert row and use mouse)
+  . Open video file
+  . Select desired timestamp cell in table right to the video image.
+  . Navigate to time using buttons below video.
+  . Continue to next timestamp (Press enter on insert row and use mouse)
 
 Requirements:
  - Qt 4.8
