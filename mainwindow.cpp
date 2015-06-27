@@ -370,7 +370,10 @@ void MainWindow::on_actionOpen_triggered()
     if (!loadVideoFile(fileName)) return;
     allocateDecodingFrameBuffers();
 
-    if (!opennedVideoFile.isEmpty()) timeIntervals->loadIntervals(QString("%1.int").arg(opennedVideoFile));
+    if (!opennedVideoFile.isEmpty()){
+        timeIntervals->loadIntervals(QString("%1.int").arg(opennedVideoFile));
+        setWindowTitle(fileName);
+    }
 
     int64_t streamDuration = av_rescale_q(pFormatCtx->duration, AV_TIME_BASE_Q, pFormatCtx->streams[videoStream]->time_base);
     ui->timeHorizontalSlider->setMaximum(streamDuration / sliderFactor);
