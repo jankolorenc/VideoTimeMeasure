@@ -17,7 +17,8 @@ SOURCES += main.cpp\
     timeintervalsmodel.cpp \
     timeinterval.cpp \
     aspectratiopixmaplabel.cpp \
-    navigationeventfilter.cpp
+    navigationeventfilter.cpp \
+    tablevalue.cpp
 
 HEADERS  += mainwindow.h \
     videoimage.h \
@@ -25,7 +26,8 @@ HEADERS  += mainwindow.h \
     timeinterval.h \
     intervaltimestamp.h \
     aspectratiopixmaplabel.h \
-    navigationeventfilter.h
+    navigationeventfilter.h \
+    tablevalue.h
 
 FORMS    += mainwindow.ui
 

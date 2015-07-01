@@ -610,7 +610,7 @@ void MainWindow::on_selectionChanged(const QItemSelection & selected, const QIte
             showCurrentImage();
         }
         else{
-            // fill empry cell with current image timestamp
+            // fill empty cell with current image timestamp
             if (imagesBufferCurrent > -1){
                 IntervalTimestamp currentTimestamp;
                 currentTimestamp.dts = imagesBuffer[imagesBufferCurrent].dts;
