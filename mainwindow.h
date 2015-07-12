@@ -4,8 +4,10 @@
 #include <QMainWindow>
 #include <QTimer>
 #include <QItemSelection>
+#include <QDir>
 #include "videoimage.h"
 #include "timeintervalsmodel.h"
+#include "tablescripts.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -61,6 +63,7 @@ private:
 
     uint64_t stopPlayerDts;
     QModelIndex stopIndex;
+    TableScripts tableScripts;
 
     void closeEvent(QCloseEvent *event);
 

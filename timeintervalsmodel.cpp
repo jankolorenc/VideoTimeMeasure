@@ -12,6 +12,7 @@ TimeIntervalsModel::TimeIntervalsModel(QObject *parent) :
 {
     TimeInterval first;
     intervals.append(first);
+    //tableValue = new TableValue(NULL, engine);
 }
 
 int TimeIntervalsModel::rowCount(const QModelIndex & /*parent*/) const
@@ -21,7 +22,7 @@ int TimeIntervalsModel::rowCount(const QModelIndex & /*parent*/) const
 
 int TimeIntervalsModel::columnCount(const QModelIndex & /*parent*/) const
 {
-    return 3;
+    return 4;
 }
 
 QVariant TimeIntervalsModel::data(const QModelIndex &index, int role) const
@@ -30,44 +31,46 @@ QVariant TimeIntervalsModel::data(const QModelIndex &index, int role) const
     {
     case Qt::DisplayRole:
         // time intervals
-        if (index.row() != rowCount(index) - 1){
-            if (index.row() < intervals.length()){
-                switch(index.column()){
-                case 0:
-                    if (intervals[index.row()].start.isValid){
-                        QTime interval(0,0,0);
-                        return interval.addMSecs(intervals[index.row()].start.pts * 1000).toString("hh:mm:ss.zzz");
-                    }
-                    break;
-                case 1:
-                    if (intervals[index.row()].stop.isValid){
-                        QTime interval(0,0,0);
-                        return interval.addMSecs(intervals[index.row()].stop.pts * 1000).toString("hh:mm:ss.zzz");
-                    }
-                    break;
-                case 2:
-                    if (intervals[index.row()].isDuration()){
-                        QTime interval(0,0,0);
-                        return interval.addMSecs(intervals[index.row()].durationSeconds() * 1000).toString("hh:mm:ss.zzz");
-                    }
-                    break;
+        if (index.row() < intervals.length()){
+            switch(index.column()){
+            case 0:
+                if (intervals[index.row()].start.isValid){
+                    QTime interval(0,0,0);
+                    return interval.addMSecs(intervals[index.row()].start.pts * 1000).toString("hh:mm:ss.zzz");
                 }
+                return QVariant();
+            case 1:
+                if (intervals[index.row()].stop.isValid){
+                    QTime interval(0,0,0);
+                    return interval.addMSecs(intervals[index.row()].stop.pts * 1000).toString("hh:mm:ss.zzz");
+                }
+                return QVariant();
+            case 2:
+                if (intervals[index.row()].isDuration()){
+                    QTime interval(0,0,0);
+                    return interval.addMSecs(intervals[index.row()].durationSeconds() * 1000).toString("hh:mm:ss.zzz");
+                }
+                return QVariant();
             }
         }
+        if (index.row() == intervals.length()){
         // sum of intervals
-        else{
-            if (index.column() == columnCount(index) - 2) return tr("Total");
-            if (index.column() == columnCount(index) - 1){
+            switch (index.column()) {
+            case 0: return QVariant();
+            case 1: return tr("Total");
+            case 2:
                 double total = 0;
                 for(int i = 0; i < intervals.length(); i++) if (intervals[i].isDuration()) total += intervals[i].durationSeconds();
                 QTime interval(0,0,0);
                 return interval.addMSecs(total * 1000).toString("hh:mm:ss.zzz");
             }
         }
-        break;
+        return getValue(index.column(), index.row()).toString();
+
     case Qt::TextAlignmentRole:
         return Qt::AlignCenter;
         break;
+
     case Qt::UserRole:
         if (index.row() < intervals.length()){
             switch(index.column()){
@@ -76,6 +79,7 @@ QVariant TimeIntervalsModel::data(const QModelIndex &index, int role) const
             }
         }
         break;
+
     }
     return QVariant();
 }
@@ -246,3 +250,38 @@ void TimeIntervalsModel::loadIntervals(QString fileName){
     }
 }
 
+QScriptValue TimeIntervalsModel::getValue(int column, int row)
+{
+    if (row < intervals.length()){
+        switch (column) {
+        case 0:
+            return intervals[row].start.isValid ? intervals[row].start.pts: 0;
+        case 1:
+            return intervals[row].stop.isValid ? intervals[row].stop.pts : 0;
+        case 2:
+            return intervals[row].durationSeconds();
+        }
+    }
+    if (row == intervals.length()){
+        switch (column) {
+        case 1:
+            return tr("Total");
+        case 2:
+            double total = 0;
+            for(int i = 0; i < intervals.length(); i++) if (intervals[i].isDuration()) total += intervals[i].durationSeconds();
+            return total;
+        }
+    }
+
+    engine.globalObject().setProperty("column", column);
+    engine.globalObject().setProperty("row", row);
+    engine.globalObject().setProperty("totalrow", intervals.length());
+    if (row < intervals.length()){
+        engine.globalObject().setProperty("start", intervals[row].start.pts);
+        engine.globalObject().setProperty("stop", intervals[row].stop.pts);
+        engine.globalObject().setProperty("difference", intervals[row].durationSeconds());
+    }
+    QScriptValue objectValue = engine.newQObject(this);
+    engine.globalObject().setProperty("table", objectValue);
+    return engine.evaluate("table.getValue(1, row)");
+}

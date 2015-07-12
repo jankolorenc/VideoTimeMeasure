@@ -3,7 +3,7 @@
 
 #include <QAbstractTableModel>
 #include <QList>
-
+#include <QScriptEngine>
 #include "timeinterval.h"
 
 class TimeIntervalsModel : public QAbstractTableModel
@@ -23,14 +23,15 @@ public:
     void saveIntervals(QString fileName);
     void loadIntervals(QString fileName);
     void clear();
-    
 signals:
     
 public slots:
+    QScriptValue getValue(int column, int row);
 
 private:
     QList<TimeInterval> intervals;
-    
+    QScriptEngine engine;
+    //TableValue tableValue;
 };
 
 #endif // TIMEINTERVALSMODEL_H

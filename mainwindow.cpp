@@ -11,6 +11,7 @@
 #include <QCloseEvent>
 #include <math.h>
 #include "navigationeventfilter.h"
+#include "tablescripts.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -139,6 +140,14 @@ MainWindow::MainWindow(QWidget *parent) :
     QItemSelectionModel *selectionModel= ui->intervalsTableView->selectionModel();
     connect(selectionModel, SIGNAL(selectionChanged(QItemSelection,QItemSelection)),
             this, SLOT(on_selectionChanged(QItemSelection,QItemSelection)));
+
+    QDir scritpsPath(QDir::currentPath().append("/scripts"));
+    if (!scritpsPath.exists()){
+        if (!QDir::current().mkdir("scripts")){
+            statusBar()->showMessage(QString("Failed to create scripts directory ").append(scritpsPath.absolutePath()));
+        }
+    }
+    if (scritpsPath.exists()) tableScripts.Load(scritpsPath);
 }
 
 MainWindow::~MainWindow()

@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       += core gui
+QT       += core gui script
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -18,7 +18,8 @@ SOURCES += main.cpp\
     timeinterval.cpp \
     aspectratiopixmaplabel.cpp \
     navigationeventfilter.cpp \
-    tablevalue.cpp
+    tablescripts.cpp \
+    cellscript.cpp
 
 HEADERS  += mainwindow.h \
     videoimage.h \
@@ -27,7 +28,8 @@ HEADERS  += mainwindow.h \
     intervaltimestamp.h \
     aspectratiopixmaplabel.h \
     navigationeventfilter.h \
-    tablevalue.h
+    tablescripts.h \
+    cellscript.h
 
 FORMS    += mainwindow.ui
 
