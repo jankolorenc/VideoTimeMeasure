@@ -642,6 +642,14 @@ void MainWindow::on_tableContextMenuRequested(QPoint position){
         menu->addAction(action);
         menu->popup(ui->intervalsTableView->viewport()->mapToGlobal(position));
         connect(action, SIGNAL(triggered()), SLOT(on_editScript()));
+        action = new QAction("Add row", this);
+        menu->addAction(action);
+        action = new QAction("Remove row", this);
+        menu->addAction(action);
+        action = new QAction("Add column", this);
+        menu->addAction(action);
+        action = new QAction("Remove column", this);
+        menu->addAction(action);
     }
 }
 
