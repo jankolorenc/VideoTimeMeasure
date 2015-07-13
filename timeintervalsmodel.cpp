@@ -30,6 +30,7 @@ QVariant TimeIntervalsModel::data(const QModelIndex &index, int role) const
     switch(role)
     {
     case Qt::DisplayRole:
+    case Qt::ToolTipRole:
         // time intervals
         if (index.row() < intervals.length()){
             switch(index.column()){
@@ -79,7 +80,6 @@ QVariant TimeIntervalsModel::data(const QModelIndex &index, int role) const
             }
         }
         break;
-
     }
     return QVariant();
 }
