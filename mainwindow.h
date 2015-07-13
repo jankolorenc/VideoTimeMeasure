@@ -98,6 +98,8 @@ private slots:
     void on_reverseJumpPushButton_clicked();
     void on_forwardJumpPushButton_clicked();
     void on_actionAbout_triggered();
+    void on_tableContextMenuRequested(QPoint position);
+    void on_editScript();
 };
 
 #endif // MAINWINDOW_H

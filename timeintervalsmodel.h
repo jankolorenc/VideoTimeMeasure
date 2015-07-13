@@ -26,6 +26,7 @@ public:
     void saveIntervals(QString fileName);
     void loadIntervals(QString fileName);
     void clear();
+    int intervalsCount();
 signals:
     
 public slots:

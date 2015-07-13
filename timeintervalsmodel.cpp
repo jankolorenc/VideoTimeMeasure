@@ -15,6 +15,10 @@ TimeIntervalsModel::TimeIntervalsModel(QObject *parent) :
     //tableValue = new TableValue(NULL, engine);
 }
 
+int TimeIntervalsModel::intervalsCount(){
+    return intervals.length();
+}
+
 int TimeIntervalsModel::rowCount(const QModelIndex & /*parent*/) const
 {
     return ((tableScripts.lastRow < intervals.length()) ? intervals.length() : tableScripts.lastRow) + 1;
@@ -287,5 +291,5 @@ QScriptValue TimeIntervalsModel::getValue(int row, int column)
     }
     QScriptValue objectValue = engine.newQObject(this);
     engine.globalObject().setProperty("table", objectValue);
-    return engine.evaluate(script);
+    return engine.evaluate(script.append("\n"));
 }

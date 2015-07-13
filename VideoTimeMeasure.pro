@@ -18,7 +18,8 @@ SOURCES += main.cpp\
     timeinterval.cpp \
     aspectratiopixmaplabel.cpp \
     navigationeventfilter.cpp \
-    tablescripts.cpp
+    tablescripts.cpp \
+    scripteditor.cpp
 
 HEADERS  += mainwindow.h \
     videoimage.h \
@@ -27,9 +28,11 @@ HEADERS  += mainwindow.h \
     intervaltimestamp.h \
     aspectratiopixmaplabel.h \
     navigationeventfilter.h \
-    tablescripts.h
+    tablescripts.h \
+    scripteditor.h
 
-FORMS    += mainwindow.ui
+FORMS    += mainwindow.ui \
+    scripteditor.ui
 
 *-g++* {
     QMAKE_CXXFLAGS += -D__STDC_CONSTANT_MACROS -fpermissive

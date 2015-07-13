@@ -42,15 +42,17 @@ void TableScripts::Load(QDir directory){
             QFile file(directory.absoluteFilePath(fileName));
             if (file.open(QIODevice::ReadOnly | QIODevice::Text)) {
                 QTextStream in(&file);
-                QString script = in.readAll();
+                QString script = in.readAll().trimmed();
                 file.close();
 
-                if (row == -1) wholeRowScripts[row] = script;
-                else{
-                    if (col == -1) wholeColumnScripts[col] = script;
+                if (!script.isEmpty()){
+                    if (row == -1) wholeRowScripts[row] = script;
                     else{
-                        if (!cellScripts.contains(row)) cellScripts[row] = QMap<int, QString>();
-                        cellScripts[row][col] = script;
+                        if (col == -1) wholeColumnScripts[col] = script;
+                        else{
+                            if (!cellScripts.contains(row)) cellScripts[row] = QMap<int, QString>();
+                            cellScripts[row][col] = script;
+                        }
                     }
                 }
             }

@@ -12,6 +12,7 @@
 #include <math.h>
 #include "navigationeventfilter.h"
 #include "tablescripts.h"
+#include "scripteditor.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -85,11 +86,9 @@ MainWindow::MainWindow(QWidget *parent) :
 
     QShortcut* openFileShortcut = new QShortcut(QKeySequence(QKeySequence::Open), this);
     connect(openFileShortcut, SIGNAL(activated()), this, SLOT(on_actionOpen_triggered()));
-    //ui->actionOpen->setShortcut(openFileShortcut->key());
 
     QShortcut* saveFileShortcut = new QShortcut(QKeySequence(QKeySequence::Save), this);
     connect(saveFileShortcut, SIGNAL(activated()), this, SLOT(on_actionSave_triggered()));
-    //ui->actionSave->setShortcut(saveFileShortcut->key());
 
     QShortcut* playImageShortcut = new QShortcut(QKeySequence(Qt::Key_Space), this);
     connect(playImageShortcut, SIGNAL(activated()), this, SLOT(on_playPausePushButton_clicked()));
@@ -148,6 +147,10 @@ MainWindow::MainWindow(QWidget *parent) :
     QItemSelectionModel *selectionModel= ui->intervalsTableView->selectionModel();
     connect(selectionModel, SIGNAL(selectionChanged(QItemSelection,QItemSelection)),
             this, SLOT(on_selectionChanged(QItemSelection,QItemSelection)));
+
+    connect(ui->intervalsTableView, SIGNAL(customContextMenuRequested(QPoint)),
+            SLOT(on_tableContextMenuRequested(QPoint)));
+
 }
 
 MainWindow::~MainWindow()
@@ -166,14 +169,12 @@ void MainWindow::on_playTimerTimeout(){
 void MainWindow::showError(QString text){
     QMessageBox msgBox;
     msgBox.setText(text);
-    //msgBox.Icon = QMessageBox::Critical;
     msgBox.exec();
 }
 
 bool MainWindow::loadVideoFile(QString fileName){
     // Open video file
     QByteArray fileNameByteArray = fileName.toLocal8Bit();
-    //if(int result = avformat_open_input(&pFormatCtx,filename, NULL, options)!=0){
     int result = avformat_open_input(&pFormatCtx,fileNameByteArray.data(), NULL, options);
     if(result < 0){
         char error_string[200];
@@ -630,6 +631,26 @@ void MainWindow::on_selectionChanged(const QItemSelection & selected, const QIte
                 timeIntervals->setData(index, timestampValue, Qt::EditRole);
             }
         }
+    }
+}
+
+void MainWindow::on_tableContextMenuRequested(QPoint position){
+    QModelIndex index = ui->intervalsTableView->indexAt(position);
+    if (!(index.row() < timeIntervals->intervalsCount() + 1 && index.column() < 3)){
+        QMenu *menu = new QMenu(this);
+        QAction *action = new QAction("Edit script", this);
+        menu->addAction(action);
+        menu->popup(ui->intervalsTableView->viewport()->mapToGlobal(position));
+        connect(action, SIGNAL(triggered()), SLOT(on_editScript()));
+    }
+}
+
+void MainWindow::on_editScript(){
+    ScriptEditor editor(this);
+    QModelIndex index = ui->intervalsTableView->selectionModel()->currentIndex();
+    editor.setScript(timeIntervals->tableScripts.GetScript(index.row(), index.column()));
+    if (editor.exec() == QDialog::Accepted){
+        editor.getScript();
     }
 }
 
