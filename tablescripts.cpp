@@ -1,7 +1,12 @@
 #include "tablescripts.h"
-#include "cellscript.h"
 #include <QRegExp>
 #include <QPair>
+
+/*
+ * stores script for each table cell
+ * expecting sparse matrix
+ * requires fast read access
+*/
 
 TableScripts::TableScripts()
 {
@@ -11,7 +16,6 @@ TableScripts::TableScripts()
 void TableScripts::Load(QDir directory){
     this->directory = directory;
     // expecting filename format col-5_row-7.js
-    QList<CellScript *> scriptsList;
     int rows = 0, columns = 0;
     QRegExp regex("(col|row)-(\\d+)");
     foreach (QString file, directory.entryList(QStringList("*.js"), QDir::Files|QDir::Readable, QDir::Unsorted)){
@@ -30,11 +34,15 @@ void TableScripts::Load(QDir directory){
             }
             matchPos += regex.matchedLength();
         }
-        if (row != -1 || col != -1){
-            CellScript *cellScript = new CellScript();
-            cellScript->column = col;
-            cellScript->row = row;
-            scriptsList.append(cellScript);
+        if (!(row == -1 && col == -1)){
+                if (row == -1) wholeRowScripts[row] = file;
+                else{
+                    if (col == -1) wholeColumnScripts[col] = file;
+                    else{
+                        if (!cellScripts.contains(row)) cellScripts[row] = QMap<int, QString>();
+                        cellScripts[row][col] = file;
+                    }
+                }
         }
     }
 }

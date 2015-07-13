@@ -18,8 +18,7 @@ SOURCES += main.cpp\
     timeinterval.cpp \
     aspectratiopixmaplabel.cpp \
     navigationeventfilter.cpp \
-    tablescripts.cpp \
-    cellscript.cpp
+    tablescripts.cpp
 
 HEADERS  += mainwindow.h \
     videoimage.h \
@@ -28,8 +27,7 @@ HEADERS  += mainwindow.h \
     intervaltimestamp.h \
     aspectratiopixmaplabel.h \
     navigationeventfilter.h \
-    tablescripts.h \
-    cellscript.h
+    tablescripts.h
 
 FORMS    += mainwindow.ui
 
