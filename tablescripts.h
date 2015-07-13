@@ -6,6 +6,7 @@
 
 class TableScripts
 {
+
 private:
     QDir directory;
     QMap<int, QString> wholeRowScripts;
@@ -13,8 +14,12 @@ private:
     QMap<int, QMap<int, QString> > cellScripts;
 
 public:
+    int lastRow;
+    int lastColumn;
+
     TableScripts();
     void Load(QDir directory);
+    QString GetScript(int row, int column);
 };
 
 #endif // TABLESCRIPTS_H

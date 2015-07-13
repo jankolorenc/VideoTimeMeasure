@@ -5,11 +5,14 @@
 #include <QList>
 #include <QScriptEngine>
 #include "timeinterval.h"
+#include "tablescripts.h"
 
 class TimeIntervalsModel : public QAbstractTableModel
 {
     Q_OBJECT
 public:
+    TableScripts tableScripts;
+
     explicit TimeIntervalsModel(QObject *parent = 0);
 
     int rowCount(const QModelIndex &parent = QModelIndex()) const ;
@@ -26,7 +29,7 @@ public:
 signals:
     
 public slots:
-    QScriptValue getValue(int column, int row);
+    QScriptValue getValue(int row, int column);
 
 private:
     QList<TimeInterval> intervals;

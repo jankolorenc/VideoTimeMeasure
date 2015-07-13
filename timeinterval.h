@@ -8,6 +8,7 @@ class TimeInterval
 {
 public:
     TimeInterval();
+
     IntervalTimestamp start;
     IntervalTimestamp stop;
 

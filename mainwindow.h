@@ -63,7 +63,6 @@ private:
 
     uint64_t stopPlayerDts;
     QModelIndex stopIndex;
-    TableScripts tableScripts;
 
     void closeEvent(QCloseEvent *event);
 

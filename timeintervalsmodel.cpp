@@ -17,12 +17,12 @@ TimeIntervalsModel::TimeIntervalsModel(QObject *parent) :
 
 int TimeIntervalsModel::rowCount(const QModelIndex & /*parent*/) const
 {
-    return intervals.length() + 1;
+    return ((tableScripts.lastRow < intervals.length()) ? intervals.length() : tableScripts.lastRow) + 1;
 }
 
 int TimeIntervalsModel::columnCount(const QModelIndex & /*parent*/) const
 {
-    return 4;
+    return ((tableScripts.lastColumn < 2) ? 2 : tableScripts.lastColumn) + 1;
 }
 
 QVariant TimeIntervalsModel::data(const QModelIndex &index, int role) const
@@ -65,7 +65,7 @@ QVariant TimeIntervalsModel::data(const QModelIndex &index, int role) const
                 return interval.addMSecs(total * 1000).toString("hh:mm:ss.zzz");
             }
         }
-        return getValue(index.column(), index.row()).toString();
+        return getValue(index.row(), index.column()).toString();
 
     case Qt::TextAlignmentRole:
         return Qt::AlignCenter;
@@ -250,16 +250,16 @@ void TimeIntervalsModel::loadIntervals(QString fileName){
     }
 }
 
-QScriptValue TimeIntervalsModel::getValue(int column, int row)
+QScriptValue TimeIntervalsModel::getValue(int row, int column)
 {
     if (row < intervals.length()){
         switch (column) {
         case 0:
-            return intervals[row].start.isValid ? intervals[row].start.pts: 0;
+            return intervals[row].start.isValid ? intervals[row].start.pts: QScriptValue::NullValue;
         case 1:
-            return intervals[row].stop.isValid ? intervals[row].stop.pts : 0;
+            return intervals[row].stop.isValid ? intervals[row].stop.pts : QScriptValue::NullValue;
         case 2:
-            return intervals[row].durationSeconds();
+            return intervals[row].isDuration() ? intervals[row].durationSeconds() : QScriptValue::NullValue;
         }
     }
     if (row == intervals.length()){
@@ -273,6 +273,10 @@ QScriptValue TimeIntervalsModel::getValue(int column, int row)
         }
     }
 
+    QString script = tableScripts.GetScript(row, column);
+
+    if (script == NULL) return QScriptValue();
+
     engine.globalObject().setProperty("column", column);
     engine.globalObject().setProperty("row", row);
     engine.globalObject().setProperty("totalrow", intervals.length());
@@ -283,5 +287,5 @@ QScriptValue TimeIntervalsModel::getValue(int column, int row)
     }
     QScriptValue objectValue = engine.newQObject(this);
     engine.globalObject().setProperty("table", objectValue);
-    return engine.evaluate("table.getValue(1, row)");
+    return engine.evaluate(script);
 }
