@@ -55,6 +55,8 @@ private:
     int backSeekFactor;
     double pts;
     int sliderFactor;
+    int editScriptColumn;
+    int editScriptRow;
 
     VideoImage imagesBuffer[IMAGES_BUFFER_SIZE];
     int imagesBufferOldest;
@@ -99,7 +101,9 @@ private slots:
     void on_forwardJumpPushButton_clicked();
     void on_actionAbout_triggered();
     void on_tableContextMenuRequested(QPoint position);
-    void on_editScript();
+    void on_horizontalHeaderContextMenuRequested(QPoint position);
+    void on_verticalHeaderContextMenuRequested(QPoint position);
+    void on_editScript();    
 };
 
 #endif // MAINWINDOW_H

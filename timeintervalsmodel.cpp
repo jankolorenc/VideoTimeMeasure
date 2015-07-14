@@ -277,7 +277,7 @@ QScriptValue TimeIntervalsModel::getValue(int row, int column)
         }
     }
 
-    QString script = tableScripts.GetScript(row, column);
+    QString script = tableScripts.getScript(row, column);
 
     if (script == NULL) return QScriptValue();
 

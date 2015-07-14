@@ -67,14 +67,9 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->setupUi(this);
 
     timeIntervals = new TimeIntervalsModel();
-
     QDir scritpsPath(QDir::currentPath().append("/scripts"));
-    if (!scritpsPath.exists()){
-        if (!QDir::current().mkdir("scripts")){
-            statusBar()->showMessage(QString("Failed to create scripts directory ").append(scritpsPath.absolutePath()));
-        }
-    }
-    if (scritpsPath.exists()) timeIntervals->tableScripts.Load(scritpsPath);
+    timeIntervals->tableScripts.directory = scritpsPath;
+    timeIntervals->tableScripts.load();
 
     NavigationEventFilter *navigationEventFilter = new NavigationEventFilter(this);
     ui->intervalsTableView->installEventFilter(navigationEventFilter);
@@ -150,6 +145,14 @@ MainWindow::MainWindow(QWidget *parent) :
 
     connect(ui->intervalsTableView, SIGNAL(customContextMenuRequested(QPoint)),
             SLOT(on_tableContextMenuRequested(QPoint)));
+
+    ui->intervalsTableView->horizontalHeader()->setContextMenuPolicy(Qt::CustomContextMenu);
+    connect(ui->intervalsTableView->horizontalHeader(), SIGNAL(customContextMenuRequested(QPoint)),
+            SLOT(on_horizontalHeaderContextMenuRequested(QPoint)));
+
+    ui->intervalsTableView->verticalHeader()->setContextMenuPolicy(Qt::CustomContextMenu);
+    connect(ui->intervalsTableView->verticalHeader(), SIGNAL(customContextMenuRequested(QPoint)),
+            SLOT(on_verticalHeaderContextMenuRequested(QPoint)));
 
 }
 
@@ -637,8 +640,10 @@ void MainWindow::on_selectionChanged(const QItemSelection & selected, const QIte
 void MainWindow::on_tableContextMenuRequested(QPoint position){
     QModelIndex index = ui->intervalsTableView->indexAt(position);
     if (!(index.row() < timeIntervals->intervalsCount() + 1 && index.column() < 3)){
+        editScriptRow = index.row();
+        editScriptColumn = index.column();
         QMenu *menu = new QMenu(this);
-        QAction *action = new QAction("Edit script", this);
+        QAction *action = new QAction("Edit cell script", this);
         menu->addAction(action);
         menu->popup(ui->intervalsTableView->viewport()->mapToGlobal(position));
         connect(action, SIGNAL(triggered()), SLOT(on_editScript()));
@@ -653,12 +658,40 @@ void MainWindow::on_tableContextMenuRequested(QPoint position){
     }
 }
 
+void MainWindow::on_horizontalHeaderContextMenuRequested(QPoint position){
+    editScriptColumn = ui->intervalsTableView->horizontalHeader()->logicalIndexAt(position);
+    editScriptRow = -1;
+    QMenu *menu = new QMenu(this);
+    QAction *action = new QAction("Edit column script", this);
+    menu->addAction(action);
+    menu->popup(ui->intervalsTableView->viewport()->mapToGlobal(position));
+    connect(action, SIGNAL(triggered()), SLOT(on_editScript()));
+    action = new QAction("Add column", this);
+    menu->addAction(action);
+    action = new QAction("Remove column", this);
+    menu->addAction(action);
+}
+
+void MainWindow::on_verticalHeaderContextMenuRequested(QPoint position){
+    editScriptRow = ui->intervalsTableView->verticalHeader()->logicalIndexAt(position);
+    editScriptColumn = -1;
+    QMenu *menu = new QMenu(this);
+    QAction *action = new QAction("Edit column script", this);
+    menu->addAction(action);
+    menu->popup(ui->intervalsTableView->viewport()->mapToGlobal(position));
+    connect(action, SIGNAL(triggered()), SLOT(on_editScript()));
+    action = new QAction("Add row", this);
+    menu->addAction(action);
+    action = new QAction("Remove row", this);
+    menu->addAction(action);
+}
+
 void MainWindow::on_editScript(){
     ScriptEditor editor(this);
-    QModelIndex index = ui->intervalsTableView->selectionModel()->currentIndex();
-    editor.setScript(timeIntervals->tableScripts.GetScript(index.row(), index.column()));
+    editor.setScript(timeIntervals->tableScripts.getScript(editScriptRow, editScriptColumn));
     if (editor.exec() == QDialog::Accepted){
-        editor.getScript();
+        timeIntervals->tableScripts.setScript(editScriptRow, editScriptColumn, editor.getScript());
+        timeIntervals->tableScripts.save();
     }
 }
 
