@@ -5,6 +5,8 @@
 #include <QXmlStreamWriter>
 #include <QXmlStreamReader>
 
+#define FIXED_COLUMS 3
+
 Q_DECLARE_METATYPE(IntervalTimestamp)
 
 TimeIntervalsModel::TimeIntervalsModel(QObject *parent) :
@@ -26,7 +28,7 @@ int TimeIntervalsModel::rowCount(const QModelIndex & /*parent*/) const
 
 int TimeIntervalsModel::columnCount(const QModelIndex & /*parent*/) const
 {
-    return ((tableScripts.lastColumn < 2) ? 2 : tableScripts.lastColumn) + 1;
+    return (tableScripts.lastColumn < (FIXED_COLUMS - 1)) ? FIXED_COLUMS : tableScripts.lastColumn + 1;
 }
 
 QVariant TimeIntervalsModel::data(const QModelIndex &index, int role) const
@@ -115,10 +117,8 @@ QVariant TimeIntervalsModel::headerData(int section, Qt::Orientation orientation
 
 Qt::ItemFlags TimeIntervalsModel::flags(const QModelIndex &index) const
 {
-    if (index.row() == rowCount(index) - 1) return Qt::ItemIsEnabled;
-    if (index.column() == columnCount(index) - 1) return Qt::ItemIsEnabled;
-
-    return Qt::ItemIsSelectable |  Qt::ItemIsEnabled ;
+    if (index.row() < intervals.length() && index.column() < FIXED_COLUMS - 1) return Qt::ItemIsSelectable |  Qt::ItemIsEnabled;
+    else return Qt::ItemIsEnabled;
 }
 
 bool TimeIntervalsModel::insertRows(int position, int rows, const QModelIndex &index)
@@ -126,10 +126,13 @@ bool TimeIntervalsModel::insertRows(int position, int rows, const QModelIndex &i
     Q_UNUSED(index);
     beginInsertRows(QModelIndex(), position, position+rows-1);
 
-    for (int row=0; row < rows; row++) {
-        TimeInterval interval;
-        intervals.insert(position, interval);
+    if (position <= intervals.length()){
+        for (int row=0; row < rows; row++) {
+            TimeInterval interval;
+            intervals.insert(position, interval);
+        }
     }
+    else tableScripts.lastRow++;
 
     endInsertRows();
     return true;
@@ -143,9 +146,12 @@ bool TimeIntervalsModel::removeRows(int position, int rows, const QModelIndex &i
 
     beginRemoveRows(QModelIndex(), position, position+rows-1);
 
-    for (int row=0; row < rows; ++row) {
-        intervals.removeAt(position);
+    if (position < intervals.length()){
+        for (int row=0; row < rows; ++row) {
+            intervals.removeAt(position);
+        }
     }
+    else if (tableScripts.lastRow > 0) tableScripts.lastRow--;
 
     endRemoveRows();
     return true;

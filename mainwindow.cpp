@@ -590,7 +590,7 @@ void MainWindow::on_selectNextCell()
     if (index.isValid()){
         if (index.row() != timeIntervals->rowCount(index.parent()) - 1){
             // add new row if last editable cell is selected
-            if (index.column() == 1 && index.row() == timeIntervals->rowCount(index.parent()) - 2){
+            if (index.column() == 1 && index.row() == timeIntervals->intervalsCount() - 1){
                 ui->intervalsTableView->model()->insertRows(index.row() + 1, 1, index.parent());
             }
             int newColumn = (index.column() + 1) % 2;
@@ -615,6 +615,7 @@ void MainWindow::on_selectionChanged(const QItemSelection & selected, const QIte
     if (selected.count() > 0 && selected.indexes().count() > 0){
         QModelIndex index = selected.indexes().first();
         QVariant data = timeIntervals->data(index, Qt::UserRole);
+
         IntervalTimestamp timestamp = data.value<IntervalTimestamp>();
         if (timestamp.isValid){
             // jump to selected timestamp
