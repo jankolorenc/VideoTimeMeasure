@@ -689,9 +689,9 @@ void MainWindow::on_verticalHeaderContextMenuRequested(QPoint position){
 
 void MainWindow::on_editScript(){
     ScriptEditor editor(this);
-    editor.setScript(timeIntervals->tableScripts.getScript(editScriptRow, editScriptColumn));
+    editor.setScript(timeIntervals->tableScripts.getScript(timeIntervals->toScriptPositionRow(editScriptRow), editScriptColumn));
     if (editor.exec() == QDialog::Accepted){
-        timeIntervals->tableScripts.setScript(editScriptRow, editScriptColumn, editor.getScript());
+        timeIntervals->tableScripts.setScript(timeIntervals->toScriptPositionRow(editScriptRow), editScriptColumn, editor.getScript());
         timeIntervals->tableScripts.save();
     }
 }

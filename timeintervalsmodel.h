@@ -27,6 +27,8 @@ public:
     void loadIntervals(QString fileName);
     void clear();
     int intervalsCount();
+    int toScriptPositionRow(int row);
+
 signals:
     
 public slots:
