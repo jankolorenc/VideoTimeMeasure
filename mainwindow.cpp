@@ -65,11 +65,9 @@ MainWindow::MainWindow(QWidget *parent) :
     for(int i = 0; i < IMAGES_BUFFER_SIZE; i++) imagesBuffer[i].image = NULL;
 
     ui->setupUi(this);
+    scriptProfilesActionGroup = new QActionGroup(this);
 
     timeIntervals = new TimeIntervalsModel();
-    QDir scritpsPath(QDir::currentPath().append("/scripts"));
-    timeIntervals->tableScripts.directory = scritpsPath;
-    timeIntervals->tableScripts.load();
 
     NavigationEventFilter *navigationEventFilter = new NavigationEventFilter(this);
     ui->intervalsTableView->installEventFilter(navigationEventFilter);
@@ -154,6 +152,21 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->intervalsTableView->verticalHeader(), SIGNAL(customContextMenuRequested(QPoint)),
             SLOT(on_verticalHeaderContextMenuRequested(QPoint)));
 
+    fillScriptProfiles();
+
+}
+
+void MainWindow::fillScriptProfiles(){
+    QDir scritpsPath(QDir::currentPath().append("/scripts"));
+    if (!scritpsPath.exists()) return;
+
+    foreach (QFileInfo dirInfo, scritpsPath.entryInfoList(QDir::Dirs|QDir::NoSymLinks|QDir::NoDotAndDotDot , QDir::Unsorted)) {
+        QAction *action = ui->menuScripts->addAction(dirInfo.baseName());
+        action->setCheckable(TRUE);
+        connect(action, SIGNAL(changed()), SLOT(on_actionProfile_changed()));
+        scriptProfilesActionGroup->addAction(action);
+        action->setData(dirInfo.absolutePath());
+    }
 }
 
 MainWindow::~MainWindow()
@@ -797,4 +810,19 @@ void MainWindow::on_actionAbout_triggered()
                            "Thanks to all people who created libraries, tutorials and tools, this application is based on. (see source code)"
                            "</p>"
                            ));
+}
+
+
+void MainWindow::on_action_Clear_triggered()
+{
+    timeIntervals->tableScripts.clear();
+}
+
+void MainWindow::on_actionProfile_changed()
+{
+    foreach (QAction *action, scriptProfilesActionGroup->actions()) {
+        if (action->isChecked()){
+            timeIntervals->tableScripts.load(action->data().toString());
+        }
+    }
 }

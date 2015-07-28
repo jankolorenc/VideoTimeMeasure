@@ -14,6 +14,12 @@ TableScripts::TableScripts()
 {
     lastRow = 0;
     lastColumn = 0;
+    setDefaultPath();
+}
+
+void TableScripts::setDefaultPath(){
+    QString defaultPath = QDir::homePath().append("/.VideoTimeMeasure/scripts/default");
+    directory.setPath(defaultPath);
 }
 
 bool TableScripts::checkDirectory(){
@@ -26,8 +32,9 @@ bool TableScripts::checkDirectory(){
     return TRUE;
 }
 
-void TableScripts::load(){
-    if (!checkDirectory()) return;
+void TableScripts::load(QString dir){
+    directory.setPath(dir);
+    if (!directory.exists()) return;
 
     // expecting filename format row-7_col-5.js
     lastRow = 0;
@@ -69,6 +76,15 @@ void TableScripts::load(){
             }
         }
     }
+}
+
+void TableScripts::clear(){
+    lastRow = 0;
+    lastColumn = 0;
+    wholeColumnScripts.clear();
+    wholeRowScripts.clear();
+    cellScripts.clear();
+    setDefaultPath();
 }
 
 QString TableScripts::getScript(int row, int column, bool exact = FALSE){

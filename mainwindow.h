@@ -5,6 +5,7 @@
 #include <QTimer>
 #include <QItemSelection>
 #include <QDir>
+#include <QActionGroup>
 #include "videoimage.h"
 #include "timeintervalsmodel.h"
 #include "tablescripts.h"
@@ -66,6 +67,8 @@ private:
     uint64_t stopPlayerDts;
     QModelIndex stopIndex;
 
+    QActionGroup *scriptProfilesActionGroup;
+
     void closeEvent(QCloseEvent *event);
 
     void showError(QString text);
@@ -83,6 +86,7 @@ private:
     void saveIntervals();
     void startPlayer(double timeout);
     void stopPlayer();
+    void fillScriptProfiles();
 
 private slots:
     void on_actionOpen_triggered();
@@ -104,6 +108,8 @@ private slots:
     void on_horizontalHeaderContextMenuRequested(QPoint position);
     void on_verticalHeaderContextMenuRequested(QPoint position);
     void on_editScript();    
+    void on_action_Clear_triggered();
+    void on_actionProfile_changed();
 };
 
 #endif // MAINWINDOW_H
