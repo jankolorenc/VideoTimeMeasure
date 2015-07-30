@@ -290,9 +290,9 @@
     </property>
     <addaction name="actionAbout"/>
    </widget>
-   <widget class="QMenu" name="menuScripts">
+   <widget class="QMenu" name="menuScriptProfiles">
     <property name="title">
-     <string>Scripts</string>
+     <string>&amp;Script profiles</string>
     </property>
     <addaction name="action_Clear"/>
     <addaction name="actionEdit"/>
@@ -300,7 +300,7 @@
     <addaction name="separator"/>
    </widget>
    <addaction name="menuOpen"/>
-   <addaction name="menuScripts"/>
+   <addaction name="menuScriptProfiles"/>
    <addaction name="menuHelp"/>
   </widget>
   <widget class="QToolBar" name="mainToolBar">

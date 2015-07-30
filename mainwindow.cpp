@@ -161,7 +161,7 @@ void MainWindow::fillScriptProfiles(){
     if (!scritpsPath.exists()) return;
 
     foreach (QFileInfo dirInfo, scritpsPath.entryInfoList(QDir::Dirs|QDir::NoSymLinks|QDir::NoDotAndDotDot , QDir::Unsorted)) {
-        QAction *action = ui->menuScripts->addAction(dirInfo.baseName());
+        QAction *action = ui->menuScriptProfiles->addAction(dirInfo.baseName());
         action->setCheckable(TRUE);
         connect(action, SIGNAL(changed()), SLOT(on_actionProfile_changed()));
         scriptProfilesActionGroup->addAction(action);
@@ -652,27 +652,37 @@ void MainWindow::on_selectionChanged(const QItemSelection & selected, const QIte
 }
 
 void MainWindow::on_tableContextMenuRequested(QPoint position){
+    if (!ui->actionEdit->isChecked()) return;
+
+    QMenu *menu = new QMenu(this);
+
+    QAction *action = new QAction("Add column", this);
+    menu->addAction(action);
+    action = new QAction("Add row", this);
+    menu->addAction(action);
+
     QModelIndex index = ui->intervalsTableView->indexAt(position);
-    if (!(index.row() < timeIntervals->intervalsCount() + 1 && index.column() < 3)){
-        editScriptRow = index.row();
-        editScriptColumn = index.column();
-        QMenu *menu = new QMenu(this);
-        QAction *action = new QAction("Edit cell script", this);
-        menu->addAction(action);
-        menu->popup(ui->intervalsTableView->viewport()->mapToGlobal(position));
-        connect(action, SIGNAL(triggered()), SLOT(on_editScript()));
-        action = new QAction("Add row", this);
-        menu->addAction(action);
-        action = new QAction("Remove row", this);
-        menu->addAction(action);
-        action = new QAction("Add column", this);
-        menu->addAction(action);
+
+    if (index.column() > FIXED_COLUMS){
         action = new QAction("Remove column", this);
         menu->addAction(action);
     }
+    if (index.row() > timeIntervals->intervalsCount() + 1){
+        action = new QAction("Remove row", this);
+        menu->addAction(action);
+        editScriptRow = index.row();
+        editScriptColumn = index.column();
+        action = new QAction("Edit cell script", this);
+        menu->addAction(action);
+        connect(action, SIGNAL(triggered()), SLOT(on_editScript()));
+    }
+
+    menu->popup(ui->intervalsTableView->viewport()->mapToGlobal(position));
 }
 
 void MainWindow::on_horizontalHeaderContextMenuRequested(QPoint position){
+    if (!ui->actionEdit->isChecked()) return;
+
     editScriptColumn = ui->intervalsTableView->horizontalHeader()->logicalIndexAt(position);
     editScriptRow = -1;
     QMenu *menu = new QMenu(this);
@@ -687,6 +697,8 @@ void MainWindow::on_horizontalHeaderContextMenuRequested(QPoint position){
 }
 
 void MainWindow::on_verticalHeaderContextMenuRequested(QPoint position){
+    if (!ui->actionEdit->isChecked()) return;
+
     editScriptRow = ui->intervalsTableView->verticalHeader()->logicalIndexAt(position);
     editScriptColumn = -1;
     QMenu *menu = new QMenu(this);
@@ -816,6 +828,9 @@ void MainWindow::on_actionAbout_triggered()
 void MainWindow::on_action_Clear_triggered()
 {
     timeIntervals->tableScripts.clear();
+    foreach (QAction *action, scriptProfilesActionGroup->actions()) {
+        if (action->isChecked()) action->setChecked(false);
+    }
 }
 
 void MainWindow::on_actionProfile_changed()

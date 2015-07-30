@@ -7,6 +7,8 @@
 #include "timeinterval.h"
 #include "tablescripts.h"
 
+#define FIXED_COLUMS 3
+
 class TimeIntervalsModel : public QAbstractTableModel
 {
     Q_OBJECT

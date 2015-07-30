@@ -5,8 +5,6 @@
 #include <QXmlStreamWriter>
 #include <QXmlStreamReader>
 
-#define FIXED_COLUMS 3
-
 Q_DECLARE_METATYPE(IntervalTimestamp)
 
 TimeIntervalsModel::TimeIntervalsModel(QObject *parent) :
