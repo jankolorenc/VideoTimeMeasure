@@ -13,6 +13,8 @@
 #include "navigationeventfilter.h"
 #include "tablescripts.h"
 #include "scripteditor.h"
+#include "newscriptprofileform.h"
+#include "tablelimits.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -653,25 +655,25 @@ void MainWindow::on_selectionChanged(const QItemSelection & selected, const QIte
 
 void MainWindow::on_tableContextMenuRequested(QPoint position){
     if (!ui->actionEdit->isChecked()) return;
+    QModelIndex index = ui->intervalsTableView->indexAt(position);
+    editScriptRow = index.row();
+    editScriptColumn = index.column();
 
     QMenu *menu = new QMenu(this);
-
     QAction *action = new QAction("Add column", this);
+    connect(action, SIGNAL(triggered()), SLOT(on_addNewScriptColumn_triggered()));
     menu->addAction(action);
     action = new QAction("Add row", this);
+    connect(action, SIGNAL(triggered()), SLOT(on_addNewScriptRow_triggered()));
     menu->addAction(action);
-
-    QModelIndex index = ui->intervalsTableView->indexAt(position);
 
     if (index.column() > FIXED_COLUMS){
         action = new QAction("Remove column", this);
         menu->addAction(action);
     }
-    if (index.row() > timeIntervals->intervalsCount() + 1){
+    if (index.row() > timeIntervals->intervalsCount()){
         action = new QAction("Remove row", this);
         menu->addAction(action);
-        editScriptRow = index.row();
-        editScriptColumn = index.column();
         action = new QAction("Edit cell script", this);
         menu->addAction(action);
         connect(action, SIGNAL(triggered()), SLOT(on_editScript()));
@@ -691,6 +693,7 @@ void MainWindow::on_horizontalHeaderContextMenuRequested(QPoint position){
     menu->popup(ui->intervalsTableView->viewport()->mapToGlobal(position));
     connect(action, SIGNAL(triggered()), SLOT(on_editScript()));
     action = new QAction("Add column", this);
+    connect(action, SIGNAL(triggered()), SLOT(on_addNewScriptColumn_triggered()));
     menu->addAction(action);
     action = new QAction("Remove column", this);
     menu->addAction(action);
@@ -707,9 +710,19 @@ void MainWindow::on_verticalHeaderContextMenuRequested(QPoint position){
     menu->popup(ui->intervalsTableView->viewport()->mapToGlobal(position));
     connect(action, SIGNAL(triggered()), SLOT(on_editScript()));
     action = new QAction("Add row", this);
+    connect(action, SIGNAL(triggered()), SLOT(on_addNewScriptRow_triggered()));
     menu->addAction(action);
     action = new QAction("Remove row", this);
     menu->addAction(action);
+}
+
+void MainWindow::on_addNewScriptColumn_triggered(){
+    timeIntervals->insertColumn(editScriptColumn);
+}
+
+
+void MainWindow::on_addNewScriptRow_triggered(){
+    timeIntervals->insertRow(editScriptRow + 1);
 }
 
 void MainWindow::on_editScript(){
@@ -838,6 +851,25 @@ void MainWindow::on_actionProfile_changed()
     foreach (QAction *action, scriptProfilesActionGroup->actions()) {
         if (action->isChecked()){
             timeIntervals->tableScripts.load(action->data().toString());
+        }
+    }
+}
+
+void MainWindow::on_actionNew_triggered()
+{
+    NewScriptProfileForm profileForm(this);
+    if (profileForm.exec() == QDialog::Accepted){
+        QString newProfileName = profileForm.getProfileName();
+        if (!(newProfileName.isNull() || newProfileName.isEmpty())){
+            QString directory =  QDir::currentPath().append("/scripts").append("/").append(newProfileName);
+            timeIntervals->tableScripts.load(directory);
+
+            QAction *action = ui->menuScriptProfiles->addAction(newProfileName);
+            action->setCheckable(TRUE);
+            connect(action, SIGNAL(changed()), SLOT(on_actionProfile_changed()));
+            scriptProfilesActionGroup->addAction(action);
+            action->setData(directory);
+            action->setChecked(true);
         }
     }
 }

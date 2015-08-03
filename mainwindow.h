@@ -110,6 +110,9 @@ private slots:
     void on_editScript();    
     void on_action_Clear_triggered();
     void on_actionProfile_changed();
+    void on_actionNew_triggered();
+    void on_addNewScriptColumn_triggered();
+    void on_addNewScriptRow_triggered();
 };
 
 #endif // MAINWINDOW_H

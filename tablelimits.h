@@ -1,0 +1,6 @@
+#ifndef TABLELIMITS_H
+#define TABLELIMITS_H
+
+#define FIXED_COLUMS 3
+
+#endif // TABLELIMITS_H

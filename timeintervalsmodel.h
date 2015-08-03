@@ -7,8 +7,6 @@
 #include "timeinterval.h"
 #include "tablescripts.h"
 
-#define FIXED_COLUMS 3
-
 class TimeIntervalsModel : public QAbstractTableModel
 {
     Q_OBJECT
@@ -24,6 +22,8 @@ public:
     Qt::ItemFlags flags(const QModelIndex & /*index*/) const;
     bool insertRows(int position, int rows, const QModelIndex &index=QModelIndex());
     bool removeRows(int position, int rows, const QModelIndex &index=QModelIndex());
+    bool insertColumns(int position, int columns, const QModelIndex &index=QModelIndex());
+    bool removeColumns(int position, int columns, const QModelIndex &index=QModelIndex());
     bool setData(const QModelIndex &index, const QVariant &value, int role);
     void saveIntervals(QString fileName);
     void loadIntervals(QString fileName);

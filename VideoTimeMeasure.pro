@@ -19,7 +19,8 @@ SOURCES += main.cpp\
     aspectratiopixmaplabel.cpp \
     navigationeventfilter.cpp \
     tablescripts.cpp \
-    scripteditor.cpp
+    scripteditor.cpp \
+    newscriptprofileform.cpp
 
 HEADERS  += mainwindow.h \
     videoimage.h \
@@ -29,10 +30,13 @@ HEADERS  += mainwindow.h \
     aspectratiopixmaplabel.h \
     navigationeventfilter.h \
     tablescripts.h \
-    scripteditor.h
+    scripteditor.h \
+    newscriptprofileform.h \
+    tablelimits.h
 
 FORMS    += mainwindow.ui \
-    scripteditor.ui
+    scripteditor.ui \
+    newscriptprofileform.ui
 
 *-g++* {
     QMAKE_CXXFLAGS += -D__STDC_CONSTANT_MACROS -fpermissive

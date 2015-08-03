@@ -1,5 +1,6 @@
 #include "timeintervalsmodel.h"
 #include "intervaltimestamp.h"
+#include "tablelimits.h"
 #include <QTime>
 #include <QFile>
 #include <QXmlStreamWriter>
@@ -121,8 +122,10 @@ Qt::ItemFlags TimeIntervalsModel::flags(const QModelIndex &index) const
 
 bool TimeIntervalsModel::insertRows(int position, int rows, const QModelIndex &index)
 {
+    bool result = true;
+
     Q_UNUSED(index);
-    beginInsertRows(QModelIndex(), position, position+rows-1);
+    beginInsertRows(QModelIndex(), position, position + rows - 1);
 
     if (position <= intervals.length()){
         for (int row=0; row < rows; row++) {
@@ -130,29 +133,72 @@ bool TimeIntervalsModel::insertRows(int position, int rows, const QModelIndex &i
             intervals.insert(position, interval);
         }
     }
-    else tableScripts.lastRow++;
+    else{
+        if (rows > 0){
+            tableScripts.insertRows(position - 1 - intervals.length(), rows);
+        }
+        else result = false;
+    }
 
     endInsertRows();
-    return true;
+    return result;
 }
 
 bool TimeIntervalsModel::removeRows(int position, int rows, const QModelIndex &index)
 {
+    bool result = false;
     Q_UNUSED(index);
 
     if (position == intervals.length()) return false;
 
-    beginRemoveRows(QModelIndex(), position, position+rows-1);
+    beginRemoveRows(QModelIndex(), position, position + rows - 1);
 
     if (position < intervals.length()){
         for (int row=0; row < rows; ++row) {
             intervals.removeAt(position);
+            result = true;
         }
     }
-    else if (tableScripts.lastRow > 0) tableScripts.lastRow--;
+    else{
+        if (position >= intervals.length() && rows > 0){
+            tableScripts.removeRows(position - intervals.length(), rows);
+            result = true;
+        }
+        else result = false;
+    }
 
     endRemoveRows();
+    return result;
+}
+
+bool TimeIntervalsModel::insertColumns(int position, int columns, const QModelIndex &index)
+{
+    Q_UNUSED(index);
+    beginInsertColumns(QModelIndex(), position, position + columns - 1);
+
+    // currently only adding
+    tableScripts.lastColumn += columns;
+
+    endInsertColumns();
     return true;
+}
+
+bool TimeIntervalsModel::removeColumns(int position, int columns, const QModelIndex &index)
+{
+    bool result = false;
+    Q_UNUSED(index);
+
+    beginRemoveColumns(QModelIndex(), position, position + columns - 1);
+
+    if (tableScripts.lastColumn > FIXED_COLUMS){
+        int newLastColumn = tableScripts.lastColumn - columns;
+        if (newLastColumn < FIXED_COLUMS - 1) newLastColumn = FIXED_COLUMS - 1;
+        tableScripts.lastColumn = newLastColumn;
+        result = true;
+    }
+
+    endRemoveColumns();
+    return result;
 }
 
 bool TimeIntervalsModel::setData(const QModelIndex &index, const QVariant &value, int role)

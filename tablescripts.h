@@ -18,6 +18,8 @@ private:
     bool checkDirectory();
     void saveScript(QString fileName, QString script);
     void setDefaultPath();
+    void insertItems(QMap<int,QVariant> &map, int position, int count);
+    void removeItems(QMap<int,QVariant> &map, int position, int count);
 
 public:
     int lastRow;
@@ -29,6 +31,10 @@ public:
     void clear();
     QString getScript(int row, int column, bool exact = FALSE);
     void setScript(int row, int column, QString script);
+    void insertRows(int position, int count);
+    void removeRows(int position, int count);
+    void insertColumns(int position, int count);
+    void removeColumns(int position, int count);
 };
 
 #endif // TABLESCRIPTS_H

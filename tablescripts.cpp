@@ -1,4 +1,5 @@
 #include "tablescripts.h"
+#include "tablelimits.h"
 #include <QRegExp>
 #include <QPair>
 #include <QFile>
@@ -13,7 +14,7 @@
 TableScripts::TableScripts()
 {
     lastRow = 0;
-    lastColumn = 0;
+    lastColumn = FIXED_COLUMS - 1;
     setDefaultPath();
 }
 
@@ -38,7 +39,7 @@ void TableScripts::load(QString dir){
 
     // expecting filename format row-7_col-5.js
     lastRow = 0;
-    lastColumn = 0;
+    lastColumn = FIXED_COLUMS - 1;
     QRegExp regex("(col|row)-(\\d+)");
     foreach (QString fileName, directory.entryList(QStringList("*.js"), QDir::Files|QDir::Readable, QDir::Unsorted)){
         int matchPos = 0;
@@ -80,7 +81,7 @@ void TableScripts::load(QString dir){
 
 void TableScripts::clear(){
     lastRow = 0;
-    lastColumn = 0;
+    lastColumn = FIXED_COLUMS - 1;
     wholeColumnScripts.clear();
     wholeRowScripts.clear();
     cellScripts.clear();
@@ -166,4 +167,64 @@ void TableScripts::save(){
 
         saveScript(directory.absoluteFilePath("col-%1.js").arg(col), script);
     }
+}
+
+bool intLessThan(const int &v1, const int &v2)
+{
+    return v1 < v2;
+}
+
+bool intMoreThan(const int &v1, const int &v2)
+{
+    return v1 > v2;
+}
+
+void TableScripts::insertItems(QMap<int,QVariant> &map, int position, int count){
+    QList<int> rows = map.keys();
+    qSort(rows.begin(), rows.end(), intMoreThan);
+    foreach(int row, rows){
+        if (row > position){
+            map[row + count] = map[row];
+            map.remove(row);
+        }
+    }
+}
+
+void TableScripts::insertRows(int position, int count){
+    insertItems((QMap<int,QVariant> &)cellScripts, position, count);
+    lastRow += count;
+}
+
+void TableScripts::removeItems(QMap<int,QVariant> &map, int position, int count){
+    QList<int> rows = map.keys();
+    qSort(rows.begin(), rows.end(), intLessThan);
+    foreach(int row, rows){
+        if (row >= position){
+            map.remove(row);
+        }
+        if (row >= position + count){
+            map[row] = map[row + count];
+        }
+    }
+}
+
+void TableScripts::removeRows(int position, int count){
+    removeItems((QMap<int,QVariant> &)cellScripts, position, count);
+    lastRow -=count;
+}
+
+void TableScripts::insertColumns(int position, int count){
+    QList<QMap<int,QString> > rows = cellScripts.values();
+    for(int i = 0 ; i < rows.length(); i++){
+        insertItems((QMap<int,QVariant> &)rows[i], position, count);
+    }
+    lastColumn += count;
+}
+
+void TableScripts::removeColumns(int position, int count){
+    QList<QMap<int,QString> > rows = cellScripts.values();
+    for(int i = 0 ; i < rows.length(); i++){
+        removeItems((QMap<int,QVariant> &)rows[i], position, count);
+    }
+    lastColumn -= count;
 }
