@@ -173,14 +173,19 @@ bool TimeIntervalsModel::removeRows(int position, int rows, const QModelIndex &i
 
 bool TimeIntervalsModel::insertColumns(int position, int columns, const QModelIndex &index)
 {
+    bool result = true;
+
     Q_UNUSED(index);
     beginInsertColumns(QModelIndex(), position, position + columns - 1);
 
-    // currently only adding
-    tableScripts.lastColumn += columns;
+    if (columns > 0){
+        tableScripts.insertColumns(position, columns);
+    }
+    else result = false;
 
     endInsertColumns();
-    return true;
+
+    return result;
 }
 
 bool TimeIntervalsModel::removeColumns(int position, int columns, const QModelIndex &index)

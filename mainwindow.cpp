@@ -717,12 +717,14 @@ void MainWindow::on_verticalHeaderContextMenuRequested(QPoint position){
 }
 
 void MainWindow::on_addNewScriptColumn_triggered(){
-    timeIntervals->insertColumn(editScriptColumn);
+    int column = (editScriptColumn < FIXED_COLUMS - 1) ? timeIntervals->tableScripts.lastColumn : editScriptColumn;
+    timeIntervals->insertColumn(column);
 }
 
 
 void MainWindow::on_addNewScriptRow_triggered(){
-    timeIntervals->insertRow(editScriptRow + 1);
+    int row = (editScriptRow < timeIntervals->intervalsCount()) ? timeIntervals->intervalsCount() + timeIntervals->tableScripts.lastRow : editScriptRow;
+    timeIntervals->insertRow(row + 1);
 }
 
 void MainWindow::on_editScript(){

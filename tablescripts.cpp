@@ -179,23 +179,25 @@ bool intMoreThan(const int &v1, const int &v2)
     return v1 > v2;
 }
 
-void TableScripts::insertItems(QMap<int,QVariant> &map, int position, int count){
-    QList<int> rows = map.keys();
-    qSort(rows.begin(), rows.end(), intMoreThan);
-    foreach(int row, rows){
-        if (row > position){
-            map[row + count] = map[row];
-            map.remove(row);
+template<typename T>
+void TableScripts::insertItems(QMap<int, T > &map, int position, int count){
+    QList<int> keys = map.keys();
+    qSort(keys.begin(), keys.end(), intMoreThan);
+    foreach(int key, keys){
+        if (key > position){
+            map[key + count] = map[key];
+            map.remove(key);
         }
     }
 }
 
 void TableScripts::insertRows(int position, int count){
-    insertItems((QMap<int,QVariant> &)cellScripts, position, count);
+    insertItems(cellScripts, position, count);
     lastRow += count;
 }
 
-void TableScripts::removeItems(QMap<int,QVariant> &map, int position, int count){
+template<typename T>
+void TableScripts::removeItems(QMap<int, T > &map, int position, int count){
     QList<int> rows = map.keys();
     qSort(rows.begin(), rows.end(), intLessThan);
     foreach(int row, rows){
@@ -209,22 +211,22 @@ void TableScripts::removeItems(QMap<int,QVariant> &map, int position, int count)
 }
 
 void TableScripts::removeRows(int position, int count){
-    removeItems((QMap<int,QVariant> &)cellScripts, position, count);
+    removeItems(cellScripts, position, count);
     lastRow -=count;
 }
 
 void TableScripts::insertColumns(int position, int count){
-    QList<QMap<int,QString> > rows = cellScripts.values();
-    for(int i = 0 ; i < rows.length(); i++){
-        insertItems((QMap<int,QVariant> &)rows[i], position, count);
+    QMap<int, QMap<int, QString> >::iterator i;
+    for (i = cellScripts.begin(); i != cellScripts.end(); ++i){
+        insertItems(i.value(), position, count);
     }
     lastColumn += count;
 }
 
 void TableScripts::removeColumns(int position, int count){
-    QList<QMap<int,QString> > rows = cellScripts.values();
-    for(int i = 0 ; i < rows.length(); i++){
-        removeItems((QMap<int,QVariant> &)rows[i], position, count);
+    QMap<int, QMap<int, QString> >::iterator i;
+    for (i = cellScripts.begin(); i != cellScripts.end(); ++i){
+        removeItems(i.value(), position, count);
     }
     lastColumn -= count;
 }

@@ -18,8 +18,10 @@ private:
     bool checkDirectory();
     void saveScript(QString fileName, QString script);
     void setDefaultPath();
-    void insertItems(QMap<int,QVariant> &map, int position, int count);
-    void removeItems(QMap<int,QVariant> &map, int position, int count);
+    template<typename T>
+    void insertItems(QMap<int, T> &map, int position, int count);
+    template<typename T>
+    void removeItems(QMap<int, T> &map, int position, int count);
 
 public:
     int lastRow;
