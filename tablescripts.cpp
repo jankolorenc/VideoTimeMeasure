@@ -184,7 +184,7 @@ void TableScripts::insertItems(QMap<int, T > &map, int position, int count){
     QList<int> keys = map.keys();
     qSort(keys.begin(), keys.end(), intMoreThan);
     foreach(int key, keys){
-        if (key > position){
+        if (key >= position){
             map[key + count] = map[key];
             map.remove(key);
         }
@@ -198,15 +198,17 @@ void TableScripts::insertRows(int position, int count){
 
 template<typename T>
 void TableScripts::removeItems(QMap<int, T > &map, int position, int count){
-    QList<int> rows = map.keys();
-    qSort(rows.begin(), rows.end(), intLessThan);
-    foreach(int row, rows){
-        if (row >= position){
-            map.remove(row);
-        }
-        if (row >= position + count){
-            map[row] = map[row + count];
-        }
+    int maxRow = 0;
+    // get max row
+    typename QMap<int, T >::iterator iterator;
+    for (iterator = map.begin(); iterator != map.end(); ++iterator){
+        if (iterator.key() > maxRow) maxRow = iterator.key();
+    }
+
+    // shift rows
+    for(int i = position; i <= maxRow; i++){
+        if (map.contains(i + count)) map[i] = map[i + count];
+        else map.remove(i);
     }
 }
 

@@ -161,7 +161,7 @@ bool TimeIntervalsModel::removeRows(int position, int rows, const QModelIndex &i
     }
     else{
         if (position >= intervals.length() && rows > 0){
-            tableScripts.removeRows(position - intervals.length(), rows);
+            tableScripts.removeRows(position - intervals.length() - 1, rows);
             result = true;
         }
         else result = false;
@@ -195,12 +195,7 @@ bool TimeIntervalsModel::removeColumns(int position, int columns, const QModelIn
 
     beginRemoveColumns(QModelIndex(), position, position + columns - 1);
 
-    if (tableScripts.lastColumn > FIXED_COLUMS){
-        int newLastColumn = tableScripts.lastColumn - columns;
-        if (newLastColumn < FIXED_COLUMS - 1) newLastColumn = FIXED_COLUMS - 1;
-        tableScripts.lastColumn = newLastColumn;
-        result = true;
-    }
+    tableScripts.removeColumns(position, columns);
 
     endRemoveColumns();
     return result;
@@ -350,5 +345,5 @@ QScriptValue TimeIntervalsModel::getValue(int row, int column)
 }
 
 int TimeIntervalsModel::toScriptPositionRow(int row){
-    return row - intervals.length();
+    return row - intervals.length() - 1;
 }

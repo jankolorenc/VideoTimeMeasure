@@ -113,6 +113,8 @@ private slots:
     void on_actionNew_triggered();
     void on_addNewScriptColumn_triggered();
     void on_addNewScriptRow_triggered();
+    void on_removeScriptColumn_triggered();
+    void on_removeScriptRow_triggered();
 };
 
 #endif // MAINWINDOW_H

@@ -667,16 +667,18 @@ void MainWindow::on_tableContextMenuRequested(QPoint position){
     connect(action, SIGNAL(triggered()), SLOT(on_addNewScriptRow_triggered()));
     menu->addAction(action);
 
-    if (index.column() > FIXED_COLUMS){
+    if (index.column() >= FIXED_COLUMS){
         action = new QAction("Remove column", this);
+        connect(action, SIGNAL(triggered()), SLOT(on_removeScriptColumn_triggered()));
         menu->addAction(action);
     }
     if (index.row() > timeIntervals->intervalsCount()){
         action = new QAction("Remove row", this);
+        connect(action, SIGNAL(triggered()), SLOT(on_removeScriptRow_triggered()));
         menu->addAction(action);
         action = new QAction("Edit cell script", this);
-        menu->addAction(action);
         connect(action, SIGNAL(triggered()), SLOT(on_editScript()));
+        menu->addAction(action);
     }
 
     menu->popup(ui->intervalsTableView->viewport()->mapToGlobal(position));
@@ -696,6 +698,7 @@ void MainWindow::on_horizontalHeaderContextMenuRequested(QPoint position){
     connect(action, SIGNAL(triggered()), SLOT(on_addNewScriptColumn_triggered()));
     menu->addAction(action);
     action = new QAction("Remove column", this);
+    connect(action, SIGNAL(triggered()), SLOT(on_removeScriptColumn_triggered()));
     menu->addAction(action);
 }
 
@@ -713,18 +716,30 @@ void MainWindow::on_verticalHeaderContextMenuRequested(QPoint position){
     connect(action, SIGNAL(triggered()), SLOT(on_addNewScriptRow_triggered()));
     menu->addAction(action);
     action = new QAction("Remove row", this);
+    connect(action, SIGNAL(triggered()), SLOT(on_removeScriptRow_triggered()));
     menu->addAction(action);
 }
 
 void MainWindow::on_addNewScriptColumn_triggered(){
     int column = (editScriptColumn < FIXED_COLUMS - 1) ? timeIntervals->tableScripts.lastColumn : editScriptColumn;
-    timeIntervals->insertColumn(column);
+    timeIntervals->insertColumn(column + 1); // +1 = add instead of insert
 }
 
 
 void MainWindow::on_addNewScriptRow_triggered(){
     int row = (editScriptRow < timeIntervals->intervalsCount()) ? timeIntervals->intervalsCount() + timeIntervals->tableScripts.lastRow : editScriptRow;
-    timeIntervals->insertRow(row + 1);
+    timeIntervals->insertRow(row + 1); // +1 = add instead of insert
+}
+
+void MainWindow::on_removeScriptColumn_triggered(){
+    int column = (editScriptColumn < FIXED_COLUMS) ? timeIntervals->tableScripts.lastColumn : editScriptColumn;
+    timeIntervals->removeColumn(column);
+}
+
+
+void MainWindow::on_removeScriptRow_triggered(){
+    int row = (editScriptRow < timeIntervals->intervalsCount()) ? timeIntervals->intervalsCount() + timeIntervals->tableScripts.lastRow : editScriptRow;
+    timeIntervals->removeRow(row);
 }
 
 void MainWindow::on_editScript(){
