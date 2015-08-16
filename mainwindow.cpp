@@ -690,16 +690,19 @@ void MainWindow::on_horizontalHeaderContextMenuRequested(QPoint position){
     editScriptColumn = ui->intervalsTableView->horizontalHeader()->logicalIndexAt(position);
     editScriptRow = -1;
     QMenu *menu = new QMenu(this);
-    QAction *action = new QAction("Edit column script", this);
-    menu->addAction(action);
-    menu->popup(ui->intervalsTableView->viewport()->mapToGlobal(position));
-    connect(action, SIGNAL(triggered()), SLOT(on_editScript()));
-    action = new QAction("Add column", this);
+    QAction *action = new QAction("Add column", this);
     connect(action, SIGNAL(triggered()), SLOT(on_addNewScriptColumn_triggered()));
     menu->addAction(action);
-    action = new QAction("Remove column", this);
-    connect(action, SIGNAL(triggered()), SLOT(on_removeScriptColumn_triggered()));
+    if (editScriptColumn >= FIXED_COLUMS){
+        action = new QAction("Remove column", this);
+        connect(action, SIGNAL(triggered()), SLOT(on_removeScriptColumn_triggered()));
+        menu->addAction(action);
+    }
+    action = new QAction("Edit column script", this);
     menu->addAction(action);
+    connect(action, SIGNAL(triggered()), SLOT(on_editScript()));
+
+    menu->popup(ui->intervalsTableView->viewport()->mapToGlobal(position));
 }
 
 void MainWindow::on_verticalHeaderContextMenuRequested(QPoint position){
@@ -708,16 +711,20 @@ void MainWindow::on_verticalHeaderContextMenuRequested(QPoint position){
     editScriptRow = ui->intervalsTableView->verticalHeader()->logicalIndexAt(position);
     editScriptColumn = -1;
     QMenu *menu = new QMenu(this);
-    QAction *action = new QAction("Edit column script", this);
-    menu->addAction(action);
-    menu->popup(ui->intervalsTableView->viewport()->mapToGlobal(position));
-    connect(action, SIGNAL(triggered()), SLOT(on_editScript()));
+    QAction *action;
     action = new QAction("Add row", this);
     connect(action, SIGNAL(triggered()), SLOT(on_addNewScriptRow_triggered()));
     menu->addAction(action);
-    action = new QAction("Remove row", this);
-    connect(action, SIGNAL(triggered()), SLOT(on_removeScriptRow_triggered()));
-    menu->addAction(action);
+    if (editScriptRow > timeIntervals->intervalsCount()){
+        action = new QAction("Remove row", this);
+        connect(action, SIGNAL(triggered()), SLOT(on_removeScriptRow_triggered()));
+        menu->addAction(action);
+        action = new QAction("Edit row script", this);
+        menu->addAction(action);
+        connect(action, SIGNAL(triggered()), SLOT(on_editScript()));
+    }
+
+    menu->popup(ui->intervalsTableView->viewport()->mapToGlobal(position));
 }
 
 void MainWindow::on_addNewScriptColumn_triggered(){

@@ -191,11 +191,6 @@ void TableScripts::insertItems(QMap<int, T > &map, int position, int count){
     }
 }
 
-void TableScripts::insertRows(int position, int count){
-    insertItems(cellScripts, position, count);
-    lastRow += count;
-}
-
 template<typename T>
 void TableScripts::removeItems(QMap<int, T > &map, int position, int count){
     int maxRow = 0;
@@ -212,8 +207,15 @@ void TableScripts::removeItems(QMap<int, T > &map, int position, int count){
     }
 }
 
+void TableScripts::insertRows(int position, int count){
+    insertItems(cellScripts, position, count);
+    insertItems(wholeRowScripts, position, count);
+    lastRow += count;
+}
+
 void TableScripts::removeRows(int position, int count){
     removeItems(cellScripts, position, count);
+    removeItems(wholeRowScripts, position, count);
     lastRow -=count;
 }
 
@@ -222,6 +224,7 @@ void TableScripts::insertColumns(int position, int count){
     for (i = cellScripts.begin(); i != cellScripts.end(); ++i){
         insertItems(i.value(), position, count);
     }
+    insertItems(wholeColumnScripts, position, count);
     lastColumn += count;
 }
 
@@ -230,5 +233,6 @@ void TableScripts::removeColumns(int position, int count){
     for (i = cellScripts.begin(); i != cellScripts.end(); ++i){
         removeItems(i.value(), position, count);
     }
+    removeItems(wholeColumnScripts, position, count);
     lastColumn -= count;
 }
