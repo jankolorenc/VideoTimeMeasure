@@ -87,6 +87,7 @@ private:
     void startPlayer(double timeout);
     void stopPlayer();
     void fillScriptProfiles();
+    void fillScriptProfiles(QString scriptsDir);
 
 private slots:
     void on_actionOpen_triggered();

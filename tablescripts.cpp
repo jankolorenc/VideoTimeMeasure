@@ -13,28 +13,11 @@
 
 TableScripts::TableScripts()
 {
-    lastRow = 0;
-    lastColumn = FIXED_COLUMS - 1;
-    setDefaultPath();
+
 }
 
-void TableScripts::setDefaultPath(){
-    QString defaultPath = QDir::homePath().append("/.VideoTimeMeasure/scripts/default");
-    directory.setPath(defaultPath);
-}
-
-bool TableScripts::checkDirectory(){
-    if (!directory.exists()){
-        if (!directory.mkpath(".")){
-            qCritical(QString("Failed to create scripts directory ").append(directory.absolutePath()).toAscii());
-            return FALSE;
-        }
-    }
-    return TRUE;
-}
-
-void TableScripts::load(QString dir){
-    directory.setPath(dir);
+void TableScripts::loadProfile(QString profile, QString basePath){
+    QDir directory(basePath + profile);
     if (!directory.exists()) return;
 
     // expecting filename format row-7_col-5.js
@@ -79,13 +62,31 @@ void TableScripts::load(QString dir){
     }
 }
 
+void TableScripts::removeProfile(QString profile, bool removeDirectory){
+    QDir directory(basePath + profile);
+    if (!directory.exists()) return;
+
+    // remove existing scripts
+    QRegExp regex("(col|row)-(\\d+)");
+    foreach (QString fileName, directory.entryList(QStringList("*.js"), QDir::Files|QDir::Readable, QDir::Unsorted)){
+        if (regex.indexIn(fileName) != -1) QFile::remove(directory.absoluteFilePath(fileName));
+    }
+
+    if (removeDirectory){
+        directory.setPath(basePath);
+        directory.rmdir(profile);
+    }
+}
+
 void TableScripts::clear(){
     lastRow = 0;
     lastColumn = FIXED_COLUMS - 1;
     wholeColumnScripts.clear();
     wholeRowScripts.clear();
     cellScripts.clear();
-    setDefaultPath();
+    profile = DEFAULT_PROFILE;
+
+    removeProfile(DEFAULT_PROFILE, true);
 }
 
 QString TableScripts::getScript(int row, int column, bool exact = FALSE){
@@ -107,13 +108,14 @@ void TableScripts::setScript(int row, int column, QString script){
     if (row < 0 && column >= 0){
         if (trimmed.isEmpty()) wholeColumnScripts.remove(column);
         else wholeColumnScripts[column] = trimmed;
-        return;
+        goto saveProfile;
     }
 
     if (column < 0 && row >= 0){
         if (trimmed.isEmpty()) wholeRowScripts.remove(column);
         else wholeRowScripts[row] = trimmed;
-        return;
+        saveProfile(this->profile);
+        goto saveProfile;
     }
 
     if (column >= 0 && row >= 0){
@@ -122,6 +124,9 @@ void TableScripts::setScript(int row, int column, QString script){
         }
         else cellScripts[row][column] = trimmed;
     }
+
+    saveProfile:
+    saveProfile(profile);
 }
 
 void TableScripts::saveScript(QString fileName, QString script){
@@ -135,14 +140,16 @@ void TableScripts::saveScript(QString fileName, QString script){
     else qCritical(QString("Failed to write script ").append(fileName).toAscii());
 }
 
-void TableScripts::save(){
-    if (!checkDirectory()) return;
-
-    // remove existing scripts
-    QRegExp regex("(col|row)-(\\d+)");
-    foreach (QString fileName, directory.entryList(QStringList("*.js"), QDir::Files|QDir::Readable, QDir::Unsorted)){
-        if (regex.indexIn(fileName) != -1) QFile::remove(directory.absoluteFilePath(fileName));
+void TableScripts::saveProfile(QString profile){
+    QDir directory(basePath + profile);
+    if (!directory.exists()){
+        if (!directory.mkpath(".")){
+            qCritical(QString("Failed to create scripts directory ").append(directory.absolutePath()).toAscii());
+            return;
+        }
     }
+
+    removeProfile(profile, false);
 
     // generate new scripts
     foreach(int row, cellScripts.keys()){
@@ -181,19 +188,24 @@ bool intMoreThan(const int &v1, const int &v2)
 
 template<typename T>
 void TableScripts::insertItems(QMap<int, T > &map, int position, int count){
+    bool save = false;
     QList<int> keys = map.keys();
     qSort(keys.begin(), keys.end(), intMoreThan);
     foreach(int key, keys){
         if (key >= position){
             map[key + count] = map[key];
             map.remove(key);
+            save = true;
         }
     }
+    if (save) saveProfile(profile);
 }
 
 template<typename T>
 void TableScripts::removeItems(QMap<int, T > &map, int position, int count){
     int maxRow = 0;
+    bool save = false;
+
     // get max item index
     typename QMap<int, T >::iterator iterator;
     for (iterator = map.begin(); iterator != map.end(); ++iterator){
@@ -204,7 +216,10 @@ void TableScripts::removeItems(QMap<int, T > &map, int position, int count){
     for(int i = position; i <= maxRow; i++){
         if (map.contains(i + count)) map[i] = map[i + count];
         else map.remove(i);
+        save = true;
     }
+
+    if (save) saveProfile(profile);
 }
 
 void TableScripts::insertRows(int position, int count){

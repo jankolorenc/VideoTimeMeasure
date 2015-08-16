@@ -30,10 +30,11 @@ public:
     void clear();
     void clearTableScripts();
     int intervalsCount();
-    QString TimeIntervalsModel::getScript(int row, int column);
-    void TimeIntervalsModel::setScript(int row, int column, QString script);
-    void TimeIntervalsModel::saveScript();
-    void TimeIntervalsModel::loadScript(QString path);
+    QString getScript(int row, int column);
+    void setScript(int row, int column, QString script);
+    void loadScriptProfile(QString profile, QString basePath);
+    QString scriptsDirectory();
+    QString scriptsProfile();
 
 signals:
     

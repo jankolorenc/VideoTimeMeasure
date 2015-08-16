@@ -15,6 +15,7 @@
 #include "scripteditor.h"
 #include "newscriptprofileform.h"
 #include "tablelimits.h"
+#include <boost/filesystem.hpp>
 
 #ifdef __cplusplus
 extern "C" {
@@ -27,6 +28,8 @@ extern "C" {
 #endif
 
 Q_DECLARE_METATYPE(IntervalTimestamp)
+
+namespace fs = boost::filesystem;
 
 uint64_t global_video_pkt_pts = AV_NOPTS_VALUE;
 
@@ -158,17 +161,34 @@ MainWindow::MainWindow(QWidget *parent) :
 
 }
 
-void MainWindow::fillScriptProfiles(){
-    QDir scritpsPath(QDir::currentPath().append("/scripts"));
+void MainWindow::fillScriptProfiles(QString scriptsDir){
+    QDir scritpsPath(scriptsDir);
     if (!scritpsPath.exists()) return;
 
     foreach (QFileInfo dirInfo, scritpsPath.entryInfoList(QDir::Dirs|QDir::NoSymLinks|QDir::NoDotAndDotDot , QDir::Unsorted)) {
-        QAction *action = ui->menuScriptProfiles->addAction(dirInfo.baseName());
-        action->setCheckable(TRUE);
-        connect(action, SIGNAL(changed()), SLOT(on_actionProfile_changed()));
-        scriptProfilesActionGroup->addAction(action);
-        action->setData(dirInfo.absolutePath());
+
+        // check existing profile
+        QList<QAction *> actions = scriptProfilesActionGroup->actions();
+        if (dirInfo.baseName() != DEFAULT_PROFILE){
+            for (int i = 0; i < actions.length(); i++) {
+                if (actions[i]->text() == dirInfo.baseName()) goto nextProfile;
+            }
+            {
+                QAction *action = ui->menuScriptProfiles->addAction(dirInfo.baseName());
+                action->setCheckable(TRUE);
+                connect(action, SIGNAL(changed()), SLOT(on_actionProfile_changed()));
+                scriptProfilesActionGroup->addAction(action);
+                action->setData(scriptsDir);
+            }
+            nextProfile:;
+        }
     }
+}
+
+void MainWindow::fillScriptProfiles(){
+    fillScriptProfiles(timeIntervals->scriptsDirectory());
+    fillScriptProfiles(QDir::currentPath() + "/scripts");
+    timeIntervals->loadScriptProfile(timeIntervals->scriptsProfile(), timeIntervals->scriptsDirectory());
 }
 
 MainWindow::~MainWindow()
@@ -754,7 +774,6 @@ void MainWindow::on_editScript(){
     editor.setScript(timeIntervals->getScript(editScriptRow, editScriptColumn));
     if (editor.exec() == QDialog::Accepted){
         timeIntervals->setScript(editScriptRow, editScriptColumn, editor.getScript());
-        timeIntervals->saveScript();
     }
 }
 
@@ -874,7 +893,7 @@ void MainWindow::on_actionProfile_changed()
 {
     foreach (QAction *action, scriptProfilesActionGroup->actions()) {
         if (action->isChecked()){
-            timeIntervals->loadScript(action->data().toString());
+            timeIntervals->loadScriptProfile(action->text(), action->data().toString());
         }
     }
 }
@@ -884,17 +903,17 @@ void MainWindow::on_actionNew_triggered()
     NewScriptProfileForm profileForm(this);
     if (profileForm.exec() == QDialog::Accepted){
         QString newProfileName = profileForm.getProfileName();
-        if (!(newProfileName.isNull() || newProfileName.isEmpty())){
-            QString directory =  QDir::currentPath().append("/scripts").append("/").append(newProfileName);
-            timeIntervals->loadScript(directory);
-
-            QAction *action = ui->menuScriptProfiles->addAction(newProfileName);
-            action->setCheckable(TRUE);
-            connect(action, SIGNAL(changed()), SLOT(on_actionProfile_changed()));
-            scriptProfilesActionGroup->addAction(action);
-            action->setData(directory);
-            action->setChecked(true);
+        if (fs::native(newProfileName.toUtf8().constData())){
+            if (!(newProfileName.isNull() || newProfileName.isEmpty())){
+                QAction *action = ui->menuScriptProfiles->addAction(newProfileName);
+                action->setCheckable(TRUE);
+                connect(action, SIGNAL(changed()), SLOT(on_actionProfile_changed()));
+                scriptProfilesActionGroup->addAction(action);
+                action->setData(timeIntervals->scriptsDirectory());
+                action->setChecked(true);
+            }
         }
+        else showError("Invalid profile name");
     }
 }
 

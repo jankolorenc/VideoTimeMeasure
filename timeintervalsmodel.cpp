@@ -359,7 +359,7 @@ QScriptValue TimeIntervalsModel::getValue(int row, int column)
     }
     QScriptValue objectValue = engine.newQObject(this);
     engine.globalObject().setProperty("table", objectValue);
-    return engine.evaluate(script.append("\n"));
+    return engine.evaluate(script + "\n");
 }
 
 int TimeIntervalsModel::toScriptPositionRow(int row){
@@ -374,10 +374,16 @@ void TimeIntervalsModel::setScript(int row, int column, QString script){
     tableScripts.setScript(toScriptPositionRow(row), column, script);
 }
 
-void TimeIntervalsModel::saveScript(){
-    tableScripts.save();
+void TimeIntervalsModel::loadScriptProfile(QString profile, QString basePath){
+    beginResetModel();
+    tableScripts.loadProfile(profile, basePath);
+    endResetModel();
 }
 
-void TimeIntervalsModel::loadScript(QString path){
-    tableScripts.load(path);
+QString TimeIntervalsModel::scriptsDirectory(){
+    return tableScripts.basePath;
+}
+
+QString TimeIntervalsModel::scriptsProfile(){
+    return tableScripts.profile;
 }
