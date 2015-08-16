@@ -5,6 +5,7 @@
 #include <QFile>
 #include <QXmlStreamWriter>
 #include <QXmlStreamReader>
+#include <QColor>
 
 Q_DECLARE_METATYPE(IntervalTimestamp)
 
@@ -75,7 +76,6 @@ QVariant TimeIntervalsModel::data(const QModelIndex &index, int role) const
 
     case Qt::TextAlignmentRole:
         return Qt::AlignCenter;
-        break;
 
     case Qt::UserRole:
         if (index.row() < intervals.length()){
@@ -85,6 +85,17 @@ QVariant TimeIntervalsModel::data(const QModelIndex &index, int role) const
             }
         }
         break;
+    case Qt::BackgroundColorRole:
+        QColor color;
+        if (index.row() % 2) color.setNamedColor("whitesmoke");
+        else color.setNamedColor("white");
+
+        if (editingTableScripts && (index.row() > intervalsCount() || index.column() >= FIXED_COLUMS)){
+            if (index.row() % 2) color.setNamedColor("powderblue");
+            else color.setNamedColor("lightcyan");
+        }
+
+        return color;
     }
     return QVariant();
 }
@@ -268,6 +279,13 @@ void TimeIntervalsModel::clear(){
         intervals.clear();
         TimeInterval interval;
         intervals.append(interval);
+        tableScripts.clear();
+        endResetModel();
+}
+
+void TimeIntervalsModel::clearTableScripts(){
+        beginResetModel();
+        tableScripts.clear();
         endResetModel();
 }
 
@@ -346,4 +364,20 @@ QScriptValue TimeIntervalsModel::getValue(int row, int column)
 
 int TimeIntervalsModel::toScriptPositionRow(int row){
     return row - intervals.length() - 1;
+}
+
+QString TimeIntervalsModel::getScript(int row, int column){
+    return tableScripts.getScript(toScriptPositionRow(row), column);
+}
+
+void TimeIntervalsModel::setScript(int row, int column, QString script){
+    tableScripts.setScript(toScriptPositionRow(row), column, script);
+}
+
+void TimeIntervalsModel::saveScript(){
+    tableScripts.save();
+}
+
+void TimeIntervalsModel::loadScript(QString path){
+    tableScripts.load(path);
 }

@@ -115,6 +115,7 @@ private slots:
     void on_addNewScriptRow_triggered();
     void on_removeScriptColumn_triggered();
     void on_removeScriptRow_triggered();
+    void on_actionEdit_changed();
 };
 
 #endif // MAINWINDOW_H

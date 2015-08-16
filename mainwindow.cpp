@@ -654,7 +654,7 @@ void MainWindow::on_selectionChanged(const QItemSelection & selected, const QIte
 }
 
 void MainWindow::on_tableContextMenuRequested(QPoint position){
-    if (!ui->actionEdit->isChecked()) return;
+    if (!timeIntervals->editingTableScripts) return;
     QModelIndex index = ui->intervalsTableView->indexAt(position);
     editScriptRow = index.row();
     editScriptColumn = index.column();
@@ -685,7 +685,7 @@ void MainWindow::on_tableContextMenuRequested(QPoint position){
 }
 
 void MainWindow::on_horizontalHeaderContextMenuRequested(QPoint position){
-    if (!ui->actionEdit->isChecked()) return;
+    if (!timeIntervals->editingTableScripts) return;
 
     editScriptColumn = ui->intervalsTableView->horizontalHeader()->logicalIndexAt(position);
     editScriptRow = -1;
@@ -706,7 +706,7 @@ void MainWindow::on_horizontalHeaderContextMenuRequested(QPoint position){
 }
 
 void MainWindow::on_verticalHeaderContextMenuRequested(QPoint position){
-    if (!ui->actionEdit->isChecked()) return;
+    if (!timeIntervals->editingTableScripts) return;
 
     editScriptRow = ui->intervalsTableView->verticalHeader()->logicalIndexAt(position);
     editScriptColumn = -1;
@@ -728,33 +728,33 @@ void MainWindow::on_verticalHeaderContextMenuRequested(QPoint position){
 }
 
 void MainWindow::on_addNewScriptColumn_triggered(){
-    int column = (editScriptColumn < FIXED_COLUMS - 1) ? timeIntervals->tableScripts.lastColumn : editScriptColumn;
+    int column = (editScriptColumn < FIXED_COLUMS - 1) ? timeIntervals->columnCount() - 1: editScriptColumn;
     timeIntervals->insertColumn(column + 1); // +1 = add instead of insert
 }
 
 
 void MainWindow::on_addNewScriptRow_triggered(){
-    int row = (editScriptRow < timeIntervals->intervalsCount()) ? timeIntervals->intervalsCount() + timeIntervals->tableScripts.lastRow : editScriptRow;
+    int row = (editScriptRow < timeIntervals->intervalsCount()) ? timeIntervals->rowCount() - 1 : editScriptRow;
     timeIntervals->insertRow(row + 1); // +1 = add instead of insert
 }
 
 void MainWindow::on_removeScriptColumn_triggered(){
-    int column = (editScriptColumn < FIXED_COLUMS) ? timeIntervals->tableScripts.lastColumn : editScriptColumn;
+    int column = (editScriptColumn < FIXED_COLUMS) ? timeIntervals->columnCount() - 1 : editScriptColumn;
     timeIntervals->removeColumn(column);
 }
 
 
 void MainWindow::on_removeScriptRow_triggered(){
-    int row = (editScriptRow < timeIntervals->intervalsCount()) ? timeIntervals->intervalsCount() + timeIntervals->tableScripts.lastRow : editScriptRow;
+    int row = (editScriptRow < timeIntervals->intervalsCount()) ? timeIntervals->rowCount() - 1 : editScriptRow;
     timeIntervals->removeRow(row);
 }
 
 void MainWindow::on_editScript(){
     ScriptEditor editor(this);
-    editor.setScript(timeIntervals->tableScripts.getScript(timeIntervals->toScriptPositionRow(editScriptRow), editScriptColumn));
+    editor.setScript(timeIntervals->getScript(editScriptRow, editScriptColumn));
     if (editor.exec() == QDialog::Accepted){
-        timeIntervals->tableScripts.setScript(timeIntervals->toScriptPositionRow(editScriptRow), editScriptColumn, editor.getScript());
-        timeIntervals->tableScripts.save();
+        timeIntervals->setScript(editScriptRow, editScriptColumn, editor.getScript());
+        timeIntervals->saveScript();
     }
 }
 
@@ -864,7 +864,7 @@ void MainWindow::on_actionAbout_triggered()
 
 void MainWindow::on_action_Clear_triggered()
 {
-    timeIntervals->tableScripts.clear();
+    timeIntervals->clearTableScripts();
     foreach (QAction *action, scriptProfilesActionGroup->actions()) {
         if (action->isChecked()) action->setChecked(false);
     }
@@ -874,7 +874,7 @@ void MainWindow::on_actionProfile_changed()
 {
     foreach (QAction *action, scriptProfilesActionGroup->actions()) {
         if (action->isChecked()){
-            timeIntervals->tableScripts.load(action->data().toString());
+            timeIntervals->loadScript(action->data().toString());
         }
     }
 }
@@ -886,7 +886,7 @@ void MainWindow::on_actionNew_triggered()
         QString newProfileName = profileForm.getProfileName();
         if (!(newProfileName.isNull() || newProfileName.isEmpty())){
             QString directory =  QDir::currentPath().append("/scripts").append("/").append(newProfileName);
-            timeIntervals->tableScripts.load(directory);
+            timeIntervals->loadScript(directory);
 
             QAction *action = ui->menuScriptProfiles->addAction(newProfileName);
             action->setCheckable(TRUE);
@@ -896,4 +896,10 @@ void MainWindow::on_actionNew_triggered()
             action->setChecked(true);
         }
     }
+}
+
+void MainWindow::on_actionEdit_changed()
+{
+    timeIntervals->editingTableScripts = ui->actionEdit->isChecked();
+    ui->intervalsTableView->reset(); // trying to repaint table (no better method found)
 }

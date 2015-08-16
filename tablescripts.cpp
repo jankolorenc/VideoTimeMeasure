@@ -194,13 +194,13 @@ void TableScripts::insertItems(QMap<int, T > &map, int position, int count){
 template<typename T>
 void TableScripts::removeItems(QMap<int, T > &map, int position, int count){
     int maxRow = 0;
-    // get max row
+    // get max item index
     typename QMap<int, T >::iterator iterator;
     for (iterator = map.begin(); iterator != map.end(); ++iterator){
         if (iterator.key() > maxRow) maxRow = iterator.key();
     }
 
-    // shift rows
+    // shift items
     for(int i = position; i <= maxRow; i++){
         if (map.contains(i + count)) map[i] = map[i + count];
         else map.remove(i);

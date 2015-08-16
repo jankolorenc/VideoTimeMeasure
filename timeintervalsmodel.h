@@ -11,7 +11,7 @@ class TimeIntervalsModel : public QAbstractTableModel
 {
     Q_OBJECT
 public:
-    TableScripts tableScripts;
+    bool editingTableScripts = false;
 
     explicit TimeIntervalsModel(QObject *parent = 0);
 
@@ -28,8 +28,12 @@ public:
     void saveIntervals(QString fileName);
     void loadIntervals(QString fileName);
     void clear();
+    void clearTableScripts();
     int intervalsCount();
-    int toScriptPositionRow(int row);
+    QString TimeIntervalsModel::getScript(int row, int column);
+    void TimeIntervalsModel::setScript(int row, int column, QString script);
+    void TimeIntervalsModel::saveScript();
+    void TimeIntervalsModel::loadScript(QString path);
 
 signals:
     
@@ -39,7 +43,8 @@ public slots:
 private:
     QList<TimeInterval> intervals;
     QScriptEngine engine;
-    //TableValue tableValue;
+    TableScripts tableScripts;
+    int toScriptPositionRow(int row);
 };
 
 #endif // TIMEINTERVALSMODEL_H
