@@ -911,6 +911,7 @@ void MainWindow::on_actionNew_triggered()
                 scriptProfilesActionGroup->addAction(action);
                 action->setData(timeIntervals->scriptsDirectory());
                 action->setChecked(true);
+                timeIntervals->saveScriptProfile(newProfileName);
             }
         }
         else showError("Invalid profile name");

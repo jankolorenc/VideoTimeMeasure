@@ -23,12 +23,12 @@ int TimeIntervalsModel::intervalsCount(){
 
 int TimeIntervalsModel::rowCount(const QModelIndex & /*parent*/) const
 {
-    return intervals.length() + tableScripts.lastRow + 1;
+    return intervals.length() + tableScripts.rows + 1;
 }
 
 int TimeIntervalsModel::columnCount(const QModelIndex & /*parent*/) const
 {
-    return (tableScripts.lastColumn < (FIXED_COLUMS - 1)) ? FIXED_COLUMS : tableScripts.lastColumn + 1;
+    return (tableScripts.columns < (FIXED_COLUMS - 1)) ? FIXED_COLUMS : tableScripts.columns;
 }
 
 QVariant TimeIntervalsModel::data(const QModelIndex &index, int role) const
@@ -378,6 +378,10 @@ void TimeIntervalsModel::loadScriptProfile(QString profile, QString basePath){
     beginResetModel();
     tableScripts.loadProfile(profile, basePath);
     endResetModel();
+}
+
+void TimeIntervalsModel::saveScriptProfile(QString profile){
+    tableScripts.saveProfile(profile);
 }
 
 QString TimeIntervalsModel::scriptsDirectory(){

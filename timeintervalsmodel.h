@@ -33,6 +33,7 @@ public:
     QString getScript(int row, int column);
     void setScript(int row, int column, QString script);
     void loadScriptProfile(QString profile, QString basePath);
+    void saveScriptProfile(QString profile);
     QString scriptsDirectory();
     QString scriptsProfile();
 

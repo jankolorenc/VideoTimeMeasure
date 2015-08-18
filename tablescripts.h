@@ -21,12 +21,12 @@ private:
     template<typename T>
     void insertItems(QMap<int, T> &map, int position, int count);
     template<typename T>
-    void removeItems(QMap<int, T> &map, int position, int count);
+    int removeItems(QMap<int, T> &map, int position, int count);
     void removeProfile(QString profile, bool removeDirectory);
 
 public:
-    int lastRow = 0;
-    int lastColumn = FIXED_COLUMS - 1;
+    int rows = 0;
+    int columns = FIXED_COLUMS;
     QString basePath = (QDir::homePath() + DEFAULT_SCRIPTS_PATH);
     QString profile = DEFAULT_PROFILE;
 

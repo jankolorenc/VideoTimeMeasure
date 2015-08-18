@@ -21,8 +21,8 @@ void TableScripts::loadProfile(QString profile, QString basePath){
     if (!directory.exists()) return;
 
     // expecting filename format row-7_col-5.js
-    lastRow = 0;
-    lastColumn = FIXED_COLUMS - 1;
+    rows = 0;
+    columns = FIXED_COLUMS;
     QRegExp regex("(col|row)-(\\d+)");
     foreach (QString fileName, directory.entryList(QStringList("*.js"), QDir::Files|QDir::Readable, QDir::Unsorted)){
         int matchPos = 0;
@@ -31,11 +31,11 @@ void TableScripts::loadProfile(QString profile, QString basePath){
             QString type = regex.cap(1);
             int index = regex.cap(2).toInt();
             if (type =="col"){
-                if (lastColumn < index) lastColumn = index;
+                if (columns < index + 1) columns = index + 1;
                 col = index;
             }
             if (type =="row"){
-                if (lastRow < index) lastRow = index;
+                if (rows < index + 1) rows = index + 1;
                 row = index;
             }
             matchPos += regex.matchedLength();
@@ -79,8 +79,8 @@ void TableScripts::removeProfile(QString profile, bool removeDirectory){
 }
 
 void TableScripts::clear(){
-    lastRow = 0;
-    lastColumn = FIXED_COLUMS - 1;
+    rows = 0;
+    columns = FIXED_COLUMS;
     wholeColumnScripts.clear();
     wholeRowScripts.clear();
     cellScripts.clear();
@@ -202,9 +202,10 @@ void TableScripts::insertItems(QMap<int, T > &map, int position, int count){
 }
 
 template<typename T>
-void TableScripts::removeItems(QMap<int, T > &map, int position, int count){
+int TableScripts::removeItems(QMap<int, T > &map, int position, int count){
     int maxRow = 0;
     bool save = false;
+    int removedCount = 0;
 
     // get max item index
     typename QMap<int, T >::iterator iterator;
@@ -217,21 +218,24 @@ void TableScripts::removeItems(QMap<int, T > &map, int position, int count){
         if (map.contains(i + count)) map[i] = map[i + count];
         else map.remove(i);
         save = true;
+        removedCount++;
     }
 
     if (save) saveProfile(profile);
+
+    return removedCount;
 }
 
 void TableScripts::insertRows(int position, int count){
     insertItems(cellScripts, position, count);
     insertItems(wholeRowScripts, position, count);
-    lastRow += count;
+    rows += count;
 }
 
 void TableScripts::removeRows(int position, int count){
     removeItems(cellScripts, position, count);
     removeItems(wholeRowScripts, position, count);
-    lastRow -=count;
+    rows -=count;
 }
 
 void TableScripts::insertColumns(int position, int count){
@@ -240,7 +244,7 @@ void TableScripts::insertColumns(int position, int count){
         insertItems(i.value(), position, count);
     }
     insertItems(wholeColumnScripts, position, count);
-    lastColumn += count;
+    columns += count;
 }
 
 void TableScripts::removeColumns(int position, int count){
@@ -249,5 +253,5 @@ void TableScripts::removeColumns(int position, int count){
         removeItems(i.value(), position, count);
     }
     removeItems(wholeColumnScripts, position, count);
-    lastColumn -= count;
+    columns -= count;
 }
