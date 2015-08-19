@@ -384,6 +384,10 @@ void TimeIntervalsModel::saveScriptProfile(QString profile){
     tableScripts.saveProfile(profile);
 }
 
+void TimeIntervalsModel::deleteScriptProfile(QString profile){
+    tableScripts.deleteProfile(profile, true);
+}
+
 QString TimeIntervalsModel::scriptsDirectory(){
     return tableScripts.basePath;
 }

@@ -62,7 +62,7 @@ void TableScripts::loadProfile(QString profile, QString basePath){
     }
 }
 
-void TableScripts::removeProfile(QString profile, bool removeDirectory){
+void TableScripts::deleteProfile(QString profile, bool removeDirectory){
     QDir directory(basePath + profile);
     if (!directory.exists()) return;
 
@@ -86,7 +86,7 @@ void TableScripts::clear(){
     cellScripts.clear();
     profile = DEFAULT_PROFILE;
 
-    removeProfile(DEFAULT_PROFILE, true);
+    deleteProfile(DEFAULT_PROFILE, true);
 }
 
 QString TableScripts::getScript(int row, int column, bool exact = FALSE){
@@ -149,7 +149,7 @@ void TableScripts::saveProfile(QString profile){
         }
     }
 
-    removeProfile(profile, false);
+    deleteProfile(profile, false);
 
     // generate new scripts
     foreach(int row, cellScripts.keys()){

@@ -887,6 +887,7 @@ void MainWindow::on_action_Clear_triggered()
     foreach (QAction *action, scriptProfilesActionGroup->actions()) {
         if (action->isChecked()) action->setChecked(false);
     }
+    ui->actionDelete->setEnabled(false);
 }
 
 void MainWindow::on_actionProfile_changed()
@@ -894,6 +895,7 @@ void MainWindow::on_actionProfile_changed()
     foreach (QAction *action, scriptProfilesActionGroup->actions()) {
         if (action->isChecked()){
             timeIntervals->loadScriptProfile(action->text(), action->data().toString());
+            ui->actionDelete->setEnabled(true);
         }
     }
 }
@@ -912,6 +914,7 @@ void MainWindow::on_actionNew_triggered()
                 action->setData(timeIntervals->scriptsDirectory());
                 action->setChecked(true);
                 timeIntervals->saveScriptProfile(newProfileName);
+                ui->actionDelete->setEnabled(true);
             }
         }
         else showError("Invalid profile name");
@@ -922,4 +925,15 @@ void MainWindow::on_actionEdit_changed()
 {
     timeIntervals->editingTableScripts = ui->actionEdit->isChecked();
     ui->intervalsTableView->reset(); // trying to repaint table (no better method found)
+}
+
+void MainWindow::on_actionDelete_triggered()
+{
+    foreach (QAction *action, scriptProfilesActionGroup->actions()) {
+        if (action->isChecked()){
+            timeIntervals->deleteScriptProfile(action->text());
+            scriptProfilesActionGroup->removeAction(action);
+        }
+    }
+    ui->actionDelete->setEnabled(false);
 }

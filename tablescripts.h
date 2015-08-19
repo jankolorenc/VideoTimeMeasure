@@ -22,7 +22,6 @@ private:
     void insertItems(QMap<int, T> &map, int position, int count);
     template<typename T>
     int removeItems(QMap<int, T> &map, int position, int count);
-    void removeProfile(QString profile, bool removeDirectory);
 
 public:
     int rows = 0;
@@ -33,6 +32,7 @@ public:
     TableScripts();
     void loadProfile(QString profile = DEFAULT_PROFILE, QString basePath = (QDir::homePath() + DEFAULT_SCRIPTS_PATH));
     void saveProfile(QString profile = DEFAULT_PROFILE);
+    void deleteProfile(QString profile, bool removeDirectory);
     void clear();
     QString getScript(int row, int column, bool exact = FALSE);
     void setScript(int row, int column, QString script);

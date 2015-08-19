@@ -297,6 +297,7 @@
     <addaction name="action_Clear"/>
     <addaction name="actionEdit"/>
     <addaction name="actionNew"/>
+    <addaction name="actionDelete"/>
     <addaction name="separator"/>
    </widget>
    <addaction name="menuOpen"/>
@@ -346,6 +347,14 @@
   <action name="action_Clear">
    <property name="text">
     <string>&amp;Clear</string>
+   </property>
+  </action>
+  <action name="actionDelete">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>&amp;Delete</string>
    </property>
   </action>
  </widget>
