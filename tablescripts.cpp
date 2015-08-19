@@ -17,8 +17,12 @@ TableScripts::TableScripts()
 }
 
 void TableScripts::loadProfile(QString profile, QString basePath){
+    clear();
+
     QDir directory(basePath + profile);
     if (!directory.exists()) return;
+
+    this->profile = profile;
 
     // expecting filename format row-7_col-5.js
     rows = 0;
@@ -85,8 +89,6 @@ void TableScripts::clear(){
     wholeRowScripts.clear();
     cellScripts.clear();
     profile = DEFAULT_PROFILE;
-
-    deleteProfile(DEFAULT_PROFILE, true);
 }
 
 QString TableScripts::getScript(int row, int column, bool exact = FALSE){

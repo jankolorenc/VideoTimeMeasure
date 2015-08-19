@@ -279,7 +279,6 @@ void TimeIntervalsModel::clear(){
         intervals.clear();
         TimeInterval interval;
         intervals.append(interval);
-        tableScripts.clear();
         endResetModel();
 }
 
@@ -385,7 +384,9 @@ void TimeIntervalsModel::saveScriptProfile(QString profile){
 }
 
 void TimeIntervalsModel::deleteScriptProfile(QString profile){
+    beginResetModel();
     tableScripts.deleteProfile(profile, true);
+    endResetModel();
 }
 
 QString TimeIntervalsModel::scriptsDirectory(){

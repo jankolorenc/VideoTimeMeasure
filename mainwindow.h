@@ -110,7 +110,7 @@ private slots:
     void on_verticalHeaderContextMenuRequested(QPoint position);
     void on_editScript();    
     void on_action_Clear_triggered();
-    void on_actionProfile_changed();
+    void on_actionProfile_triggered(bool checked);
     void on_actionNew_triggered();
     void on_addNewScriptColumn_triggered();
     void on_addNewScriptRow_triggered();
@@ -118,6 +118,7 @@ private slots:
     void on_removeScriptRow_triggered();
     void on_actionEdit_changed();
     void on_actionDelete_triggered();
+    void on_intervalsTableView_doubleClicked(const QModelIndex &index);
 };
 
 #endif // MAINWINDOW_H

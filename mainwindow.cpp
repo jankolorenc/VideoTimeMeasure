@@ -176,7 +176,7 @@ void MainWindow::fillScriptProfiles(QString scriptsDir){
             {
                 QAction *action = ui->menuScriptProfiles->addAction(dirInfo.baseName());
                 action->setCheckable(TRUE);
-                connect(action, SIGNAL(changed()), SLOT(on_actionProfile_changed()));
+                connect(action, SIGNAL(triggered(bool)), SLOT(on_actionProfile_triggered(bool)));
                 scriptProfilesActionGroup->addAction(action);
                 action->setData(scriptsDir);
             }
@@ -883,20 +883,20 @@ void MainWindow::on_actionAbout_triggered()
 
 void MainWindow::on_action_Clear_triggered()
 {
-    timeIntervals->clearTableScripts();
     foreach (QAction *action, scriptProfilesActionGroup->actions()) {
         if (action->isChecked()) action->setChecked(false);
     }
     ui->actionDelete->setEnabled(false);
+    timeIntervals->loadScriptProfile(DEFAULT_PROFILE, timeIntervals->scriptsDirectory());
+    timeIntervals->deleteScriptProfile(DEFAULT_PROFILE);
 }
 
-void MainWindow::on_actionProfile_changed()
+void MainWindow::on_actionProfile_triggered(bool checked)
 {
-    foreach (QAction *action, scriptProfilesActionGroup->actions()) {
-        if (action->isChecked()){
-            timeIntervals->loadScriptProfile(action->text(), action->data().toString());
-            ui->actionDelete->setEnabled(true);
-        }
+    if (checked){
+        QAction *action = QObject::sender();
+        timeIntervals->loadScriptProfile(action->text(), action->data().toString());
+        ui->actionDelete->setEnabled(true);
     }
 }
 
@@ -909,12 +909,13 @@ void MainWindow::on_actionNew_triggered()
             if (!(newProfileName.isNull() || newProfileName.isEmpty())){
                 QAction *action = ui->menuScriptProfiles->addAction(newProfileName);
                 action->setCheckable(TRUE);
-                connect(action, SIGNAL(changed()), SLOT(on_actionProfile_changed()));
+                connect(action, SIGNAL(triggered(bool)), SLOT(on_actionProfile_triggered(bool)));
                 scriptProfilesActionGroup->addAction(action);
                 action->setData(timeIntervals->scriptsDirectory());
                 action->setChecked(true);
                 timeIntervals->saveScriptProfile(newProfileName);
                 ui->actionDelete->setEnabled(true);
+                timeIntervals->loadScriptProfile(newProfileName, timeIntervals->scriptsDirectory());
             }
         }
         else showError("Invalid profile name");
@@ -933,7 +934,20 @@ void MainWindow::on_actionDelete_triggered()
         if (action->isChecked()){
             timeIntervals->deleteScriptProfile(action->text());
             scriptProfilesActionGroup->removeAction(action);
+            ui->menuScriptProfiles->removeAction(action);
         }
     }
     ui->actionDelete->setEnabled(false);
+}
+
+void MainWindow::on_intervalsTableView_doubleClicked(const QModelIndex &index)
+{
+    if (timeIntervals->editingTableScripts){
+        //if (index.row() > timeIntervals->intervalsCount() || index.column() >= FIXED_COLUMS){
+        if (index.row() > timeIntervals->intervalsCount()){
+            editScriptRow = index.row();
+            editScriptColumn = index.column();
+            on_editScript();
+        }
+    }
 }
