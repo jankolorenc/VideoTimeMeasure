@@ -13,7 +13,10 @@
 
 TableScripts::TableScripts()
 {
-
+    rows = 0;
+    columns = FIXED_COLUMS;
+    basePath = (QDir::homePath() + DEFAULT_SCRIPTS_PATH);
+    profile = DEFAULT_PROFILE;
 }
 
 void TableScripts::loadProfile(QString profile, QString basePath){

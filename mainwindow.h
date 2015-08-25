@@ -2,27 +2,13 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
-#include <QTimer>
 #include <QItemSelection>
 #include <QDir>
 #include <QActionGroup>
 #include "videoimage.h"
 #include "timeintervalsmodel.h"
 #include "tablescripts.h"
-
-#ifdef __cplusplus
-extern "C" {
-#endif
-#include <libavformat/avformat.h>
-#include <libavcodec/avcodec.h>
-#ifdef __cplusplus
-}
-#endif
-
-//#define IMAGES_BUFFER_SIZE 10
-#define IMAGES_BUFFER_SIZE 20
-#define BACK_SEEK_FRAMES 12
-#define MAX_BACK_SEEK_FACTOR 20
+#include "videoplayer.h"
 
 namespace Ui {
 class MainWindow;
@@ -37,54 +23,23 @@ public:
     ~MainWindow();
     
 private:
-    Ui::MainWindow *ui;
-    QTimer *playTimer;
-
-    TimeIntervalsModel *timeIntervals;
-    QString opennedVideoFile;
-
-    AVDictionary **options;
-    AVFormatContext *pFormatCtx;
-    AVCodecContext *pCodecCtx;
-    AVCodec *pCodec;
-    int videoStream;
-    AVFrame *pFrame;
-    AVFrame *pFrameRGB;
-    uint8_t *buffer;
-    struct SwsContext *sws_ctx;
-    double video_clock;
-    int backSeekFactor;
-    double pts;
-    int sliderFactor;
     int editScriptColumn;
     int editScriptRow;
+    QString opennedVideoFile;
 
-    VideoImage imagesBuffer[IMAGES_BUFFER_SIZE];
-    int imagesBufferOldest;
-    int imagesBufferNewest;
-    int imagesBufferCurrent;
+    Ui::MainWindow *ui;
 
-    uint64_t stopPlayerDts;
-    QModelIndex stopIndex;
+    VideoPlayer videoPlayer;
+
+    TimeIntervalsModel *timeIntervals;
 
     QActionGroup *scriptProfilesActionGroup;
 
     void closeEvent(QCloseEvent *event);
 
     void showError(QString text);
-    bool loadVideoFile(QString filename);
-    void closeVideoFile();
-    void allocateDecodingFrameBuffers();
-    void freeDecodingFrameBuffers();
-    bool readNextFrame();
-    void bufferCurrentFrame();
-    void showCurrentImage(bool updateSlider = true);
-    double synchronizeVideo(AVFrame *src_frame, double pts);
-    void videoSeek(double targetPts, uint64_t targetDts, bool exactSeek, bool stayOneImageBack);
-    bool showNextImage(int jumpImages = 1);
-    bool showPreviousImage(int jumpImages = 1);
     void saveIntervals();
-    void startPlayer(double timeout);
+    void startPlayer(IntervalTimestamp *stop = NULL, int selectCellRow = -1, int selectCellColumn = -1);
     void stopPlayer();
     void fillScriptProfiles();
     void fillScriptProfiles(QString scriptsDir);
@@ -92,7 +47,6 @@ private:
 private slots:
     void on_actionOpen_triggered();
     void on_playPausePushButton_clicked();
-    void on_playTimerTimeout();
     void on_previousImagePushButton_clicked();
     void on_nextImagePushButton_clicked();
     void on_timeHorizontalSlider_sliderMoved(int position);
@@ -119,6 +73,8 @@ private slots:
     void on_actionEdit_changed();
     void on_actionDelete_triggered();
     void on_intervalsTableView_doubleClicked(const QModelIndex &index);
+    void showCurrentFrame(bool updateSlider = true);
+    void videoPlayerStopped(int selectCellRow = -1, int selectCellColumn = -1);
 };
 
 #endif // MAINWINDOW_H

@@ -20,7 +20,8 @@ SOURCES += main.cpp\
     navigationeventfilter.cpp \
     tablescripts.cpp \
     scripteditor.cpp \
-    newscriptprofileform.cpp
+    newscriptprofileform.cpp \
+    videoplayer.cpp
 
 HEADERS  += mainwindow.h \
     videoimage.h \
@@ -32,7 +33,8 @@ HEADERS  += mainwindow.h \
     tablescripts.h \
     scripteditor.h \
     newscriptprofileform.h \
-    tablelimits.h
+    tablelimits.h \
+    videoplayer.h
 
 FORMS    += mainwindow.ui \
     scripteditor.ui \

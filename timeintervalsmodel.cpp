@@ -12,6 +12,8 @@ Q_DECLARE_METATYPE(IntervalTimestamp)
 TimeIntervalsModel::TimeIntervalsModel(QObject *parent) :
     QAbstractTableModel(parent)
 {
+    editingTableScripts = false;
+
     TimeInterval first;
     intervals.append(first);
     //tableValue = new TableValue(NULL, engine);

@@ -11,7 +11,7 @@ class TimeIntervalsModel : public QAbstractTableModel
 {
     Q_OBJECT
 public:
-    bool editingTableScripts = false;
+    bool editingTableScripts;
 
     explicit TimeIntervalsModel(QObject *parent = 0);
 

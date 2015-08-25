@@ -24,10 +24,10 @@ private:
     int removeItems(QMap<int, T> &map, int position, int count);
 
 public:
-    int rows = 0;
-    int columns = FIXED_COLUMS;
-    QString basePath = (QDir::homePath() + DEFAULT_SCRIPTS_PATH);
-    QString profile = DEFAULT_PROFILE;
+    int rows;
+    int columns;
+    QString basePath;
+    QString profile;
 
     TableScripts();
     void loadProfile(QString profile = DEFAULT_PROFILE, QString basePath = (QDir::homePath() + DEFAULT_SCRIPTS_PATH));
