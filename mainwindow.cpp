@@ -611,3 +611,8 @@ void MainWindow::videoPlayerStopped(int selectCellRow, int selectCellColumn){
                     QItemSelectionModel::SelectCurrent);
     }
 }
+
+void MainWindow::on_nextCellPushButton_clicked()
+{
+    on_selectNextCell();
+}

@@ -75,6 +75,7 @@ private slots:
     void on_intervalsTableView_doubleClicked(const QModelIndex &index);
     void showCurrentFrame(bool updateSlider = true);
     void videoPlayerStopped(int selectCellRow = -1, int selectCellColumn = -1);
+    void on_nextCellPushButton_clicked();
 };
 
 #endif // MAINWINDOW_H
