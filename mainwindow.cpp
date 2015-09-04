@@ -173,8 +173,12 @@ void MainWindow::on_actionOpen_triggered()
     ui->timeHorizontalSlider->setValue(0);
     statusBar()->showMessage("");
 
-    if (!videoPlayer.loadFile(fileName)) return;
+    if (!videoPlayer.loadFile(fileName)){
+        showError("Invalid video");
+        return;
+    }
     session.setOpennedVideo(fileName);
+    videoLoaded = true;
 
     if (!session.opennedVideo().isEmpty()){
         timeIntervals->loadIntervals(QString("%1.int").arg(session.opennedVideo()));
@@ -290,7 +294,7 @@ void MainWindow::on_selectNextCell()
 }
 
 void MainWindow::saveIntervals(){
-    if (!session.opennedVideo().isEmpty()) timeIntervals->saveIntervals(QString("%1.int").arg(session.opennedVideo()));
+    if (videoLoaded && !session.opennedVideo().isEmpty()) timeIntervals->saveIntervals(QString("%1.int").arg(session.opennedVideo()));
 }
 
 void MainWindow::on_actionSave_triggered()
