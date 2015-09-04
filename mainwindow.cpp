@@ -115,6 +115,8 @@ MainWindow::MainWindow(QWidget *parent) :
 
     fillScriptProfiles();
 
+    session.load();
+
 }
 
 void MainWindow::fillScriptProfiles(QString scriptsDir){
@@ -158,27 +160,24 @@ void MainWindow::showError(QString text){
     msgBox.exec();
 }
 
-QString lastDirectory;
 void MainWindow::on_actionOpen_triggered()
 {
-    QString fileName = QFileDialog::getOpenFileName(this, tr("Open File"), lastDirectory, tr("Files (*.*)"));
+    QString fileName = QFileDialog::getOpenFileName(this, tr("Open File"), session.lastVideoDirectory(), tr("Files (*.*)"));
     if (fileName.isEmpty()) return;
-
-    lastDirectory = QFileInfo(fileName).absoluteDir().absolutePath();
 
     videoPlayer.clearState();
     saveIntervals();
-    opennedVideoFile.clear();
 
+    session.setOpennedVideo("");
     timeIntervals->clear();
     ui->timeHorizontalSlider->setValue(0);
     statusBar()->showMessage("");
 
     if (!videoPlayer.loadFile(fileName)) return;
-    opennedVideoFile = fileName;
+    session.setOpennedVideo(fileName);
 
-    if (!opennedVideoFile.isEmpty()){
-        timeIntervals->loadIntervals(QString("%1.int").arg(opennedVideoFile));
+    if (!session.opennedVideo().isEmpty()){
+        timeIntervals->loadIntervals(QString("%1.int").arg(session.opennedVideo()));
         setWindowTitle(fileName);
     }
 
@@ -291,7 +290,7 @@ void MainWindow::on_selectNextCell()
 }
 
 void MainWindow::saveIntervals(){
-    if (!opennedVideoFile.isEmpty()) timeIntervals->saveIntervals(QString("%1.int").arg(opennedVideoFile));
+    if (!session.opennedVideo().isEmpty()) timeIntervals->saveIntervals(QString("%1.int").arg(session.opennedVideo()));
 }
 
 void MainWindow::on_actionSave_triggered()

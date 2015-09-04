@@ -9,6 +9,7 @@
 #include "timeintervalsmodel.h"
 #include "tablescripts.h"
 #include "videoplayer.h"
+#include "session.h"
 
 namespace Ui {
 class MainWindow;
@@ -25,7 +26,8 @@ public:
 private:
     int editScriptColumn;
     int editScriptRow;
-    QString opennedVideoFile;
+
+    Session session;
 
     Ui::MainWindow *ui;
 

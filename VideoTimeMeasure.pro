@@ -21,7 +21,8 @@ SOURCES += main.cpp\
     tablescripts.cpp \
     scripteditor.cpp \
     newscriptprofileform.cpp \
-    videoplayer.cpp
+    videoplayer.cpp \
+    session.cpp
 
 HEADERS  += mainwindow.h \
     videoimage.h \
@@ -34,7 +35,8 @@ HEADERS  += mainwindow.h \
     scripteditor.h \
     newscriptprofileform.h \
     tablelimits.h \
-    videoplayer.h
+    videoplayer.h \
+    session.h
 
 FORMS    += mainwindow.ui \
     scripteditor.ui \
