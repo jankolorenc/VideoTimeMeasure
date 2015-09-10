@@ -119,33 +119,34 @@ MainWindow::MainWindow(QWidget *parent) :
 
 }
 
+QAction* MainWindow::registerScriptProfile(QString name){
+    if (name == DEFAULT_PROFILE) return NULL;
+
+    // check existing profile
+    QList<QAction *> actions = scriptProfilesActionGroup->actions();
+    for (int i = 0; i < actions.length(); i++) {
+        if (actions[i]->text() == name) return actions[i];
+    }
+    {
+        QAction *action = ui->menuScriptProfiles->addAction(name);
+        action->setCheckable(TRUE);
+        connect(action, SIGNAL(triggered(bool)), SLOT(on_actionProfile_triggered(bool)));
+        scriptProfilesActionGroup->addAction(action);
+        return action;
+    }
+}
+
 void MainWindow::fillScriptProfiles(QString scriptsDir){
     QDir scritpsPath(scriptsDir);
     if (!scritpsPath.exists()) return;
 
     foreach (QFileInfo dirInfo, scritpsPath.entryInfoList(QDir::Dirs|QDir::NoSymLinks|QDir::NoDotAndDotDot , QDir::Unsorted)) {
-
-        // check existing profile
-        QList<QAction *> actions = scriptProfilesActionGroup->actions();
-        if (dirInfo.baseName() != DEFAULT_PROFILE){
-            for (int i = 0; i < actions.length(); i++) {
-                if (actions[i]->text() == dirInfo.baseName()) goto nextProfile;
-            }
-            {
-                QAction *action = ui->menuScriptProfiles->addAction(dirInfo.baseName());
-                action->setCheckable(TRUE);
-                connect(action, SIGNAL(triggered(bool)), SLOT(on_actionProfile_triggered(bool)));
-                scriptProfilesActionGroup->addAction(action);
-                action->setData(scriptsDir);
-            }
-            nextProfile:;
-        }
+        registerScriptProfile(dirInfo.baseName());
     }
 }
 
 void MainWindow::fillScriptProfiles(){
     fillScriptProfiles(timeIntervals->scriptsDirectory());
-    fillScriptProfiles(QDir::currentPath() + "/scripts");
     timeIntervals->loadScriptProfile(timeIntervals->scriptsProfile(), timeIntervals->scriptsDirectory());
 }
 
@@ -550,7 +551,7 @@ void MainWindow::on_actionProfile_triggered(bool checked)
 {
     if (checked){
         QAction *action = (QAction *)QObject::sender();
-        timeIntervals->loadScriptProfile(action->text(), action->data().toString());
+        timeIntervals->loadScriptProfile(action->text(), timeIntervals->scriptsDirectory());
         ui->actionDelete->setEnabled(true);
     }
 }
@@ -562,15 +563,11 @@ void MainWindow::on_actionNew_triggered()
         QString newProfileName = profileForm.getProfileName();
         if (fs::native(newProfileName.toUtf8().constData())){
             if (!(newProfileName.isNull() || newProfileName.isEmpty())){
-                QAction *action = ui->menuScriptProfiles->addAction(newProfileName);
-                action->setCheckable(TRUE);
-                connect(action, SIGNAL(triggered(bool)), SLOT(on_actionProfile_triggered(bool)));
-                scriptProfilesActionGroup->addAction(action);
-                action->setData(timeIntervals->scriptsDirectory());
-                action->setChecked(true);
                 timeIntervals->saveScriptProfile(newProfileName);
                 ui->actionDelete->setEnabled(true);
                 timeIntervals->loadScriptProfile(newProfileName, timeIntervals->scriptsDirectory());
+                QAction *action = registerScriptProfile(newProfileName);
+                if (action != NULL) action->setCheckable(TRUE);
             }
         }
         else showError("Invalid profile name");
@@ -598,7 +595,6 @@ void MainWindow::on_actionDelete_triggered()
 void MainWindow::on_intervalsTableView_doubleClicked(const QModelIndex &index)
 {
     if (timeIntervals->editingTableScripts){
-        //if (index.row() > timeIntervals->intervalsCount() || index.column() >= FIXED_COLUMS){
         if (index.row() > timeIntervals->intervalsCount()){
             editScriptRow = index.row();
             editScriptColumn = index.column();
@@ -618,4 +614,40 @@ void MainWindow::videoPlayerStopped(int selectCellRow, int selectCellColumn){
 void MainWindow::on_nextCellPushButton_clicked()
 {
     on_selectNextCell();
+}
+
+// copy script examples to user directory
+void MainWindow::on_action_Get_examples_triggered()
+{
+    QString path = QDir::currentPath() + "/scripts";
+    QDir exampleScritpsPath(QDir::currentPath() + "/scripts");
+    if (!exampleScritpsPath.exists()) return;
+
+    foreach (QFileInfo dirInfo, exampleScritpsPath.entryInfoList(QDir::Dirs|QDir::NoSymLinks|QDir::NoDotAndDotDot , QDir::Unsorted)) {
+        ui->actionDelete->setEnabled(true);
+        timeIntervals->loadScriptProfile(dirInfo.baseName(), timeIntervals->scriptsDirectory());
+        //copy files
+
+        QDir destinationDirectory(timeIntervals->scriptsDirectory() + dirInfo.baseName());
+        if (destinationDirectory.exists()){
+            // remove existing scripts
+            QRegExp regex("(col|row)-(\\d+)");
+            foreach (QString fileName, destinationDirectory.entryList(QStringList("*.js"), QDir::Files|QDir::Readable, QDir::Unsorted)){
+                if (regex.indexIn(fileName) != -1) QFile::remove(destinationDirectory.absoluteFilePath(fileName));
+            }
+        }
+        else destinationDirectory.mkpath(".");
+
+        QDir sourceDirectory(QDir::currentPath() + "/scripts");
+        foreach (QString fileName, sourceDirectory.entryList(QStringList("*.js"), QDir::Files|QDir::Readable, QDir::Unsorted)){
+            QFile file(sourceDirectory.absoluteFilePath(fileName));
+            file.copy(destinationDirectory.absolutePath() + fileName);
+        }
+
+        timeIntervals->loadScriptProfile(dirInfo.baseName(), timeIntervals->scriptsDirectory());
+
+        QAction *action = registerScriptProfile(dirInfo.baseName());
+        if (action != NULL) action->setCheckable(TRUE);
+        ui->actionDelete->setEnabled(false);
+    }
 }

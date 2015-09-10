@@ -16,7 +16,6 @@ TimeIntervalsModel::TimeIntervalsModel(QObject *parent) :
 
     TimeInterval first;
     intervals.append(first);
-    //tableValue = new TableValue(NULL, engine);
 }
 
 int TimeIntervalsModel::intervalsCount(){
@@ -92,6 +91,7 @@ QVariant TimeIntervalsModel::data(const QModelIndex &index, int role) const
         if (index.row() % 2) color.setNamedColor("whitesmoke");
         else color.setNamedColor("white");
 
+        if (index.row() == intervalsCount()) color.setNamedColor("cyan");
         if (editingTableScripts && (index.row() > intervalsCount() || index.column() >= FIXED_COLUMS)){
             if (index.row() % 2) color.setNamedColor("powderblue");
             else color.setNamedColor("lightcyan");
@@ -218,20 +218,24 @@ bool TimeIntervalsModel::setData(const QModelIndex &index, const QVariant &value
 {
     if (index.isValid() && role == Qt::EditRole){
         if (index.row() < intervals.length()){
-            QModelIndex durationIndex = this->index(index.row(), 2);
-            QModelIndex totalDurationIndex = this->index(rowCount() - 1, 2);
+            // QModelIndex durationIndex = this->index(index.row(), 2);
+            // QModelIndex totalDurationIndex = this->index(rowCount() - 1, 2);
             switch (index.column()){
             case 0:
                 intervals[index.row()].start = value.value<IntervalTimestamp>();
-                emit(dataChanged(index, index));
-                emit(dataChanged(durationIndex, durationIndex));
-                emit(dataChanged(totalDurationIndex, totalDurationIndex));
+                // emit(dataChanged(index, index));
+                // emit(dataChanged(durationIndex, durationIndex));
+                // emit(dataChanged(totalDurationIndex, totalDurationIndex));
+                // update whole table because of scripts - too lazy to get dependency tree
+                emit(layoutChanged());
                 return true;
             case 1:
                 intervals[index.row()].stop = value.value<IntervalTimestamp>();
-                emit(dataChanged(index, index));
-                emit(dataChanged(durationIndex, durationIndex));
-                emit(dataChanged(totalDurationIndex, totalDurationIndex));
+                // emit(dataChanged(index, index));
+                // emit(dataChanged(durationIndex, durationIndex));
+                // emit(dataChanged(totalDurationIndex, totalDurationIndex));
+                // update whole table because of scripts - too lazy to get dependency tree
+                emit(layoutChanged());
                 return true;
             }
         }
@@ -352,15 +356,26 @@ QScriptValue TimeIntervalsModel::getValue(int row, int column)
 
     engine.globalObject().setProperty("column", column);
     engine.globalObject().setProperty("row", row);
-    engine.globalObject().setProperty("totalrow", intervals.length());
+    engine.globalObject().setProperty("intervals", intervals.length());
     if (row < intervals.length()){
         engine.globalObject().setProperty("start", intervals[row].start.pts);
         engine.globalObject().setProperty("stop", intervals[row].stop.pts);
-        engine.globalObject().setProperty("difference", intervals[row].durationSeconds());
+        engine.globalObject().setProperty("duration", intervals[row].durationSeconds());
+    }
+    else if (row == intervals.length()){
+        double total = 0;
+        for(int i = 0; i < intervals.length(); i++) if (intervals[i].isDuration()) total += intervals[i].durationSeconds();
+        engine.globalObject().setProperty("duration", total);
     }
     QScriptValue objectValue = engine.newQObject(this);
     engine.globalObject().setProperty("table", objectValue);
     return engine.evaluate(script + "\n");
+}
+
+QScriptValue TimeIntervalsModel::printf(QString format, float value){
+    QString str;
+    str.sprintf(format.toAscii(),value);
+    return str;
 }
 
 int TimeIntervalsModel::toScriptPositionRow(int row){

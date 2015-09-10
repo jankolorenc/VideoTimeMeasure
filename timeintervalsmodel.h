@@ -41,7 +41,9 @@ public:
 signals:
     
 public slots:
+    //available to scripts
     QScriptValue getValue(int row, int column);
+    QScriptValue printf(QString format, float value);
 
 private:
     QList<TimeInterval> intervals;

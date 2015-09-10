@@ -46,6 +46,7 @@ private:
     void stopPlayer();
     void fillScriptProfiles();
     void fillScriptProfiles(QString scriptsDir);
+    QAction *registerScriptProfile(QString name);
 
 private slots:
     void on_actionOpen_triggered();
@@ -79,6 +80,7 @@ private slots:
     void showCurrentFrame(bool updateSlider = true);
     void videoPlayerStopped(int selectCellRow = -1, int selectCellColumn = -1);
     void on_nextCellPushButton_clicked();
+    void on_action_Get_examples_triggered();
 };
 
 #endif // MAINWINDOW_H

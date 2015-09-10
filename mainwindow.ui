@@ -299,6 +299,8 @@
     <addaction name="actionNew"/>
     <addaction name="actionDelete"/>
     <addaction name="separator"/>
+    <addaction name="action_Get_examples"/>
+    <addaction name="separator"/>
    </widget>
    <addaction name="menuOpen"/>
    <addaction name="menuScriptProfiles"/>
@@ -355,6 +357,11 @@
    </property>
    <property name="text">
     <string>&amp;Delete</string>
+   </property>
+  </action>
+  <action name="action_Get_examples">
+   <property name="text">
+    <string>&amp;Get examples</string>
    </property>
   </action>
  </widget>
