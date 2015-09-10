@@ -619,15 +619,11 @@ void MainWindow::on_nextCellPushButton_clicked()
 // copy script examples to user directory
 void MainWindow::on_action_Get_examples_triggered()
 {
-    QString path = QDir::currentPath() + "/scripts";
     QDir exampleScritpsPath(QDir::currentPath() + "/scripts");
     if (!exampleScritpsPath.exists()) return;
 
     foreach (QFileInfo dirInfo, exampleScritpsPath.entryInfoList(QDir::Dirs|QDir::NoSymLinks|QDir::NoDotAndDotDot , QDir::Unsorted)) {
-        ui->actionDelete->setEnabled(true);
-        timeIntervals->loadScriptProfile(dirInfo.baseName(), timeIntervals->scriptsDirectory());
         //copy files
-
         QDir destinationDirectory(timeIntervals->scriptsDirectory() + dirInfo.baseName());
         if (destinationDirectory.exists()){
             // remove existing scripts
@@ -638,10 +634,10 @@ void MainWindow::on_action_Get_examples_triggered()
         }
         else destinationDirectory.mkpath(".");
 
-        QDir sourceDirectory(QDir::currentPath() + "/scripts");
+        QDir sourceDirectory(dirInfo.absoluteFilePath());
         foreach (QString fileName, sourceDirectory.entryList(QStringList("*.js"), QDir::Files|QDir::Readable, QDir::Unsorted)){
             QFile file(sourceDirectory.absoluteFilePath(fileName));
-            file.copy(destinationDirectory.absolutePath() + fileName);
+            file.copy(destinationDirectory.absolutePath() + "/" + fileName);
         }
 
         timeIntervals->loadScriptProfile(dirInfo.baseName(), timeIntervals->scriptsDirectory());
