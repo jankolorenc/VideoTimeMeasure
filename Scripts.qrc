@@ -1,0 +1,6 @@
+<RCC>
+    <qresource prefix="/">
+        <file>scripts/Trampoline individual example/col-3.js</file>
+        <file>scripts/Trampoline synchronous example/col-3.js</file>
+    </qresource>
+</RCC>

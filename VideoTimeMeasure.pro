@@ -51,4 +51,5 @@ unix|win32: LIBS += -lm -lz -lswscale -lavformat -lavcodec -lavutil -lboost_syst
 win32: LIBS += -lvfw32 -lbz2 -liconv -lmp3lame -lopencore-amrwb -lopencore-amrnb -lopus -lspeex -ltheora -lvorbis -lvorbisenc -lvorbisfile -lvpx -lx264 -lxvidcore -logg -lpthread
 
 RESOURCES += \
-    Images.qrc
+    Images.qrc \
+    Scripts.qrc

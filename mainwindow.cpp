@@ -16,6 +16,8 @@
 #include "newscriptprofileform.h"
 #include "tablelimits.h"
 #include <boost/filesystem.hpp>
+#include <QDirIterator>
+#include <QDebug>
 
 Q_DECLARE_METATYPE(IntervalTimestamp)
 
@@ -619,12 +621,12 @@ void MainWindow::on_nextCellPushButton_clicked()
 // copy script examples to user directory
 void MainWindow::on_action_Get_examples_triggered()
 {
-    QDir exampleScritpsPath(QDir::currentPath() + "/scripts");
-    if (!exampleScritpsPath.exists()) return;
+    QDirIterator profilesIterator(":/scripts");
+    while (profilesIterator.hasNext()) {
+        profilesIterator.next();
 
-    foreach (QFileInfo dirInfo, exampleScritpsPath.entryInfoList(QDir::Dirs|QDir::NoSymLinks|QDir::NoDotAndDotDot , QDir::Unsorted)) {
-        //copy files
-        QDir destinationDirectory(timeIntervals->scriptsDirectory() + dirInfo.baseName());
+        //create destination directory
+        QDir destinationDirectory(timeIntervals->scriptsDirectory() + profilesIterator.fileName());
         if (destinationDirectory.exists()){
             // remove existing scripts
             QRegExp regex("(col|row)-(\\d+)");
@@ -634,16 +636,14 @@ void MainWindow::on_action_Get_examples_triggered()
         }
         else destinationDirectory.mkpath(".");
 
-        QDir sourceDirectory(dirInfo.absoluteFilePath());
-        foreach (QString fileName, sourceDirectory.entryList(QStringList("*.js"), QDir::Files|QDir::Readable, QDir::Unsorted)){
-            QFile file(sourceDirectory.absoluteFilePath(fileName));
-            file.copy(destinationDirectory.absolutePath() + "/" + fileName);
+        QDirIterator scriptsIterator(":/scripts/" + profilesIterator.fileName());
+        while (scriptsIterator.hasNext()) {
+            scriptsIterator.next();
+            QFile file(scriptsIterator.fileInfo().absoluteFilePath());
+            file.copy(destinationDirectory.absolutePath() + "/" + scriptsIterator.fileName());
         }
 
-        timeIntervals->loadScriptProfile(dirInfo.baseName(), timeIntervals->scriptsDirectory());
-
-        QAction *action = registerScriptProfile(dirInfo.baseName());
+        QAction *action = registerScriptProfile(profilesIterator.fileName());
         if (action != NULL) action->setCheckable(TRUE);
-        ui->actionDelete->setEnabled(false);
     }
 }
