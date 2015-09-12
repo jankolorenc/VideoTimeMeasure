@@ -547,6 +547,7 @@ void MainWindow::on_action_Clear_triggered()
     ui->actionDelete->setEnabled(false);
     timeIntervals->loadScriptProfile(DEFAULT_PROFILE, timeIntervals->scriptsDirectory());
     timeIntervals->deleteScriptProfile(DEFAULT_PROFILE);
+    timeIntervals->clearTableScripts();
 }
 
 void MainWindow::on_actionProfile_triggered(bool checked)
@@ -554,7 +555,7 @@ void MainWindow::on_actionProfile_triggered(bool checked)
     if (checked){
         QAction *action = (QAction *)QObject::sender();
         timeIntervals->loadScriptProfile(action->text(), timeIntervals->scriptsDirectory());
-        ui->actionDelete->setEnabled(true);
+        if (timeIntervals->editingTableScripts) ui->actionDelete->setEnabled(true);
     }
 }
 
@@ -566,7 +567,7 @@ void MainWindow::on_actionNew_triggered()
         if (fs::native(newProfileName.toUtf8().constData())){
             if (!(newProfileName.isNull() || newProfileName.isEmpty())){
                 timeIntervals->saveScriptProfile(newProfileName);
-                ui->actionDelete->setEnabled(true);
+                if (timeIntervals->editingTableScripts) ui->actionDelete->setEnabled(true);
                 timeIntervals->loadScriptProfile(newProfileName, timeIntervals->scriptsDirectory());
                 QAction *action = registerScriptProfile(newProfileName);
                 if (action != NULL) action->setCheckable(TRUE);
@@ -580,6 +581,13 @@ void MainWindow::on_actionEdit_changed()
 {
     timeIntervals->editingTableScripts = ui->actionEdit->isChecked();
     ui->intervalsTableView->reset(); // trying to repaint table (no better method found)
+    if (timeIntervals->editingTableScripts){
+        ui->actionNew->setEnabled(true);
+    }
+    else{
+        ui->actionDelete->setEnabled(false);
+        ui->actionNew->setEnabled(false);
+    }
 }
 
 void MainWindow::on_actionDelete_triggered()
@@ -647,3 +655,4 @@ void MainWindow::on_action_Get_examples_triggered()
         if (action != NULL) action->setCheckable(TRUE);
     }
 }
+
