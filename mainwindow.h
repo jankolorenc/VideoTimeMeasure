@@ -81,6 +81,7 @@ private slots:
     void videoPlayerStopped(int selectCellRow = -1, int selectCellColumn = -1);
     void on_nextCellPushButton_clicked();
     void on_action_Get_examples_triggered();
+    void on_actionRead_me_triggered();
 };
 
 #endif // MAINWINDOW_H

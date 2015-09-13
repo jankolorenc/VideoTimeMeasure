@@ -22,7 +22,8 @@ SOURCES += main.cpp\
     scripteditor.cpp \
     newscriptprofileform.cpp \
     videoplayer.cpp \
-    session.cpp
+    session.cpp \
+    readme.cpp
 
 HEADERS  += mainwindow.h \
     videoimage.h \
@@ -36,11 +37,13 @@ HEADERS  += mainwindow.h \
     newscriptprofileform.h \
     tablelimits.h \
     videoplayer.h \
-    session.h
+    session.h \
+    readme.h
 
 FORMS    += mainwindow.ui \
     scripteditor.ui \
-    newscriptprofileform.ui
+    newscriptprofileform.ui \
+    readme.ui
 
 *-g++* {
     QMAKE_CXXFLAGS += -D__STDC_CONSTANT_MACROS -fpermissive

@@ -18,6 +18,7 @@
 #include <boost/filesystem.hpp>
 #include <QDirIterator>
 #include <QDebug>
+#include "readme.h"
 
 Q_DECLARE_METATYPE(IntervalTimestamp)
 
@@ -503,13 +504,12 @@ void MainWindow::on_forwardJumpPushButton_clicked()
 
 void MainWindow::on_actionAbout_triggered()
 {
-    QFile file(":/README.html");
-    QString about;
-    if (file.open(QFile::ReadOnly | QFile::Text)){
-        QTextStream in(&file);
-        about = in.readAll();
-    }
-    QMessageBox::about(this, "About Video Time Measure", about);
+    QMessageBox::about(this,
+                       "About Video Time Measure",
+                       "<h1>VideoTimeMeasure</h1> \
+                       <p>Application to measure time in video clip.</p> \
+                       <p>Created by Jan Kolorenc</p> \
+                       <p>Sources: <a href=\"https://github.com/jankolorenc/VideoTimeMeasure\">https://github.com/jankolorenc/VideoTimeMeasure</a></p>");
 }
 
 
@@ -630,3 +630,9 @@ void MainWindow::on_action_Get_examples_triggered()
     }
 }
 
+
+void MainWindow::on_actionRead_me_triggered()
+{
+    ReadMe readme(this);
+    readme.exec();
+}

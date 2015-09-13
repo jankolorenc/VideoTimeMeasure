@@ -288,6 +288,7 @@
     <property name="title">
      <string>&amp;Help</string>
     </property>
+    <addaction name="actionRead_me"/>
     <addaction name="actionAbout"/>
    </widget>
    <widget class="QMenu" name="menuScriptProfiles">
@@ -365,6 +366,11 @@
   <action name="action_Get_examples">
    <property name="text">
     <string>&amp;Get examples</string>
+   </property>
+  </action>
+  <action name="actionRead_me">
+   <property name="text">
+    <string>&amp;Read me</string>
    </property>
   </action>
  </widget>

@@ -368,13 +368,10 @@ span.icon > [class^="icon-"], span.icon > [class*=" icon-"] { cursor: default; }
 <div id="preamble">
 <div class="sectionbody">
 <div class="paragraph">
-<p>This application measures time in video clip. Wide range of formats are supported to measure time directly in camcoder&#8217;s native video format.</p>
+<p>This application measures time in video clip. Wide range of formats are supported to measure time directly in camcorder&#8217;s native video format.</p>
 </div>
 <div class="paragraph">
-<p>Motivation was to create application that can measure / verify air time and synchronization for trampolines.<br></p>
-</div>
-<div class="paragraph">
-<p>Use video from camcoders or hardware encoders. Software encoders can damage time information in video even running on strong hardware.</p>
+<p>Use video from camcorders or hardware encoders. Software encoders can damage time information in video even running on powerful hardware.</p>
 </div>
 </div>
 </div>
@@ -384,16 +381,16 @@ span.icon > [class^="icon-"], span.icon > [class*=" icon-"] { cursor: default; }
 <div class="olist arabic">
 <ol class="arabic">
 <li>
-<p>Open video file</p>
+<p>Open video file by selecting <em>Open</em> item in <em>File</em> menu.</p>
 </li>
 <li>
 <p>Select desired timestamp cell in table right to the video image.</p>
 </li>
 <li>
-<p>Navigate to time using buttons below video.</p>
+<p>Navigate to time using arrow buttons below video.</p>
 </li>
 <li>
-<p>Continue to next timestamp (Press enter on insert row and use mouse)</p>
+<p>Continue to next timestamp. (Press enter on insert row and use mouse.)</p>
 </li>
 </ol>
 </div>
@@ -403,15 +400,20 @@ span.icon > [class^="icon-"], span.icon > [class*=" icon-"] { cursor: default; }
 <h2 id="_scripting">Scripting</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>Scripts allow to further process measured intervals for example to points or process data according to sport specific requirements.<br>
-Scripting language is JavaScript<br>
-Each cell excluding cells used for intervals measurement and sumary can contain script. There are also whole column and row scripts.
+<p>Scripts allow to further process measured intervals for example to points or process data according to sport specific requirements.</p>
+</div>
+<div class="paragraph">
+<p>Each cell excluding cells used for intervals measurement and summary can contain script. There are also whole column and row scripts.
 Cells in rows of measured intervals can contain whole column scripts only.</p>
+</div>
+<div class="paragraph">
+<p>Scripting language is JavaScript, so basic programming skill is necessary to create script.</p>
 </div>
 <div class="sect2">
 <h3 id="_profiles">Profiles</h3>
 <div class="paragraph">
-<p>Scripts in table are called profile. User can switch between profiles to easily manage different match types.</p>
+<p>Scripts in table are called profile. User can switch between profiles to easily manage different match types.
+Choose desired profile in <em>Script profiles</em> menu.</p>
 </div>
 </div>
 <div class="sect2">
@@ -423,23 +425,91 @@ Cells in rows of measured intervals can contain whole column scripts only.</p>
 <dl>
 <dt class="hdlist1">row</dt>
 <dd>
-<p>current row starting from 0</p>
+<p>Current row starting from 0.</p>
 </dd>
 <dt class="hdlist1">column</dt>
 <dd>
-<p>current column starting from 0</p>
+<p>Current column starting from 0.</p>
 </dd>
 <dt class="hdlist1">intervals</dt>
 <dd>
-<p>number of measured intervals</p>
+<p>Number of measured intervals.</p>
 </dd>
-<dt class="hdlist1">start</dt>
-<dt class="hdlist1">stop</dt>
-<dt class="hdlist1">duration</dt>
 <dt class="hdlist1">table.getValue(row, column)</dt>
+<dd>
+<p>Function returns value of cell specified by row and column.</p>
+</dd>
 <dt class="hdlist1">table.printf(format, number)</dt>
 <dd>
-<p>=== Editing scripts</p>
+<p>Function returns formatted number. <em>Format</em> argument is the same as for standard C printf function.</p>
+</dd>
+</dl>
+</div>
+<div class="paragraph">
+<p>Rows with measured intervals contain additional variables:</p>
+</div>
+<div class="dlist">
+<dl>
+<dt class="hdlist1">start</dt>
+<dd>
+<p>Interval start in seconds.</p>
+</dd>
+<dt class="hdlist1">stop</dt>
+<dd>
+<p>Interval stop in seconds.</p>
+</dd>
+<dt class="hdlist1">duration</dt>
+<dd>
+<p>Interval duration in seconds.</p>
+</dd>
+</dl>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_editing_scripts">Editing scripts</h3>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Check <em>Edit</em> item in <em>Script profiles</em> menu.</p>
+</li>
+<li>
+<p>Right click on table to add column or row.</p>
+</li>
+<li>
+<p>Right click on desired cell, row or column header to edit cell, whole row or column script.</p>
+</li>
+</ol>
+</div>
+<div class="paragraph">
+<p>In <em>Script profiles</em> menu:</p>
+</div>
+<div class="dlist">
+<dl>
+<dt class="hdlist1">Clear</dt>
+<dd>
+<p>Removes script from table and deactivates current profile.</p>
+</dd>
+<dt class="hdlist1">New</dt>
+<dd>
+<p>Creates new script profile. If there are scripts in table, the scripts are copies to newly created profile.</p>
+</dd>
+<dt class="hdlist1">Delete</dt>
+<dd>
+<p>Deletes selected script profile.</p>
+</dd>
+<dt class="hdlist1">Get examples</dt>
+<dd>
+<p>Creates script profile examples. There are 2 examples:</p>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p><em>Trampoline individual example</em> demonstrates formatting interval duration according to specific requirements.</p>
+</li>
+<li>
+<p><em>Trampoline synchronous example</em> demonstrates  converting intervals to points.</p>
+</li>
+</ol>
+</div>
 </dd>
 </dl>
 </div>
@@ -451,7 +521,7 @@ Cells in rows of measured intervals can contain whole column scripts only.</p>
 <div class="sectionbody">
 <div class="dlist">
 <dl>
-<dt class="hdlist1">Requirements for compilation or dynamically linked binary</dt>
+<dt class="hdlist1">Dependencies for compilation or dynamically linked binary</dt>
 <dd>
 <div class="ulist">
 <ul>
@@ -475,7 +545,7 @@ Cells in rows of measured intervals can contain whole column scripts only.</p>
 <p>Linux: qmake or qt creator</p>
 </li>
 <li>
-<p>Windows: I use MXE cross compilation environment on linux</p>
+<p>Windows: I use MXE cross compilation environment on Linux</p>
 </li>
 </ul>
 </div>
@@ -498,7 +568,7 @@ Cells in rows of measured intervals can contain whole column scripts only.</p>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2015-09-13 11:59:38 CEST
+Last updated 2015-09-13 13:31:58 CEST
 </div>
 </div>
 </body>

@@ -1,58 +1,77 @@
 = VideoTimeMeasure
 
-This application measures time in video clip. Wide range of formats are supported to measure time directly in camcoder's native video format.
+This application measures time in video clip. Wide range of formats are supported to measure time directly in camcorder's native video format.
 
-Motivation was to create application that can measure / verify air time and synchronization for trampolines. +
-
-Use video from camcoders or hardware encoders. Software encoders can damage time information in video even running on powerful hardware.
+Use video from camcorders or hardware encoders. Software encoders can damage time information in video even running on powerful hardware.
 
 == Basic usage
- . Open video file
+ . Open video file by selecting 'Open' item in 'File' menu.
  . Select desired timestamp cell in table right to the video image.
- . Navigate to time using buttons below video.
- . Continue to next timestamp (Press enter on insert row and use mouse)
+ . Navigate to time using arrow buttons below video.
+ . Continue to next timestamp. (Press enter on insert row and use mouse.)
 
 == Scripting
-Scripts allow to further process measured intervals for example to points or process data according to sport specific requirements. +
-Scripting language is JavaScript +
-Each cell excluding cells used for intervals measurement and sumary can contain script. There are also whole column and row scripts.
+Scripts allow to further process measured intervals for example to points or process data according to sport specific requirements.
+
+Each cell excluding cells used for intervals measurement and summary can contain script. There are also whole column and row scripts.
 Cells in rows of measured intervals can contain whole column scripts only.
+
+Scripting language is JavaScript, so basic programming skill is necessary to create script.
 
 === Profiles
 Scripts in table are called profile. User can switch between profiles to easily manage different match types.
+Choose desired profile in 'Script profiles' menu.
 
 === Environment variables
 Environment variable provide information about cell position in table and measured intervals.
 
 row::
-    current row starting from 0
-
+    Current row starting from 0.
 column::
-    current column starting from 0
-
+    Current column starting from 0.
 intervals::
-    number of measured intervals
+    Number of measured intervals.
+table.getValue(row, column)::
+    Function returns value of cell specified by row and column.
+table.printf(format, number)::
+    Function returns formatted number. 'Format' argument is the same as for standard C printf function.
 
+Rows with measured intervals contain additional variables:
 
 start::
+    Interval start in seconds.
 stop::
+    Interval stop in seconds.
 duration::
-
-table.getValue(row, column)::
-table.printf(format, number)::
+    Interval duration in seconds.
 
 === Editing scripts
+ . Check 'Edit' item in 'Script profiles' menu.
+ . Right click on table to add column or row.
+ . Right click on desired cell, row or column header to edit cell, whole row or column script.
 
+In 'Script profiles' menu:
+
+Clear::
+    Removes script from table and deactivates current profile.
+New::
+    Creates new script profile. If there are scripts in table, the scripts are copies to newly created profile.
+Delete::
+    Deletes selected script profile.
+Get examples::
+    Creates script profile examples. There are 2 examples:
+    . 'Trampoline individual example' demonstrates formatting interval duration according to specific requirements.
+    . 'Trampoline synchronous example' demonstrates  converting intervals to points.
 
 == Running and compilation
 
-Requirements for compilation or dynamically linked binary::
+Dependencies for compilation or dynamically linked binary::
  - Qt 4.8
  - FFmpeg
  - Boost library
 Compilation::
  - Linux: qmake or qt creator
- - Windows: I use MXE cross compilation environment on linux
+ - Windows: I use MXE cross compilation environment on Linux
 Sources::
 https://github.com/jankolorenc/VideoTimeMeasure
 Problem description::
