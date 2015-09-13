@@ -557,6 +557,7 @@ void MainWindow::on_actionEdit_changed()
     ui->intervalsTableView->reset(); // trying to repaint table (no better method found)
     if (timeIntervals->editingTableScripts){
         ui->actionNew->setEnabled(true);
+        if(timeIntervals->scriptsProfile() != DEFAULT_PROFILE) ui->actionDelete->setEnabled(true);
     }
     else{
         ui->actionDelete->setEnabled(false);

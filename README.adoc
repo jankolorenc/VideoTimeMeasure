@@ -22,6 +22,8 @@ Scripting language is JavaScript, so basic programming skill is necessary to cre
 Scripts in table are called profile. User can switch between profiles to easily manage different match types.
 Choose desired profile in 'Script profiles' menu.
 
+Profiles are stored in user's application data directory.
+
 === Environment variables
 Environment variable provide information about cell position in table and measured intervals.
 
@@ -57,7 +59,7 @@ Clear::
 New::
     Creates new script profile. If there are scripts in table, the scripts are copies to newly created profile.
 Delete::
-    Deletes selected script profile.
+    Deletes selected script profile. Profile scripts are not removed immediately from table to allow undo by creating new profile.
 Get examples::
     Creates script profile examples. There are 2 examples:
     . 'Trampoline individual example' demonstrates formatting interval duration according to specific requirements.
