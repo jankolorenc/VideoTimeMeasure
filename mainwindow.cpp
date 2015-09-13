@@ -19,6 +19,7 @@
 #include <QDirIterator>
 #include <QDebug>
 #include "readme.h"
+#include <zip.h>
 
 Q_DECLARE_METATYPE(IntervalTimestamp)
 
@@ -636,4 +637,119 @@ void MainWindow::on_actionRead_me_triggered()
 {
     ReadMe readme(this);
     readme.exec();
+}
+
+void MainWindow::on_actionExport_triggered()
+{
+    QString zipFileName = QFileDialog::getSaveFileName(
+                this,
+                tr("Export profile ") + timeIntervals->scriptsProfile(),
+                timeIntervals->scriptsProfile() + ".zip",
+                tr("Archive (*.zip)"));
+    if (!zipFileName.isEmpty()){
+        int errorp;
+        zip *archive = zip_open(zipFileName.toAscii(), ZIP_CREATE|ZIP_TRUNCATE, &errorp);
+        if (archive != NULL){
+            QList<QPair<char *, zip_source *> > buffers;
+            QDirIterator scriptsIterator(timeIntervals->scriptsDirectory() + "/" + timeIntervals->scriptsProfile());
+            while (scriptsIterator.hasNext()) {
+                scriptsIterator.next();
+                if (scriptsIterator.fileInfo().isFile()){
+                    QFile file(scriptsIterator.fileInfo().absoluteFilePath());
+                    if (file.open(QFile::ReadOnly)){
+                        long size = file.size();
+                        char *buffer = (char *)malloc(size);
+                        file.read(buffer, size);
+                        zip_source *source = zip_source_buffer(archive, buffer, size, 1);
+                        QString filename = timeIntervals->scriptsProfile() + "/" + scriptsIterator.fileInfo().fileName();
+                        if (source != NULL){
+                            if (zip_file_add(archive, filename.toUtf8(), source, ZIP_FL_ENC_UTF_8) >= 0) {
+                                buffers.append(QPair<char *, zip_source *>(buffer, source));
+                            }
+                            else zip_source_free(source);
+                        }
+                    }
+                }
+            }
+            zip_close(archive);
+        }
+    }
+}
+
+void MainWindow::on_actionImport_triggered()
+{
+    QString zipFileName = QFileDialog::getOpenFileName(
+                this,
+                tr("Import profile"),
+                QString(),
+                tr("Archive (*.zip)"));
+    if (!zipFileName.isEmpty()){
+        int errorp;
+        zip *archive = zip_open(zipFileName.toAscii(),  ZIP_CHECKCONS, &errorp);
+        QString firstProfile;
+        if (archive != NULL){
+            long entries = zip_get_num_entries(archive, ZIP_FL_UNCHANGED);
+            for (long i = 0; i < entries; i++){
+                const char *path = zip_get_name(archive, i, ZIP_FL_ENC_GUESS);
+                if (path != NULL){
+                    boost::filesystem::path profile_dir(path);
+                    if (profile_dir.is_relative())
+                        while(profile_dir.has_parent_path()) profile_dir = profile_dir.parent_path();
+                    QString profile(profile_dir.c_str());
+                    if (profile.isEmpty()) continue;
+                    QDir profileDirectory;
+                    if (firstProfile.isEmpty()){
+                        firstProfile = profile;
+                        profileDirectory.setPath(timeIntervals->scriptsDirectory() + profile);
+                        if (profileDirectory.exists()){
+                            QMessageBox msgBox;
+                            msgBox.setText("Import will overwrite profile " + profile);
+                            msgBox.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
+                            if (msgBox.exec() == QMessageBox::No) return;
+                            else{
+                                // clear all files
+                                QDirIterator scriptsIterator(profileDirectory.absolutePath());
+                                while (scriptsIterator.hasNext()) {
+                                    scriptsIterator.next();
+                                    if (scriptsIterator.fileInfo().isFile()) QFile::remove(scriptsIterator.fileInfo().absoluteFilePath());
+                                }
+                            }
+                        }
+                    }
+                    if (profile != firstProfile) continue;
+
+                    if (!profileDirectory.exists()) profileDirectory.mkpath(".");
+
+                    zip_file *zipfile = zip_fopen_index(archive, i, ZIP_FL_ENC_GUESS);
+                    if (zipfile != NULL){
+                        char buffer[200];
+                        boost::filesystem::path p(path);
+                        QFile file(profileDirectory.absolutePath() + "/" + QString(p.filename().c_str()));
+                        if (file.open(QFile::WriteOnly)){
+                            long bytes = zip_fread(zipfile, buffer, sizeof(buffer));
+                            while(bytes > 0){
+                                file.write(buffer, bytes);
+                                bytes = zip_fread(zipfile, buffer, sizeof(buffer));
+                            }
+                            file.close();
+                        }
+                    }
+                }
+            }
+
+            if(firstProfile != DEFAULT_PROFILE){
+                QAction *action = registerScriptProfile(firstProfile);
+                action->setChecked(true);
+                if (timeIntervals->editingTableScripts) ui->actionDelete->setEnabled(true);
+            }
+            else{
+                foreach (QAction *action, scriptProfilesActionGroup->actions()) {
+                    if (action->isChecked()) action->setChecked(false);
+                }
+            }
+            timeIntervals->loadScriptProfile(firstProfile, timeIntervals->scriptsDirectory());
+
+        }
+        zip_close(archive);
+    }
 }

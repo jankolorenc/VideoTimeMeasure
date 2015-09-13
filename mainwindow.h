@@ -82,6 +82,8 @@ private slots:
     void on_nextCellPushButton_clicked();
     void on_action_Get_examples_triggered();
     void on_actionRead_me_triggered();
+    void on_actionExport_triggered();
+    void on_actionImport_triggered();
 };
 
 #endif // MAINWINDOW_H

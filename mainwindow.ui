@@ -296,6 +296,8 @@
      <string>&amp;Script profiles</string>
     </property>
     <addaction name="action_Clear"/>
+    <addaction name="actionImport"/>
+    <addaction name="actionExport"/>
     <addaction name="actionEdit"/>
     <addaction name="actionNew"/>
     <addaction name="actionDelete"/>
@@ -371,6 +373,16 @@
   <action name="actionRead_me">
    <property name="text">
     <string>&amp;Read me</string>
+   </property>
+  </action>
+  <action name="actionImport">
+   <property name="text">
+    <string>&amp;Import</string>
+   </property>
+  </action>
+  <action name="actionExport">
+   <property name="text">
+    <string>E&amp;xport</string>
    </property>
   </action>
  </widget>
