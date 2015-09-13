@@ -503,39 +503,13 @@ void MainWindow::on_forwardJumpPushButton_clicked()
 
 void MainWindow::on_actionAbout_triggered()
 {
-    QMessageBox::about(this,
-                       "About Video Time Measure",
-                       tr(
-                           "<h1>Video Time Measure</h1>"
-                           "<p>"
-                           "This application is intended to measure time in a recorded video.<br />"
-                           "Main motivation was to measure and verify air time and synchronization for trampoline."
-                           "</p>"
-                           "<p>"
-                           "Use video from camcoders or hardware encoders. Software encoders can damage time information in video even running on strong hardware."
-                           "</p>"
-                           "<p>"
-                           "To measure time:"
-                           "<ol>"
-                           "<li>Open video file</li>"
-                           "<li>Select appropriate start or stop timestamp in the intervals table right to the video image.</li>"
-                           "<li>Navigate to desired video timestamp using buttons below the image.</li>"
-                           "</ol>"
-                           "Advanced usage for never seen video file:"
-                           "<ol>"
-                           "<li>Open video file</li>"
-                           "<li>Play the video</li>"
-                           "<li>Mark desired timestamps by pressing &quot;Enter&quot; during playing video.</li>"
-                           "<li>Fine tune created timestamp from the first start timestamp.</li>"
-                           "<li>&quot;Play interval&quot; button plays video until next timestamp.</li>"
-                           "</ol>"
-                           "</p>"
-                           "<p>"
-                           "Created by Jan Kolorenc</br>"
-                           "Source codes are on <a href=\"https://github.com/jankolorenc/VideoTimeMeasure\">GitHub</a><br/>"
-                           "Thanks to all people who created libraries, tutorials and tools, this application is based on. (see source code)"
-                           "</p>"
-                           ));
+    QFile file(":/README.html");
+    QString about;
+    if (file.open(QFile::ReadOnly | QFile::Text)){
+        QTextStream in(&file);
+        about = in.readAll();
+    }
+    QMessageBox::about(this, "About Video Time Measure", about);
 }
 
 

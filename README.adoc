@@ -1,25 +1,61 @@
-VideoTimeMeasure
-================
+= VideoTimeMeasure
 
-Measure time interval in video
+This application measures time in video clip. Wide range of formats are supported to measure time directly in camcoder's native video format.
 
-This application is intended to measure time in video clip. Motivation was to create application that can measure / verify air time and synchronization for trampolines.
-Thanks to all people who created libraries, tutorials and tools used to create this application.
+Motivation was to create application that can measure / verify air time and synchronization for trampolines. +
 
-Use video from camcoders or hardware encoders. Software encoders can damage time information in video even running on strong hardware.
+Use video from camcoders or hardware encoders. Software encoders can damage time information in video even running on powerful hardware.
 
-Usage::
+== Basic usage
  . Open video file
  . Select desired timestamp cell in table right to the video image.
  . Navigate to time using buttons below video.
  . Continue to next timestamp (Press enter on insert row and use mouse)
-Requirements::
+
+== Scripting
+Scripts allow to further process measured intervals for example to points or process data according to sport specific requirements. +
+Scripting language is JavaScript +
+Each cell excluding cells used for intervals measurement and sumary can contain script. There are also whole column and row scripts.
+Cells in rows of measured intervals can contain whole column scripts only.
+
+=== Profiles
+Scripts in table are called profile. User can switch between profiles to easily manage different match types.
+
+=== Environment variables
+Environment variable provide information about cell position in table and measured intervals.
+
+row::
+    current row starting from 0
+
+column::
+    current column starting from 0
+
+intervals::
+    number of measured intervals
+
+
+start::
+stop::
+duration::
+
+table.getValue(row, column)::
+table.printf(format, number)::
+
+=== Editing scripts
+
+
+== Running and compilation
+
+Requirements for compilation or dynamically linked binary::
  - Qt 4.8
  - FFmpeg
+ - Boost library
 Compilation::
  - Linux: qmake or qt creator
- - Windows: I do is using MXE cross compilation environment on linux
+ - Windows: I use MXE cross compilation environment on linux
 Sources::
 https://github.com/jankolorenc/VideoTimeMeasure
 Problem description::
 https://jankolorenc.github.io/2015/05/20/Measuring-time-in-video.html
+
+Thanks to all people who created libraries, tutorials and tools used to create this application.

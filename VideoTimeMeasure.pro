@@ -46,10 +46,19 @@ FORMS    += mainwindow.ui \
     QMAKE_CXXFLAGS += -D__STDC_CONSTANT_MACROS -fpermissive
 }
 
-unix|win32: LIBS += -lm -lz -lswscale -lavformat -lavcodec -lavutil -lboost_system -lboost_filesystem
+unix|win32: LIBS += -lm -lz -lswscale -lavformat -lavcodec -lavutil
+unix: LIBS += -lboost_system -lboost_filesystem
 
-win32: LIBS += -lvfw32 -lbz2 -liconv -lmp3lame -lopencore-amrwb -lopencore-amrnb -lopus -lspeex -ltheora -lvorbis -lvorbisenc -lvorbisfile -lvpx -lx264 -lxvidcore -logg -lpthread
+win32: LIBS += -lvfw32 -lbz2 -liconv -lmp3lame -lopencore-amrwb -lopencore-amrnb -lopus -lspeex -ltheora \
+ -lvorbis -lvorbisenc -lvorbisfile -lvpx -lx264 -lxvidcore -lbluray -logg -lpthread -lboost_system-mt \
+ -lboost_filesystem-mt  -lvo-aacenc -lvo-amrwbenc -lswresample -lxml2 -lfreetype -lharfbuzz -lglib-2.0 -lintl \
+ -lgnutls -lnettle -lhogweed -liconv -lcrypt32 \
+ -lgmp
 
 RESOURCES += \
     Images.qrc \
-    Scripts.qrc
+    Scripts.qrc \
+    Texts.qrc
+
+OTHER_FILES += \
+    README.adoc
