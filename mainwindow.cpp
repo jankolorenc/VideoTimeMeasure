@@ -683,73 +683,77 @@ void MainWindow::on_actionImport_triggered()
                 tr("Import profile"),
                 QString(),
                 tr("Archive (*.zip)"));
-    if (!zipFileName.isEmpty()){
-        int errorp;
-        zip *archive = zip_open(zipFileName.toAscii(),  ZIP_CHECKCONS, &errorp);
-        QString firstProfile;
-        if (archive != NULL){
-            long entries = zip_get_num_entries(archive, ZIP_FL_UNCHANGED);
-            for (long i = 0; i < entries; i++){
-                const char *path = zip_get_name(archive, i, ZIP_FL_ENC_GUESS);
-                if (path != NULL){
-                    boost::filesystem::path profile_dir(path);
-                    if (profile_dir.is_relative())
-                        while(profile_dir.has_parent_path()) profile_dir = profile_dir.parent_path();
-                    QString profile(profile_dir.c_str());
-                    if (profile.isEmpty()) continue;
-                    QDir profileDirectory;
-                    if (firstProfile.isEmpty()){
-                        firstProfile = profile;
-                        profileDirectory.setPath(timeIntervals->scriptsDirectory() + profile);
-                        if (profileDirectory.exists()){
-                            QMessageBox msgBox;
-                            msgBox.setText("Import will overwrite profile " + profile);
-                            msgBox.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
-                            if (msgBox.exec() == QMessageBox::No) return;
-                            else{
-                                // clear all files
-                                QDirIterator scriptsIterator(profileDirectory.absolutePath());
-                                while (scriptsIterator.hasNext()) {
-                                    scriptsIterator.next();
-                                    if (scriptsIterator.fileInfo().isFile()) QFile::remove(scriptsIterator.fileInfo().absoluteFilePath());
-                                }
-                            }
-                        }
-                    }
-                    if (profile != firstProfile) continue;
+    if (zipFileName.isEmpty()) return;
 
-                    if (!profileDirectory.exists()) profileDirectory.mkpath(".");
+    int errorp;
+    zip *archive = zip_open(zipFileName.toAscii(),  ZIP_CHECKCONS, &errorp);
+    QString firstProfile;
+    QDir firstProfileDirectory;
+    if (archive == NULL) return;
 
-                    zip_file *zipfile = zip_fopen_index(archive, i, ZIP_FL_ENC_GUESS);
-                    if (zipfile != NULL){
-                        char buffer[200];
-                        boost::filesystem::path p(path);
-                        QFile file(profileDirectory.absolutePath() + "/" + QString(p.filename().c_str()));
-                        if (file.open(QFile::WriteOnly)){
-                            long bytes = zip_fread(zipfile, buffer, sizeof(buffer));
-                            while(bytes > 0){
-                                file.write(buffer, bytes);
-                                bytes = zip_fread(zipfile, buffer, sizeof(buffer));
-                            }
-                            file.close();
-                        }
+    QRegExp rootRx("^([^\s/]+)/");
+    long entries = zip_get_num_entries(archive, ZIP_FL_UNCHANGED);
+    for (long i = 0; i < entries; i++){
+        const char *path = zip_get_name(archive, i, ZIP_FL_ENC_GUESS);
+        if (path == NULL) continue;
+
+        QString filePath(path);
+        if (rootRx.indexIn(filePath) < 0) continue;
+
+        QString profile = rootRx.cap(1);
+        if (firstProfile.isEmpty()){
+            firstProfile = profile;
+            firstProfileDirectory.setPath(timeIntervals->scriptsDirectory() + profile);
+            if (firstProfileDirectory.exists()){
+                QMessageBox msgBox;
+                msgBox.setText("Import will overwrite profile " + profile);
+                msgBox.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
+                if (msgBox.exec() == QMessageBox::No) goto closeZip;
+                else{
+                    // clear all files
+                    QDirIterator scriptsIterator(firstProfileDirectory.absolutePath());
+                    while (scriptsIterator.hasNext()) {
+                        scriptsIterator.next();
+                        if (scriptsIterator.fileInfo().isFile()) QFile::remove(scriptsIterator.fileInfo().absoluteFilePath());
                     }
                 }
             }
-
-            if(firstProfile != DEFAULT_PROFILE){
-                QAction *action = registerScriptProfile(firstProfile);
-                action->setChecked(true);
-                if (timeIntervals->editingTableScripts) ui->actionDelete->setEnabled(true);
-            }
-            else{
-                foreach (QAction *action, scriptProfilesActionGroup->actions()) {
-                    if (action->isChecked()) action->setChecked(false);
-                }
-            }
-            timeIntervals->loadScriptProfile(firstProfile, timeIntervals->scriptsDirectory());
-
         }
-        zip_close(archive);
+        if (profile != firstProfile) continue;
+
+        if (!firstProfileDirectory.exists()) firstProfileDirectory.mkpath(".");
+
+        zip_file *zipfile = zip_fopen_index(archive, i, ZIP_FL_ENC_GUESS);
+        if (zipfile == NULL) continue;
+
+        char buffer[200];
+        QFileInfo pathInfo(filePath);
+        QFile file(firstProfileDirectory.absolutePath() + "/" + pathInfo.fileName());
+        if (file.open(QFile::WriteOnly)){
+            long bytes = zip_fread(zipfile, buffer, sizeof(buffer));
+            while(bytes > 0){
+                file.write(buffer, bytes);
+                bytes = zip_fread(zipfile, buffer, sizeof(buffer));
+            }
+            file.close();
+        }
     }
+
+    if (!firstProfile.isEmpty()){
+        if(firstProfile != DEFAULT_PROFILE){
+            QAction *action = registerScriptProfile(firstProfile);
+            action->setChecked(true);
+            if (timeIntervals->editingTableScripts) ui->actionDelete->setEnabled(true);
+        }
+        else{
+            foreach (QAction *action, scriptProfilesActionGroup->actions()) {
+                if (action->isChecked()) action->setChecked(false);
+            }
+        }
+        timeIntervals->loadScriptProfile(firstProfile, timeIntervals->scriptsDirectory());
+    }
+
+    closeZip:
+    zip_close(archive);
 }
+
