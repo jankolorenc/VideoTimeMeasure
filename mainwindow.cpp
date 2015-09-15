@@ -19,7 +19,8 @@
 #include <QDirIterator>
 #include <QDebug>
 #include "readme.h"
-#include <zip.h>
+#include <minizip/zip.h>
+#include <minizip/unzip.h>
 
 Q_DECLARE_METATYPE(IntervalTimestamp)
 
@@ -647,10 +648,8 @@ void MainWindow::on_actionExport_triggered()
                 timeIntervals->scriptsProfile() + ".zip",
                 tr("Archive (*.zip)"));
     if (!zipFileName.isEmpty()){
-        int errorp;
-        zip *archive = zip_open(zipFileName.toAscii(), ZIP_CREATE|ZIP_TRUNCATE, &errorp);
+        zipFile archive = zipOpen(zipFileName.toStdString().c_str(), APPEND_STATUS_CREATE);
         if (archive != NULL){
-            QList<QPair<char *, zip_source *> > buffers;
             QDirIterator scriptsIterator(timeIntervals->scriptsDirectory() + "/" + timeIntervals->scriptsProfile());
             while (scriptsIterator.hasNext()) {
                 scriptsIterator.next();
@@ -660,18 +659,23 @@ void MainWindow::on_actionExport_triggered()
                         long size = file.size();
                         char *buffer = (char *)malloc(size);
                         file.read(buffer, size);
-                        zip_source *source = zip_source_buffer(archive, buffer, size, 1);
                         QString filename = timeIntervals->scriptsProfile() + "/" + scriptsIterator.fileInfo().fileName();
-                        if (source != NULL){
-                            if (zip_file_add(archive, filename.toUtf8(), source, ZIP_FL_ENC_UTF_8) >= 0) {
-                                buffers.append(QPair<char *, zip_source *>(buffer, source));
-                            }
-                            else zip_source_free(source);
+                        zip_fileinfo zfi = { 0 };
+                        if (ZIP_OK == zipOpenNewFileInZip(archive, filename.toStdString().c_str(), &zfi, NULL, 0, NULL, 0, NULL, Z_DEFLATED, Z_DEFAULT_COMPRESSION))
+                        {
+                            zipWriteInFileInZip(archive, buffer, size);
+                            zipCloseFileInZip(archive);
                         }
+                        file.close();
                     }
                 }
             }
-            zip_close(archive);
+            zipClose(archive,NULL);
+        }
+        else{
+            QMessageBox msgBox;
+            msgBox.setText("Failed to open archive.");
+            msgBox.exec();
         }
     }
 }
@@ -685,57 +689,67 @@ void MainWindow::on_actionImport_triggered()
                 tr("Archive (*.zip)"));
     if (zipFileName.isEmpty()) return;
 
-    int errorp;
-    zip *archive = zip_open(zipFileName.toAscii(),  ZIP_CHECKCONS, &errorp);
     QString firstProfile;
     QDir firstProfileDirectory;
+    unzFile archive = unzOpen(zipFileName.toStdString().c_str());
     if (archive == NULL) return;
 
-    QRegExp rootRx("^([^\s/]+)/");
-    long entries = zip_get_num_entries(archive, ZIP_FL_UNCHANGED);
-    for (long i = 0; i < entries; i++){
-        const char *path = zip_get_name(archive, i, ZIP_FL_ENC_GUESS);
-        if (path == NULL) continue;
+    QRegExp rootRx("^([^/]+)/");
+    unz_global_info gi;
+    int err = unzGetGlobalInfo(archive, &gi);
+    if (err != UNZ_OK) goto closeZip;
 
-        QString filePath(path);
-        if (rootRx.indexIn(filePath) < 0) continue;
+    for (int i = 0; i < gi.number_entry; i++)
+    {
+        unz_file_info file_info;
+        char filename_inzip[256];
+        if (unzGetCurrentFileInfo(archive, &file_info, filename_inzip, sizeof(filename_inzip), NULL, 0, NULL, 0) == UNZ_OK){
+            QString filePath(filename_inzip);
+            if (rootRx.indexIn(filePath) >= 0){
+                QString profile = rootRx.cap(1);
+                if (firstProfile.isEmpty()){
+                    firstProfile = profile;
+                    firstProfileDirectory.setPath(timeIntervals->scriptsDirectory() + profile);
+                    if (firstProfileDirectory.exists()){
+                        QMessageBox msgBox;
+                        msgBox.setText("Import will overwrite profile " + profile);
+                        msgBox.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
+                        if (msgBox.exec() == QMessageBox::No) goto closeZip;
+                        else{
+                            // clear all files
+                            QDirIterator scriptsIterator(firstProfileDirectory.absolutePath());
+                            while (scriptsIterator.hasNext()) {
+                                scriptsIterator.next();
+                                if (scriptsIterator.fileInfo().isFile()) QFile::remove(scriptsIterator.fileInfo().absoluteFilePath());
+                            }
+                        }
+                    }
+                }
 
-        QString profile = rootRx.cap(1);
-        if (firstProfile.isEmpty()){
-            firstProfile = profile;
-            firstProfileDirectory.setPath(timeIntervals->scriptsDirectory() + profile);
-            if (firstProfileDirectory.exists()){
-                QMessageBox msgBox;
-                msgBox.setText("Import will overwrite profile " + profile);
-                msgBox.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
-                if (msgBox.exec() == QMessageBox::No) goto closeZip;
-                else{
-                    // clear all files
-                    QDirIterator scriptsIterator(firstProfileDirectory.absolutePath());
-                    while (scriptsIterator.hasNext()) {
-                        scriptsIterator.next();
-                        if (scriptsIterator.fileInfo().isFile()) QFile::remove(scriptsIterator.fileInfo().absoluteFilePath());
+                if (profile == firstProfile){
+                    if (!firstProfileDirectory.exists()) firstProfileDirectory.mkpath(".");
+
+                    if (unzOpenCurrentFile(archive) == UNZ_OK){
+                        char buffer[1024];
+                        QFileInfo pathInfo(filePath);
+                        QFile file(firstProfileDirectory.absolutePath() + "/" + pathInfo.fileName());
+                        if (file.open(QFile::WriteOnly)){
+                            int bytes = unzReadCurrentFile(archive, buffer, sizeof(buffer));
+                            while (bytes > 0){
+                                file.write(buffer, bytes);
+                                bytes = unzReadCurrentFile(archive, buffer, sizeof(buffer));
+                            }
+                            file.close();
+                        }
                     }
                 }
             }
         }
-        if (profile != firstProfile) continue;
 
-        if (!firstProfileDirectory.exists()) firstProfileDirectory.mkpath(".");
-
-        zip_file *zipfile = zip_fopen_index(archive, i, ZIP_FL_ENC_GUESS);
-        if (zipfile == NULL) continue;
-
-        char buffer[200];
-        QFileInfo pathInfo(filePath);
-        QFile file(firstProfileDirectory.absolutePath() + "/" + pathInfo.fileName());
-        if (file.open(QFile::WriteOnly)){
-            long bytes = zip_fread(zipfile, buffer, sizeof(buffer));
-            while(bytes > 0){
-                file.write(buffer, bytes);
-                bytes = zip_fread(zipfile, buffer, sizeof(buffer));
-            }
-            file.close();
+        if ((i+1) < gi.number_entry)
+        {
+            err = unzGoToNextFile(archive);
+            if (err != UNZ_OK) break;
         }
     }
 
@@ -753,7 +767,7 @@ void MainWindow::on_actionImport_triggered()
         timeIntervals->loadScriptProfile(firstProfile, timeIntervals->scriptsDirectory());
     }
 
-    closeZip:
-    zip_close(archive);
+closeZip:
+    unzClose(archive);
 }
 

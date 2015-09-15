@@ -49,7 +49,7 @@ FORMS    += mainwindow.ui \
     QMAKE_CXXFLAGS += -D__STDC_CONSTANT_MACROS -fpermissive
 }
 
-unix|win32: LIBS += -lm -lz -lswscale -lavformat -lavcodec -lavutil -lzip
+unix|win32: LIBS += -lm -lz -lswscale -lavformat -lavcodec -lavutil -lminizip
 unix: LIBS += -lboost_system -lboost_filesystem
 
 win32: LIBS += -lvfw32 -lbz2 -liconv -lmp3lame -lopencore-amrwb -lopencore-amrnb -lopus -lspeex -ltheora \
