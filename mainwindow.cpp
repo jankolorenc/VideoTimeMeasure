@@ -180,7 +180,7 @@ void MainWindow::on_actionOpen_triggered()
     statusBar()->showMessage("");
 
     if (!videoPlayer.loadFile(fileName)){
-        showError("Invalid video");
+        showError(tr("Invalid video"));
         return;
     }
     session.setOpennedVideo(fileName);
@@ -208,7 +208,7 @@ void MainWindow::on_actionOpen_triggered()
     videoPlayer.readNextFrame();
 
     QTime formatDurationTime(0,0,0);
-    statusBar()->showMessage(QString("%1 fps, duration: %2")
+    statusBar()->showMessage(QString(tr("%1 fps, duration: %2"))
                              .arg(videoPlayer.framerate())
                              .arg(formatDurationTime.addSecs(videoPlayer.durationSeconds()).toString("hh:mm:ss.zzz")));
 }
@@ -343,23 +343,28 @@ void MainWindow::on_tableContextMenuRequested(QPoint position){
     editScriptColumn = index.column();
 
     QMenu *menu = new QMenu(this);
-    QAction *action = new QAction("Add column", this);
+    QAction *action = new QAction(tr("Add column"), this);
     connect(action, SIGNAL(triggered()), SLOT(on_addNewScriptColumn_triggered()));
     menu->addAction(action);
-    action = new QAction("Add row", this);
+    action = new QAction(tr("Add row"), this);
     connect(action, SIGNAL(triggered()), SLOT(on_addNewScriptRow_triggered()));
     menu->addAction(action);
 
     if (index.column() >= FIXED_COLUMS){
-        action = new QAction("Remove column", this);
+        action = new QAction(tr("Remove column"), this);
         connect(action, SIGNAL(triggered()), SLOT(on_removeScriptColumn_triggered()));
         menu->addAction(action);
     }
     if (index.row() > timeIntervals->intervalsCount()){
-        action = new QAction("Remove row", this);
+        action = new QAction(tr("Remove row"), this);
         connect(action, SIGNAL(triggered()), SLOT(on_removeScriptRow_triggered()));
         menu->addAction(action);
-        action = new QAction("Edit cell script", this);
+        action = new QAction(tr("Edit cell script"), this);
+        connect(action, SIGNAL(triggered()), SLOT(on_editScript()));
+        menu->addAction(action);
+    }
+    else{
+        action = new QAction(tr("Edit column script"), this);
         connect(action, SIGNAL(triggered()), SLOT(on_editScript()));
         menu->addAction(action);
     }
@@ -373,15 +378,15 @@ void MainWindow::on_horizontalHeaderContextMenuRequested(QPoint position){
     editScriptColumn = ui->intervalsTableView->horizontalHeader()->logicalIndexAt(position);
     editScriptRow = -1;
     QMenu *menu = new QMenu(this);
-    QAction *action = new QAction("Add column", this);
+    QAction *action = new QAction(tr("Add column"), this);
     connect(action, SIGNAL(triggered()), SLOT(on_addNewScriptColumn_triggered()));
     menu->addAction(action);
     if (editScriptColumn >= FIXED_COLUMS){
-        action = new QAction("Remove column", this);
+        action = new QAction(tr("Remove column"), this);
         connect(action, SIGNAL(triggered()), SLOT(on_removeScriptColumn_triggered()));
         menu->addAction(action);
     }
-    action = new QAction("Edit column script", this);
+    action = new QAction(tr("Edit column script"), this);
     menu->addAction(action);
     connect(action, SIGNAL(triggered()), SLOT(on_editScript()));
 
@@ -395,14 +400,14 @@ void MainWindow::on_verticalHeaderContextMenuRequested(QPoint position){
     editScriptColumn = -1;
     QMenu *menu = new QMenu(this);
     QAction *action;
-    action = new QAction("Add row", this);
+    action = new QAction(tr("Add row"), this);
     connect(action, SIGNAL(triggered()), SLOT(on_addNewScriptRow_triggered()));
     menu->addAction(action);
     if (editScriptRow > timeIntervals->intervalsCount()){
-        action = new QAction("Remove row", this);
+        action = new QAction(tr("Remove row"), this);
         connect(action, SIGNAL(triggered()), SLOT(on_removeScriptRow_triggered()));
         menu->addAction(action);
-        action = new QAction("Edit row script", this);
+        action = new QAction(tr("Edit row script"), this);
         menu->addAction(action);
         connect(action, SIGNAL(triggered()), SLOT(on_editScript()));
     }
@@ -507,7 +512,7 @@ void MainWindow::on_forwardJumpPushButton_clicked()
 void MainWindow::on_actionAbout_triggered()
 {
     QMessageBox::about(this,
-                       "About Video Time Measure",
+                       tr("About Video Time Measure"),
                        "<h1>VideoTimeMeasure</h1> \
                        <p>Application to measure time in video clip.</p> \
                        <p>Created by Jan Kolorenc</p> \
@@ -549,7 +554,7 @@ void MainWindow::on_actionNew_triggered()
                 if (action != NULL) action->setCheckable(TRUE);
             }
         }
-        else showError("Invalid profile name");
+        else showError(tr("Invalid profile name"));
     }
 }
 
@@ -674,7 +679,7 @@ void MainWindow::on_actionExport_triggered()
         }
         else{
             QMessageBox msgBox;
-            msgBox.setText("Failed to open archive.");
+            msgBox.setText(tr("Failed to open archive."));
             msgBox.exec();
         }
     }
@@ -712,7 +717,7 @@ void MainWindow::on_actionImport_triggered()
                     firstProfileDirectory.setPath(timeIntervals->scriptsDirectory() + profile);
                     if (firstProfileDirectory.exists()){
                         QMessageBox msgBox;
-                        msgBox.setText("Import will overwrite profile " + profile);
+                        msgBox.setText(tr("Import will overwrite profile %1").arg(profile));
                         msgBox.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
                         if (msgBox.exec() == QMessageBox::No) goto closeZip;
                         else{
