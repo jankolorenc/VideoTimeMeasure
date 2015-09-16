@@ -75,6 +75,7 @@ Dependencies for compilation or dynamically linked binary::
  - Qt 4.8
  - FFmpeg
  - Boost library
+ - Minizip library
 Compilation::
  - Linux: qmake or qt creator
  - Windows: I use MXE cross compilation environment on Linux
