@@ -56,6 +56,10 @@ In 'Script profiles' menu:
 
 Clear::
     Removes script from table and deactivates current profile.
+Import::
+    Imports profile from archive file.
+Export::
+    Exports profile to archive file.
 New::
     Creates new script profile. If there are scripts in table, the scripts are copies to newly created profile.
 Delete::
