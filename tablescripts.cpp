@@ -142,14 +142,14 @@ void TableScripts::saveScript(QString fileName, QString script){
         out.flush();
         file.close();
     }
-    else qCritical((const char*)QString("Failed to write script %1").arg(fileName).toStdString().c_str());
+    // else qCritical(QString("Failed to write script %1").arg(fileName).toStdString().c_str());
 }
 
 void TableScripts::saveProfile(QString profile){
     QDir directory(basePath + profile);
     if (!directory.exists()){
         if (!directory.mkpath(".")){
-            qCritical((const char*)QString("Failed to create scripts directory %1").arg(directory.absolutePath()).toStdString().c_str());
+            // qCritical((const char*)QString("Failed to create scripts directory %1").arg(directory.absolutePath()).toStdString().c_str());
             return;
         }
     }
