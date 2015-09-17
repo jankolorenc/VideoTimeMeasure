@@ -45,8 +45,8 @@ private:
     uint64_t stopPlayerDts;
 
     QTimer playTimer;
-    int selectCellRow = -1;
-    int selectCellColumn = -1;
+    int selectCellRow;
+    int selectCellColumn;
 
 public:
     int sliderFactor;

@@ -29,7 +29,7 @@ public:
     void loadIntervals(QString fileName);
     void clear();
     void clearTableScripts();
-    int intervalsCount();
+    int intervalsCount() const;
     QString getScript(int row, int column);
     void setScript(int row, int column, QString script);
     void loadScriptProfile(QString profile, QString basePath);
@@ -42,14 +42,14 @@ signals:
     
 public slots:
     //available to scripts
-    QScriptValue getValue(int row, int column);
+    QScriptValue getValue(int row, int column) const;
     QScriptValue printf(QString format, float value);
 
 private:
     QList<TimeInterval> intervals;
     QScriptEngine engine;
     TableScripts tableScripts;
-    int toScriptPositionRow(int row);
+    int toScriptPositionRow(int row) const;
 };
 
 #endif // TIMEINTERVALSMODEL_H

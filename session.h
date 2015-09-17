@@ -12,7 +12,7 @@ class Session : public QObject
     //Q_PROPERTY(QString lastVideoDirectory READ lastVideoDirectory)
 
 private:
-    QString filename = (QDir::homePath() + "/.VideoTimeMeasure/session.xml");
+    QString filename;
     QString videoFile;
     QString videoDirectory;
 

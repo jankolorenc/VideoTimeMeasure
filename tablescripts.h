@@ -34,7 +34,7 @@ public:
     void saveProfile(QString profile = DEFAULT_PROFILE);
     void deleteProfile(QString profile, bool removeDirectory);
     void clear();
-    QString getScript(int row, int column, bool exact = FALSE);
+    QString getScript(int row, int column, bool exact = FALSE) const;
     void setScript(int row, int column, QString script);
     void insertRows(int position, int count);
     void removeRows(int position, int count);

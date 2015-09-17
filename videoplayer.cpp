@@ -46,6 +46,9 @@ VideoPlayer::VideoPlayer(QObject *parent) :
     sliderFactor = 1;
     stopPlayerDts = 0xffffffffffffffff;
 
+    selectCellRow = -1;
+    selectCellColumn = -1;
+
     for(int i = 0; i < IMAGES_BUFFER_SIZE; i++) imagesBuffer[i].image = NULL;
 
     connect(&playTimer, SIGNAL(timeout()), this, SLOT(on_playTimerTimeout()));

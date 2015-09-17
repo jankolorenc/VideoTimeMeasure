@@ -18,7 +18,7 @@ TimeIntervalsModel::TimeIntervalsModel(QObject *parent) :
     intervals.append(first);
 }
 
-int TimeIntervalsModel::intervalsCount(){
+int TimeIntervalsModel::intervalsCount() const{
     return intervals.length();
 }
 
@@ -327,16 +327,16 @@ void TimeIntervalsModel::loadIntervals(QString fileName){
     }
 }
 
-QScriptValue TimeIntervalsModel::getValue(int row, int column)
+QScriptValue TimeIntervalsModel::getValue(int row, int column) const
 {
     if (row < intervals.length()){
         switch (column) {
         case 0:
-            return intervals[row].start.isValid ? intervals[row].start.pts : QScriptValue::NullValue;
+            return intervals[row].start.isValid ? intervals[row].start.pts : QScriptValue();
         case 1:
-            return intervals[row].stop.isValid ? intervals[row].stop.pts : QScriptValue::NullValue;
+            return intervals[row].stop.isValid ? intervals[row].stop.pts : QScriptValue();
         case 2:
-            return intervals[row].isDuration() ? intervals[row].durationSeconds() : QScriptValue::NullValue;
+            return intervals[row].isDuration() ? intervals[row].durationSeconds() : QScriptValue();
         }
     }
     if (row == intervals.length()){
@@ -367,7 +367,7 @@ QScriptValue TimeIntervalsModel::getValue(int row, int column)
         for(int i = 0; i < intervals.length(); i++) if (intervals[i].isDuration()) total += intervals[i].durationSeconds();
         engine.globalObject().setProperty("duration", total);
     }
-    QScriptValue objectValue = engine.newQObject(this);
+    QScriptValue objectValue = engine.newQObject(const_cast<TimeIntervalsModel *>(this));
     engine.globalObject().setProperty("table", objectValue);
     return engine.evaluate(script + "\n");
 }
@@ -378,7 +378,7 @@ QScriptValue TimeIntervalsModel::printf(QString format, float value){
     return str;
 }
 
-int TimeIntervalsModel::toScriptPositionRow(int row){
+int TimeIntervalsModel::toScriptPositionRow(int row) const{
     return row - intervals.length() - 1;
 }
 

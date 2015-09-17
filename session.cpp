@@ -4,7 +4,7 @@
 Session::Session(QObject *parent) :
     QObject(parent)
 {
-
+    filename = (QDir::homePath() + "/.VideoTimeMeasure/session.xml");
 }
 
 QString Session::opennedVideo(){

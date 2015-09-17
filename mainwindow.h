@@ -26,7 +26,7 @@ public:
 private:
     int editScriptColumn;
     int editScriptRow;
-    bool videoLoaded = false;
+    bool videoLoaded;
 
     Session session;
 

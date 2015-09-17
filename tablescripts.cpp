@@ -94,7 +94,7 @@ void TableScripts::clear(){
     profile = DEFAULT_PROFILE;
 }
 
-QString TableScripts::getScript(int row, int column, bool exact = FALSE){
+QString TableScripts::getScript(int row, int column, bool exact) const{
     if (row >= 0 && column >= 0 && cellScripts.contains(row) && cellScripts[row].contains(column))
         return cellScripts[row][column];
 
@@ -142,14 +142,14 @@ void TableScripts::saveScript(QString fileName, QString script){
         out.flush();
         file.close();
     }
-    else qCritical(QString("Failed to write script ").append(fileName).toAscii());
+    else qCritical((const char*)QString("Failed to write script %1").arg(fileName).toStdString().c_str());
 }
 
 void TableScripts::saveProfile(QString profile){
     QDir directory(basePath + profile);
     if (!directory.exists()){
         if (!directory.mkpath(".")){
-            qCritical(QString("Failed to create scripts directory ").append(directory.absolutePath()).toAscii());
+            qCritical((const char*)QString("Failed to create scripts directory %1").arg(directory.absolutePath()).toStdString().c_str());
             return;
         }
     }

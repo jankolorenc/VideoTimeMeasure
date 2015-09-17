@@ -30,6 +30,8 @@ MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
 {
+    videoLoaded = false;
+
     ui->setupUi(this);
     scriptProfilesActionGroup = new QActionGroup(this);
 
@@ -309,6 +311,8 @@ void MainWindow::on_actionSave_triggered()
 }
 
 void MainWindow::on_selectionChanged(const QItemSelection & selected, const QItemSelection & deselected){
+    (void)(deselected); // avoid unused warning
+
     if (selected.count() > 0 && selected.indexes().count() > 0){
         QModelIndex index = selected.indexes().first();
         QVariant data = timeIntervals->data(index, Qt::UserRole);
@@ -665,7 +669,7 @@ void MainWindow::on_actionExport_triggered()
                         char *buffer = (char *)malloc(size);
                         file.read(buffer, size);
                         QString filename = timeIntervals->scriptsProfile() + "/" + scriptsIterator.fileInfo().fileName();
-                        zip_fileinfo zfi = { 0 };
+                        zip_fileinfo zfi = { 0, 0, 0, 0, 0, 0, 0, 0, 0 };
                         if (ZIP_OK == zipOpenNewFileInZip(archive, filename.toStdString().c_str(), &zfi, NULL, 0, NULL, 0, NULL, Z_DEFLATED, Z_DEFAULT_COMPRESSION))
                         {
                             zipWriteInFileInZip(archive, buffer, size);
@@ -704,7 +708,7 @@ void MainWindow::on_actionImport_triggered()
     int err = unzGetGlobalInfo(archive, &gi);
     if (err != UNZ_OK) goto closeZip;
 
-    for (int i = 0; i < gi.number_entry; i++)
+    for (ulong i = 0; i < gi.number_entry; i++)
     {
         unz_file_info file_info;
         char filename_inzip[256];
