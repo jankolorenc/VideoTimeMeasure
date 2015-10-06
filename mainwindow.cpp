@@ -208,7 +208,6 @@ void MainWindow::on_actionOpen_triggered()
     }
     //next image
     videoPlayer.readNextFrame();
-
     QTime formatDurationTime(0,0,0);
     statusBar()->showMessage(QString(tr("%1 fps, duration: %2"))
                              .arg(videoPlayer.framerate())
@@ -236,6 +235,13 @@ void MainWindow::showCurrentFrame(bool updateSlider){
         foreach(const QModelIndex index, ui->intervalsTableView->selectionModel()->selectedIndexes()){
             timeIntervals->setData(index, timestampValue, Qt::EditRole);
         }
+
+        QTime formatDurationTime(0,0,0);
+        statusBar()->showMessage(QString(tr("%1 fps, duration: %2, dts: %3, pts: %4"))
+                                 .arg(videoPlayer.framerate())
+                                 .arg(formatDurationTime.addSecs(videoPlayer.durationSeconds()).toString("hh:mm:ss.zzz"))
+                                 .arg(currentImage->dts)
+                                 .arg(av_q2d(currentImage->pts)));
     }
 }
 
@@ -276,8 +282,8 @@ void MainWindow::on_timeHorizontalSlider_sliderMoved(int position)
 
     int64_t streamPosition = (position * videoPlayer.sliderFactor) + videoPlayer.startTime();
 
-    if (position) videoPlayer.seek(streamPosition * videoPlayer.timebase(), streamPosition, false, false);
-    else videoPlayer.seek(streamPosition * videoPlayer.timebase(), streamPosition, true, false);
+    if (position) videoPlayer.seek(av_mul_q(av_make_q(streamPosition, 1), videoPlayer.timebase()), false, false);
+    else videoPlayer.seek(av_mul_q(av_make_q(streamPosition, 1), videoPlayer.timebase()), true, false);
     showCurrentFrame(false);
 }
 
@@ -321,7 +327,7 @@ void MainWindow::on_selectionChanged(const QItemSelection & selected, const QIte
         if (timestamp.isValid){
             // jump to selected timestamp
             stopPlayer();
-            videoPlayer.seek(timestamp.pts, timestamp.dts, true, false);
+            videoPlayer.seek(timestamp.pts, true, false);
             showCurrentFrame();
         }
         else{

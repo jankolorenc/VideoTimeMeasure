@@ -33,9 +33,9 @@ private:
     AVFrame *pFrameRGB;
     uint8_t *buffer;
     struct SwsContext *sws_ctx;
-    double video_clock;
+    AVRational video_clock;
     int backSeekFactor;
-    double pts;
+    AVRational pts;
 
     VideoImage imagesBuffer[IMAGES_BUFFER_SIZE];
     int imagesBufferOldest;
@@ -58,10 +58,10 @@ public:
     void closeVideoFile();
     void allocateDecodingFrameBuffers();
     void freeDecodingFrameBuffers();
-    double synchronizeVideo(AVFrame *src_frame, double pts);
+    AVRational synchronizeVideo(AVFrame *src_frame, AVRational pts);
     bool readNextFrame();
     void bufferCurrentFrame();
-    void seek(double targetPts, uint64_t targetDts, bool exactSeek, bool stayOneImageBack);
+    void seek(AVRational targetPts, bool exactSeek, bool stayOneImageBack);
     bool stepForward(int jumpImages = 1);
     bool isStopReached();
     void clearState();
@@ -72,7 +72,7 @@ public:
     int64_t startTime();
     bool stepReverse(int jumpImages = 1);
     bool isEmpty();
-    double timebase();
+    AVRational timebase();
     void play(IntervalTimestamp *stop = NULL, int selectCellRow = -1, int selectCellColumn = -1);
     void stop();
     bool isPlaying();

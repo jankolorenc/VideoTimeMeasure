@@ -10,8 +10,8 @@ bool TimeInterval::isDuration() const{
 }
 
 double TimeInterval::durationSeconds() const{
-    if (start.isValid && stop.isValid && start.pts < stop.pts){
-        return stop.pts - start.pts;
+    if (start.isValid && stop.isValid && av_cmp_q(start.pts, stop.pts) == -1){
+        return av_q2d(av_sub_q(stop.pts, start.pts));
     }
 
     return 0;

@@ -188,9 +188,9 @@ void VideoPlayer::freeDecodingFrameBuffers(){
     }
 }
 
-double VideoPlayer::synchronizeVideo(AVFrame *src_frame, double pts) {
-    double frame_delay;
-    if(pts != 0) {
+AVRational VideoPlayer::synchronizeVideo(AVFrame *src_frame, AVRational pts) {
+    AVRational frame_delay;
+    if(pts.num != 0) {
         /* if we have pts, set video clock to it */
         video_clock = pts;
     } else {
@@ -198,10 +198,10 @@ double VideoPlayer::synchronizeVideo(AVFrame *src_frame, double pts) {
         pts = video_clock;
     }
     /* update the video clock */
-    frame_delay = av_q2d(pFormatCtx->streams[videoStream]->codec->time_base);
+    frame_delay = pFormatCtx->streams[videoStream]->codec->time_base;
     /* if we are repeating a frame, adjust clock accordingly */
-    frame_delay += src_frame->repeat_pict * (frame_delay * 0.5);
-    video_clock += frame_delay;
+    frame_delay = av_add_q(frame_delay, av_mul_q(av_make_q(src_frame->repeat_pict, 1), av_mul_q(frame_delay, av_make_q(1, 2))));
+    video_clock = av_add_q(video_clock, frame_delay);
     return pts;
 }
 
@@ -213,7 +213,7 @@ bool VideoPlayer::readNextFrame(){
 
     while(av_read_frame(pFormatCtx, &packet)>=0) {
         if(packet.stream_index==videoStream) {
-            pts = 0;
+            pts = av_make_q(0, 1);
             // Save global pts to be stored in pFrame in first call
             global_video_pkt_pts = packet.pts;
             // Is this a packet from the video stream?
@@ -221,13 +221,13 @@ bool VideoPlayer::readNextFrame(){
             // Decode video frame
             avcodec_decode_video2(pCodecCtx, pFrame, &frameFinished, &packet);
             if(packet.dts == AV_NOPTS_VALUE && pFrame->opaque && *(uint64_t*)pFrame->opaque != AV_NOPTS_VALUE) {
-                pts = *(uint64_t *)pFrame->opaque;
+                pts = av_make_q(*(uint64_t *)pFrame->opaque, 1);
             } else if(packet.dts != AV_NOPTS_VALUE) {
-                pts = packet.dts;
+                pts = av_make_q(packet.dts, 1);
             } else {
-                pts = 0;
+                pts = av_make_q(0, 1);
             }
-            pts *= av_q2d(pFormatCtx->streams[videoStream]->time_base);
+            pts = av_mul_q(pts, pFormatCtx->streams[videoStream]->time_base);
         }
         // Free the packet that was allocated by av_read_frame
         av_free_packet(&packet);
@@ -270,12 +270,13 @@ void VideoPlayer::bufferCurrentFrame(){
     if (imagesBufferOldest == -1) imagesBufferOldest = imagesBufferNewest;
 }
 
-void VideoPlayer::seek(double targetPts, uint64_t targetDts, bool exactSeek, bool stayOneImageBack){
+void VideoPlayer::seek(AVRational targetPts, bool exactSeek, bool stayOneImageBack){
     //limit backseek factor for case when ffmpeg cannot seek
     while(backSeekFactor < MAX_BACK_SEEK_FACTOR){
-        double backSeekDuration = 0;
-        if (exactSeek) backSeekDuration = (BACK_SEEK_FRAMES * backSeekFactor) / av_q2d(pFormatCtx->streams[videoStream]->r_frame_rate);
-        int64_t seekTarget = (targetPts - backSeekDuration) * AV_TIME_BASE;
+        AVRational backSeekDuration;
+        if (exactSeek) backSeekDuration = av_div_q(av_make_q(BACK_SEEK_FRAMES * backSeekFactor, 1), pFormatCtx->streams[videoStream]->r_frame_rate);
+        else backSeekDuration = av_make_q(0, 1);
+        int64_t seekTarget = av_q2d(av_mul_q(av_sub_q(targetPts, backSeekDuration), av_make_q(AV_TIME_BASE, 1)));
 
         // hope this is fix for mjpeg back seek causing crash
         if (pFormatCtx->start_time >=0 && seekTarget < 0) seekTarget = 0;
@@ -287,12 +288,12 @@ void VideoPlayer::seek(double targetPts, uint64_t targetDts, bool exactSeek, boo
             avcodec_flush_buffers(pFormatCtx->streams[videoStream]->codec);
             // flush imagesBuffer
             imagesBufferCurrent = imagesBufferNewest = imagesBufferOldest = -1;
-            video_clock = 0;
+            video_clock = av_make_q(0, 1);
 
             // read and buffer previous images
             if (exactSeek){
-                if (stayOneImageBack) while (readNextFrame() && imagesBuffer[imagesBufferNewest].dts < targetDts);
-                else while (readNextFrame() && imagesBuffer[imagesBufferNewest].dts <= targetDts);
+                if (stayOneImageBack) while (readNextFrame() && av_cmp_q(imagesBuffer[imagesBufferNewest].pts, targetPts) == -1);
+                else while (readNextFrame() && av_cmp_q(imagesBuffer[imagesBufferNewest].pts, targetPts) != 1);
                 if (imagesBufferNewest != imagesBufferOldest){
                     imagesBufferCurrent = (imagesBufferNewest -1 + IMAGES_BUFFER_SIZE) % IMAGES_BUFFER_SIZE;
                     break;
@@ -368,9 +369,9 @@ int64_t VideoPlayer::startTime(){
     return pFormatCtx->streams[videoStream]->start_time;
 }
 
-double VideoPlayer::timebase(){
-    if (isEmpty()) return 0;
-    return av_q2d(pFormatCtx->streams[videoStream]->time_base);
+AVRational VideoPlayer::timebase(){
+    if (isEmpty()) return av_make_q(0, 1);
+    return pFormatCtx->streams[videoStream]->time_base;
 }
 
 bool VideoPlayer::stepReverse(int jumpImages)
@@ -385,7 +386,7 @@ bool VideoPlayer::stepReverse(int jumpImages)
         else{
             int64_t start_time = av_rescale_q(pFormatCtx->start_time, AV_TIME_BASE_Q, pFormatCtx->streams[videoStream]->time_base);
             if (imagesBuffer[imagesBufferCurrent].dts > start_time){
-                seek(imagesBuffer[imagesBufferCurrent].pts, imagesBuffer[imagesBufferCurrent].dts, true, true);
+                seek(imagesBuffer[imagesBufferCurrent].pts, true, true);
             }
         }
     }

@@ -3,8 +3,16 @@
 
 #include <stdint.h>
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+#include <libavutil/rational.h>
+#ifdef __cplusplus
+}
+#endif
+
 typedef struct IntervalTimestamp {
-    double pts;
+    AVRational pts;
     uint64_t dts;
     bool isValid;
 } IntervalTimestamp;

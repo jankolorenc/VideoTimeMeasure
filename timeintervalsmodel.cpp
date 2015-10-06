@@ -44,13 +44,13 @@ QVariant TimeIntervalsModel::data(const QModelIndex &index, int role) const
             case 0:
                 if (intervals[index.row()].start.isValid){
                     QTime interval(0,0,0);
-                    return interval.addMSecs(intervals[index.row()].start.pts * 1000).toString("hh:mm:ss.zzz");
+                    return interval.addMSecs(av_q2d(intervals[index.row()].start.pts) * 1000).toString("hh:mm:ss.zzz");
                 }
                 return QVariant();
             case 1:
                 if (intervals[index.row()].stop.isValid){
                     QTime interval(0,0,0);
-                    return interval.addMSecs(intervals[index.row()].stop.pts * 1000).toString("hh:mm:ss.zzz");
+                    return interval.addMSecs(av_q2d(intervals[index.row()].stop.pts) * 1000).toString("hh:mm:ss.zzz");
                 }
                 return QVariant();
             case 2:
@@ -246,7 +246,7 @@ bool TimeIntervalsModel::setData(const QModelIndex &index, const QVariant &value
 void xmlSaveTimestamp(IntervalTimestamp &timestamp, const QString &name, QXmlStreamWriter &stream){
     if (timestamp.isValid){
         stream.writeStartElement(name);
-        stream.writeAttribute("pts", QString("%1").arg(timestamp.pts));
+        stream.writeAttribute("pts", QString("%1").arg(av_q2d(timestamp.pts)));
         stream.writeAttribute("dts", QString("%1").arg(timestamp.dts));
         stream.writeEndElement(); // interval
     }
@@ -274,7 +274,7 @@ void TimeIntervalsModel::saveIntervals(QString fileName){
 void xmlLoadTimestamp(QXmlStreamReader &stream, IntervalTimestamp &timestamp){
     QXmlStreamAttributes attributes = stream.attributes();
     if (attributes.hasAttribute("pts") && attributes.hasAttribute("dts")){
-        timestamp.pts = attributes.value("pts").toString().toDouble();
+        timestamp.pts = av_d2q(attributes.value("pts").toString().toDouble(), 100000);
         timestamp.dts = attributes.value("dts").toString().toULong();
         timestamp.isValid = true;
     }
@@ -305,10 +305,10 @@ void TimeIntervalsModel::loadIntervals(QString fileName){
         while(!stream.atEnd()){
             if (stream.readNextStartElement()){
                 if (stream.name() == "interval"){
-                    interval.start.pts = 0;
+                    interval.start.pts = av_make_q(0, 1);
                     interval.start.dts = 0;
                     interval.start.isValid = false;
-                    interval.stop.pts = 0;
+                    interval.stop.pts = av_make_q(0, 1);
                     interval.stop.dts = 0;
                     interval.stop.isValid = false;
                 }
@@ -332,9 +332,9 @@ QScriptValue TimeIntervalsModel::getValue(int row, int column) const
     if (row < intervals.length()){
         switch (column) {
         case 0:
-            return intervals[row].start.isValid ? intervals[row].start.pts : QScriptValue();
+            return intervals[row].start.isValid ? av_q2d(intervals[row].start.pts) : QScriptValue();
         case 1:
-            return intervals[row].stop.isValid ? intervals[row].stop.pts : QScriptValue();
+            return intervals[row].stop.isValid ? av_q2d(intervals[row].stop.pts) : QScriptValue();
         case 2:
             return intervals[row].isDuration() ? intervals[row].durationSeconds() : QScriptValue();
         }
@@ -358,8 +358,8 @@ QScriptValue TimeIntervalsModel::getValue(int row, int column) const
     engine.globalObject().setProperty("row", row);
     engine.globalObject().setProperty("intervals", intervals.length());
     if (row < intervals.length()){
-        engine.globalObject().setProperty("start", intervals[row].start.pts);
-        engine.globalObject().setProperty("stop", intervals[row].stop.pts);
+        engine.globalObject().setProperty("start", av_q2d(intervals[row].start.pts));
+        engine.globalObject().setProperty("stop", av_q2d(intervals[row].stop.pts));
         engine.globalObject().setProperty("duration", intervals[row].durationSeconds());
     }
     else if (row == intervals.length()){
