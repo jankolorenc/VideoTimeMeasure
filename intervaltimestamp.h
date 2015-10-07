@@ -13,7 +13,6 @@ extern "C" {
 
 typedef struct IntervalTimestamp {
     AVRational pts;
-    uint64_t dts;
     bool isValid;
 } IntervalTimestamp;
 

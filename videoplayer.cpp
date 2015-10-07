@@ -1,5 +1,6 @@
 #include "videoplayer.h"
 #include "intervaltimestamp.h"
+#include "limits.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -43,8 +44,7 @@ VideoPlayer::VideoPlayer(QObject *parent) :
     imagesBufferNewest = -1;
     imagesBufferCurrent = -1;
     backSeekFactor = 1;
-    sliderFactor = 1;
-    stopPlayerDts = 0xffffffffffffffff;
+    stopPlayerPts = av_make_q(INT_MAX, 1);
 
     selectCellRow = -1;
     selectCellColumn = -1;
@@ -264,26 +264,22 @@ void VideoPlayer::bufferCurrentFrame(){
     }
 
     imagesBuffer[imagesBufferNewest].pts = pts;
-    imagesBuffer[imagesBufferNewest].dts = pFrame->pkt_dts;
 
     if (imagesBufferCurrent == -1) imagesBufferCurrent = imagesBufferNewest;
     if (imagesBufferOldest == -1) imagesBufferOldest = imagesBufferNewest;
 }
 
-void VideoPlayer::seek(AVRational targetPts, bool exactSeek, bool stayOneImageBack){
+void VideoPlayer::seek(AVRational targetPts, bool exactSeek){
     //limit backseek factor for case when ffmpeg cannot seek
     while(backSeekFactor < MAX_BACK_SEEK_FACTOR){
         AVRational backSeekDuration;
         if (exactSeek) backSeekDuration = av_div_q(av_make_q(BACK_SEEK_FRAMES * backSeekFactor, 1), pFormatCtx->streams[videoStream]->r_frame_rate);
         else backSeekDuration = av_make_q(0, 1);
-        int64_t seekTarget = av_q2d(av_mul_q(av_sub_q(targetPts, backSeekDuration), av_make_q(AV_TIME_BASE, 1)));
 
-        // hope this is fix for mjpeg back seek causing crash
-        if (pFormatCtx->start_time >=0 && seekTarget < 0) seekTarget = 0;
+        int64_t seekTimestamp = av_q2d(av_div_q(av_sub_q(targetPts, backSeekDuration), pFormatCtx->streams[videoStream]->time_base));
+        if (seekTimestamp < 0) seekTimestamp = 0;
 
-        seekTarget = av_rescale_q(seekTarget, AV_TIME_BASE_Q, pFormatCtx->streams[videoStream]->time_base);
-
-        int result = av_seek_frame(pFormatCtx, videoStream, seekTarget, AVSEEK_FLAG_BACKWARD);
+        int result = av_seek_frame(pFormatCtx, videoStream, seekTimestamp, AVSEEK_FLAG_BACKWARD);
         if (result >= 0){
             avcodec_flush_buffers(pFormatCtx->streams[videoStream]->codec);
             // flush imagesBuffer
@@ -292,8 +288,7 @@ void VideoPlayer::seek(AVRational targetPts, bool exactSeek, bool stayOneImageBa
 
             // read and buffer previous images
             if (exactSeek){
-                if (stayOneImageBack) while (readNextFrame() && av_cmp_q(imagesBuffer[imagesBufferNewest].pts, targetPts) == -1);
-                else while (readNextFrame() && av_cmp_q(imagesBuffer[imagesBufferNewest].pts, targetPts) != 1);
+                while (readNextFrame() && av_cmp_q(imagesBuffer[imagesBufferNewest].pts, targetPts) != 1);
                 if (imagesBufferNewest != imagesBufferOldest){
                     imagesBufferCurrent = (imagesBufferNewest -1 + IMAGES_BUFFER_SIZE) % IMAGES_BUFFER_SIZE;
                     break;
@@ -329,7 +324,7 @@ bool VideoPlayer::stepForward(int jumpImages)
 
 bool VideoPlayer::isStopReached()
 {
-    return imagesBufferCurrent > -1 && imagesBuffer[imagesBufferCurrent].dts >= stopPlayerDts;
+    return imagesBufferCurrent > -1 && av_cmp_q(imagesBuffer[imagesBufferCurrent].pts, stopPlayerPts) != -1;
 }
 
 void VideoPlayer::clearState(){
@@ -337,14 +332,13 @@ void VideoPlayer::clearState(){
     freeDecodingFrameBuffers();
     imagesBufferCurrent = imagesBufferNewest = imagesBufferOldest = -1;
     backSeekFactor = 1;
-    sliderFactor = 1;
-    stopPlayerDts = 0xffffffffffffffff;
+    stopPlayerPts = av_make_q(INT_MAX, 1);
 }
 
 int64_t VideoPlayer::streamDuration()
 {
     if (isEmpty()) return 0;
-    return av_rescale_q(pFormatCtx->duration, AV_TIME_BASE_Q, pFormatCtx->streams[videoStream]->time_base);
+    return pFormatCtx->streams[videoStream]->duration;
 }
 
 double VideoPlayer::framerate()
@@ -384,9 +378,9 @@ bool VideoPlayer::stepReverse(int jumpImages)
             imagesBufferCurrent = (imagesBufferCurrent - 1 + IMAGES_BUFFER_SIZE) % IMAGES_BUFFER_SIZE;
         }
         else{
-            int64_t start_time = av_rescale_q(pFormatCtx->start_time, AV_TIME_BASE_Q, pFormatCtx->streams[videoStream]->time_base);
-            if (imagesBuffer[imagesBufferCurrent].dts > start_time){
-                seek(imagesBuffer[imagesBufferCurrent].pts, true, true);
+            AVRational start_time = av_mul_q(av_make_q(pFormatCtx->streams[videoStream]->start_time, 1), pFormatCtx->streams[videoStream]->time_base);
+            if (av_cmp_q(imagesBuffer[imagesBufferCurrent].pts, start_time) == 1){
+                seek(imagesBuffer[imagesBufferCurrent].pts, true);
             }
         }
     }
@@ -404,8 +398,8 @@ bool VideoPlayer::isPlaying(){
 }
 
 void VideoPlayer::play(IntervalTimestamp *stop, int selectCellRow, int selectCellColumn){
-    if (stop != NULL && stop->isValid) stopPlayerDts = stop->dts;
-    else stopPlayerDts = 0xffffffffffffffff;
+    if (stop != NULL && stop->isValid) stopPlayerPts = stop->pts;
+    else stopPlayerPts = av_make_q(INT_MAX, 1 );
     this->selectCellRow = selectCellRow;
     this->selectCellColumn = selectCellColumn;
     double timeout = 1 / framerate() * 1000;

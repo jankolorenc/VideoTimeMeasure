@@ -246,8 +246,10 @@ bool TimeIntervalsModel::setData(const QModelIndex &index, const QVariant &value
 void xmlSaveTimestamp(IntervalTimestamp &timestamp, const QString &name, QXmlStreamWriter &stream){
     if (timestamp.isValid){
         stream.writeStartElement(name);
-        stream.writeAttribute("pts", QString("%1").arg(av_q2d(timestamp.pts)));
-        stream.writeAttribute("dts", QString("%1").arg(timestamp.dts));
+        //stream.writeAttribute("pts", QString("%1").arg(av_q2d(timestamp.pts)));
+        //stream.writeAttribute("dts", QString("%1").arg(timestamp.dts));
+        stream.writeAttribute("pts_num", QString("%1").arg(timestamp.pts.num));
+        stream.writeAttribute("pts_den", QString("%1").arg(timestamp.pts.den));
         stream.writeEndElement(); // interval
     }
 }
@@ -275,7 +277,10 @@ void xmlLoadTimestamp(QXmlStreamReader &stream, IntervalTimestamp &timestamp){
     QXmlStreamAttributes attributes = stream.attributes();
     if (attributes.hasAttribute("pts") && attributes.hasAttribute("dts")){
         timestamp.pts = av_d2q(attributes.value("pts").toString().toDouble(), 100000);
-        timestamp.dts = attributes.value("dts").toString().toULong();
+        timestamp.isValid = true;
+    }
+    if (attributes.hasAttribute("pts_num") && attributes.hasAttribute("pts_den")){
+        timestamp.pts = av_make_q(attributes.value("pts_num").toString().toInt(), attributes.value("pts_den").toString().toInt());
         timestamp.isValid = true;
     }
 }
@@ -306,10 +311,8 @@ void TimeIntervalsModel::loadIntervals(QString fileName){
             if (stream.readNextStartElement()){
                 if (stream.name() == "interval"){
                     interval.start.pts = av_make_q(0, 1);
-                    interval.start.dts = 0;
                     interval.start.isValid = false;
                     interval.stop.pts = av_make_q(0, 1);
-                    interval.stop.dts = 0;
                     interval.stop.isValid = false;
                 }
                 if (stream.name() == "start") xmlLoadTimestamp(stream, interval.start);

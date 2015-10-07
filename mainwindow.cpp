@@ -193,8 +193,7 @@ void MainWindow::on_actionOpen_triggered()
         setWindowTitle(fileName);
     }
 
-    int64_t streamDuration = videoPlayer.streamDuration();
-    ui->timeHorizontalSlider->setMaximum(streamDuration / videoPlayer.sliderFactor);
+    ui->timeHorizontalSlider->setMaximum(videoPlayer.streamDuration());
 
     QVariant data = timeIntervals->data(timeIntervals->index(0, 0), Qt::UserRole);
     if (data.isValid()){
@@ -221,7 +220,8 @@ void MainWindow::showCurrentFrame(bool updateSlider){
 
         // update slider
         if (updateSlider){
-            double sliderValue = (currentImage->dts - videoPlayer.startTime()) / videoPlayer.sliderFactor;
+            u_int64_t timestamp = av_q2d(av_div_q(currentImage->pts, videoPlayer.timebase()));
+            double sliderValue = timestamp - videoPlayer.startTime();
             ui->timeHorizontalSlider->setValue(sliderValue);
         }
 
@@ -229,7 +229,6 @@ void MainWindow::showCurrentFrame(bool updateSlider){
         IntervalTimestamp timestamp;
         timestamp.isValid = true;
         timestamp.pts = currentImage->pts;
-        timestamp.dts = currentImage->dts;
         QVariant timestampValue;
         timestampValue.setValue(timestamp);
         foreach(const QModelIndex index, ui->intervalsTableView->selectionModel()->selectedIndexes()){
@@ -237,10 +236,9 @@ void MainWindow::showCurrentFrame(bool updateSlider){
         }
 
         QTime formatDurationTime(0,0,0);
-        statusBar()->showMessage(QString(tr("%1 fps, duration: %2, dts: %3, pts: %4"))
+        statusBar()->showMessage(QString(tr("%1 fps, duration: %2, pts: %3"))
                                  .arg(videoPlayer.framerate())
                                  .arg(formatDurationTime.addSecs(videoPlayer.durationSeconds()).toString("hh:mm:ss.zzz"))
-                                 .arg(currentImage->dts)
                                  .arg(av_q2d(currentImage->pts)));
     }
 }
@@ -280,10 +278,9 @@ void MainWindow::on_timeHorizontalSlider_sliderMoved(int position)
 {
     if(videoPlayer.isEmpty()) return;
 
-    int64_t streamPosition = (position * videoPlayer.sliderFactor) + videoPlayer.startTime();
+    int64_t streamPosition = position + videoPlayer.startTime();
 
-    if (position) videoPlayer.seek(av_mul_q(av_make_q(streamPosition, 1), videoPlayer.timebase()), false, false);
-    else videoPlayer.seek(av_mul_q(av_make_q(streamPosition, 1), videoPlayer.timebase()), true, false);
+    videoPlayer.seek(av_mul_q(av_make_q(streamPosition, 1), videoPlayer.timebase()), true);
     showCurrentFrame(false);
 }
 
@@ -327,7 +324,7 @@ void MainWindow::on_selectionChanged(const QItemSelection & selected, const QIte
         if (timestamp.isValid){
             // jump to selected timestamp
             stopPlayer();
-            videoPlayer.seek(timestamp.pts, true, false);
+            videoPlayer.seek(timestamp.pts, true);
             showCurrentFrame();
         }
         else{
@@ -335,7 +332,6 @@ void MainWindow::on_selectionChanged(const QItemSelection & selected, const QIte
             VideoImage *currentImage = videoPlayer.currentImage();
             if (currentImage != NULL){
                 IntervalTimestamp currentTimestamp;
-                currentTimestamp.dts = currentImage->dts;
                 currentTimestamp.pts = currentImage->pts;
                 currentTimestamp.isValid = true;
                 QVariant timestampValue;

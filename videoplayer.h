@@ -42,15 +42,13 @@ private:
     int imagesBufferNewest;
     int imagesBufferCurrent;
 
-    uint64_t stopPlayerDts;
+    AVRational stopPlayerPts;
 
     QTimer playTimer;
     int selectCellRow;
     int selectCellColumn;
 
 public:
-    int sliderFactor;
-
     explicit VideoPlayer(QObject *parent = 0);
     ~VideoPlayer();
 
@@ -61,7 +59,7 @@ public:
     AVRational synchronizeVideo(AVFrame *src_frame, AVRational pts);
     bool readNextFrame();
     void bufferCurrentFrame();
-    void seek(AVRational targetPts, bool exactSeek, bool stayOneImageBack);
+    void seek(AVRational targetPts, bool exactSeek);
     bool stepForward(int jumpImages = 1);
     bool isStopReached();
     void clearState();
