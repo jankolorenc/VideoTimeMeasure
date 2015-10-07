@@ -220,7 +220,7 @@ void MainWindow::showCurrentFrame(bool updateSlider){
 
         // update slider
         if (updateSlider){
-            u_int64_t timestamp = av_q2d(av_div_q(currentImage->pts, videoPlayer.timebase()));
+            int64_t timestamp = av_q2d(av_div_q(currentImage->pts, videoPlayer.timebase()));
             ui->timeHorizontalSlider->setValue(timestamp - videoPlayer.startTime());
         }
 
