@@ -246,8 +246,6 @@ bool TimeIntervalsModel::setData(const QModelIndex &index, const QVariant &value
 void xmlSaveTimestamp(IntervalTimestamp &timestamp, const QString &name, QXmlStreamWriter &stream){
     if (timestamp.isValid){
         stream.writeStartElement(name);
-        //stream.writeAttribute("pts", QString("%1").arg(av_q2d(timestamp.pts)));
-        //stream.writeAttribute("dts", QString("%1").arg(timestamp.dts));
         stream.writeAttribute("pts_num", QString("%1").arg(timestamp.pts.num));
         stream.writeAttribute("pts_den", QString("%1").arg(timestamp.pts.den));
         stream.writeEndElement(); // interval
@@ -275,7 +273,7 @@ void TimeIntervalsModel::saveIntervals(QString fileName){
 
 void xmlLoadTimestamp(QXmlStreamReader &stream, IntervalTimestamp &timestamp){
     QXmlStreamAttributes attributes = stream.attributes();
-    if (attributes.hasAttribute("pts") && attributes.hasAttribute("dts")){
+    if (attributes.hasAttribute("pts")){
         timestamp.pts = av_d2q(attributes.value("pts").toString().toDouble(), 100000);
         timestamp.isValid = true;
     }

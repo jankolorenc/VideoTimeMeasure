@@ -221,8 +221,7 @@ void MainWindow::showCurrentFrame(bool updateSlider){
         // update slider
         if (updateSlider){
             u_int64_t timestamp = av_q2d(av_div_q(currentImage->pts, videoPlayer.timebase()));
-            double sliderValue = timestamp - videoPlayer.startTime();
-            ui->timeHorizontalSlider->setValue(sliderValue);
+            ui->timeHorizontalSlider->setValue(timestamp - videoPlayer.startTime());
         }
 
         // update selected cell in intervals table
