@@ -9,7 +9,7 @@
 
 /**
  * @brief The TimeIntervalsModel class
- * Model to fill TableView with time intervals with intervals start, stop, duration and profile script values
+ * Model to fill TableView with intervals (start, stop timestamps and duration) and profile script values
  */
 class TimeIntervalsModel : public QAbstractTableModel
 {
@@ -30,30 +30,111 @@ public:
     bool removeColumns(int position, int columns, const QModelIndex &index=QModelIndex());
     bool setData(const QModelIndex &index, const QVariant &value, int role);
 
+    /**
+     * @brief save intervals to file
+     * @param fileName
+     */
     void saveIntervals(QString fileName);
+
+    /**
+     * @brief load intervals from file
+     * @param fileName
+     */
     void loadIntervals(QString fileName);
+
+    /**
+     * @brief clear intervals
+     */
     void clear();
+
+    /**
+     * @brief clear scripts
+     */
     void clearTableScripts();
-    int intervalsCount() const;
+
+    /**
+     * @brief get number of intervals
+     * @return intervals count
+     */
+    int getIntervalsCount() const;
+
+    /**
+     * @brief get script from specified cell
+     * @param row. -1 indicates whole column script
+     * @param column. -1 indicates whole row script
+     * @return script
+     */
     QString getScript(int row, int column);
+
+    /**
+     * @brief set script to specified cell
+     * @param row. -1 indicates whole column script
+     * @param column. -1 indicates whole row script
+     * @param script
+     */
     void setScript(int row, int column, QString script);
+
+    /**
+     * @brief load scripts from directory (profile)
+     * @param profile name
+     * @param basePath profiles base path
+     */
     void loadScriptProfile(QString profile, QString basePath);
+
+    /**
+     * @brief save sripts to directory
+     * @param profile name
+     */
     void saveScriptProfile(QString profile);
+
+    /**
+     * @brief delete script profile
+     * @param profile name
+     */
     void deleteScriptProfile(QString profile);
-    QString scriptsDirectory();
-    QString scriptsProfile();
+
+    /**
+     * @brief get profiles directory
+     * @return profiles directory
+     */
+    QString getProfilesDirectory();
+
+    /**
+     * @brief get current scripts profile
+     * @return current scripts profile
+     */
+    QString getScriptsProfile();
 
 signals:
     
 public slots:
-    //available to scripts
+    //functions available in scripts
+    /**
+     * @brief return value of specified cell
+     * @param row
+     * @param column
+     * @return
+     */
     QScriptValue getValue(int row, int column) const;
+
+    /**
+     * @brief float value formatting in printf style
+     * @param format
+     * @param value
+     * @return
+     */
     QScriptValue printf(QString format, float value);
 
 private:
     QList<TimeInterval> intervals;
     QScriptEngine engine;
     TableScripts tableScripts;
+    /**
+     * @brief convert table row to internal script rows.
+     * Script row with 0 index is row after intervals total row
+     * @param row in table
+     * @return
+     */
     int toScriptPositionRow(int row) const;
 };
 

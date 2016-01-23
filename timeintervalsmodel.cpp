@@ -18,7 +18,7 @@ TimeIntervalsModel::TimeIntervalsModel(QObject *parent) :
     intervals.append(first);
 }
 
-int TimeIntervalsModel::intervalsCount() const{
+int TimeIntervalsModel::getIntervalsCount() const{
     return intervals.length();
 }
 
@@ -91,8 +91,8 @@ QVariant TimeIntervalsModel::data(const QModelIndex &index, int role) const
         if (index.row() % 2) color.setNamedColor("whitesmoke");
         else color.setNamedColor("white");
 
-        if (index.row() == intervalsCount()) color.setNamedColor("cyan");
-        if (editingTableScripts && (index.row() > intervalsCount() || index.column() >= FIXED_COLUMS)){
+        if (index.row() == getIntervalsCount()) color.setNamedColor("cyan");
+        if (editingTableScripts && (index.row() > getIntervalsCount() || index.column() >= FIXED_COLUMS)){
             if (index.row() % 2) color.setNamedColor("powderblue");
             else color.setNamedColor("lightcyan");
         }
@@ -407,10 +407,10 @@ void TimeIntervalsModel::deleteScriptProfile(QString profile){
     endResetModel();
 }
 
-QString TimeIntervalsModel::scriptsDirectory(){
+QString TimeIntervalsModel::getProfilesDirectory(){
     return tableScripts.basePath;
 }
 
-QString TimeIntervalsModel::scriptsProfile(){
+QString TimeIntervalsModel::getScriptsProfile(){
     return tableScripts.profile;
 }

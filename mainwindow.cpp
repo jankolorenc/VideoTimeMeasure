@@ -153,8 +153,8 @@ void MainWindow::fillScriptProfiles(QString scriptsDir){
 }
 
 void MainWindow::fillScriptProfiles(){
-    fillScriptProfiles(timeIntervals->scriptsDirectory());
-    timeIntervals->loadScriptProfile(timeIntervals->scriptsProfile(), timeIntervals->scriptsDirectory());
+    fillScriptProfiles(timeIntervals->getProfilesDirectory());
+    timeIntervals->loadScriptProfile(timeIntervals->getScriptsProfile(), timeIntervals->getProfilesDirectory());
 }
 
 MainWindow::~MainWindow()
@@ -291,7 +291,7 @@ void MainWindow::on_selectNextCell()
     if (index.isValid()){
         if (index.row() != timeIntervals->rowCount(index.parent()) - 1){
             // add new row if last editable cell is selected
-            if (index.column() == 1 && index.row() == timeIntervals->intervalsCount() - 1){
+            if (index.column() == 1 && index.row() == timeIntervals->getIntervalsCount() - 1){
                 ui->intervalsTableView->model()->insertRows(index.row() + 1, 1, index.parent());
             }
             int newColumn = (index.column() + 1) % 2;
@@ -360,7 +360,7 @@ void MainWindow::on_tableContextMenuRequested(QPoint position){
         connect(action, SIGNAL(triggered()), SLOT(on_removeScriptColumn_triggered()));
         menu->addAction(action);
     }
-    if (index.row() > timeIntervals->intervalsCount()){
+    if (index.row() > timeIntervals->getIntervalsCount()){
         action = new QAction(tr("Remove row"), this);
         connect(action, SIGNAL(triggered()), SLOT(on_removeScriptRow_triggered()));
         menu->addAction(action);
@@ -408,7 +408,7 @@ void MainWindow::on_verticalHeaderContextMenuRequested(QPoint position){
     action = new QAction(tr("Add row"), this);
     connect(action, SIGNAL(triggered()), SLOT(on_addNewScriptRow_triggered()));
     menu->addAction(action);
-    if (editScriptRow > timeIntervals->intervalsCount()){
+    if (editScriptRow > timeIntervals->getIntervalsCount()){
         action = new QAction(tr("Remove row"), this);
         connect(action, SIGNAL(triggered()), SLOT(on_removeScriptRow_triggered()));
         menu->addAction(action);
@@ -427,7 +427,7 @@ void MainWindow::on_addNewScriptColumn_triggered(){
 
 
 void MainWindow::on_addNewScriptRow_triggered(){
-    int row = (editScriptRow < timeIntervals->intervalsCount()) ? timeIntervals->rowCount() - 1 : editScriptRow;
+    int row = (editScriptRow < timeIntervals->getIntervalsCount()) ? timeIntervals->rowCount() - 1 : editScriptRow;
     timeIntervals->insertRow(row + 1); // +1 = add instead of insert
 }
 
@@ -438,7 +438,7 @@ void MainWindow::on_removeScriptColumn_triggered(){
 
 
 void MainWindow::on_removeScriptRow_triggered(){
-    int row = (editScriptRow < timeIntervals->intervalsCount()) ? timeIntervals->rowCount() - 1 : editScriptRow;
+    int row = (editScriptRow < timeIntervals->getIntervalsCount()) ? timeIntervals->rowCount() - 1 : editScriptRow;
     timeIntervals->removeRow(row);
 }
 
@@ -531,7 +531,7 @@ void MainWindow::on_action_Clear_triggered()
         if (action->isChecked()) action->setChecked(false);
     }
     ui->actionDelete->setEnabled(false);
-    timeIntervals->loadScriptProfile(DEFAULT_PROFILE, timeIntervals->scriptsDirectory());
+    timeIntervals->loadScriptProfile(DEFAULT_PROFILE, timeIntervals->getProfilesDirectory());
     timeIntervals->deleteScriptProfile(DEFAULT_PROFILE);
     timeIntervals->clearTableScripts();
 }
@@ -540,7 +540,7 @@ void MainWindow::on_actionProfile_triggered(bool checked)
 {
     if (checked){
         QAction *action = (QAction *)QObject::sender();
-        timeIntervals->loadScriptProfile(action->text(), timeIntervals->scriptsDirectory());
+        timeIntervals->loadScriptProfile(action->text(), timeIntervals->getProfilesDirectory());
         if (timeIntervals->editingTableScripts) ui->actionDelete->setEnabled(true);
     }
 }
@@ -554,7 +554,7 @@ void MainWindow::on_actionNew_triggered()
             if (!(newProfileName.isNull() || newProfileName.isEmpty())){
                 timeIntervals->saveScriptProfile(newProfileName);
                 if (timeIntervals->editingTableScripts) ui->actionDelete->setEnabled(true);
-                timeIntervals->loadScriptProfile(newProfileName, timeIntervals->scriptsDirectory());
+                timeIntervals->loadScriptProfile(newProfileName, timeIntervals->getProfilesDirectory());
                 QAction *action = registerScriptProfile(newProfileName);
                 if (action != NULL) action->setCheckable(TRUE);
             }
@@ -569,7 +569,7 @@ void MainWindow::on_actionEdit_changed()
     ui->intervalsTableView->reset(); // trying to repaint table (no better method found)
     if (timeIntervals->editingTableScripts){
         ui->actionNew->setEnabled(true);
-        if(timeIntervals->scriptsProfile() != DEFAULT_PROFILE) ui->actionDelete->setEnabled(true);
+        if(timeIntervals->getScriptsProfile() != DEFAULT_PROFILE) ui->actionDelete->setEnabled(true);
     }
     else{
         ui->actionDelete->setEnabled(false);
@@ -592,7 +592,7 @@ void MainWindow::on_actionDelete_triggered()
 void MainWindow::on_intervalsTableView_doubleClicked(const QModelIndex &index)
 {
     if (timeIntervals->editingTableScripts){
-        if (index.row() > timeIntervals->intervalsCount()){
+        if (index.row() > timeIntervals->getIntervalsCount()){
             editScriptRow = index.row();
             editScriptColumn = index.column();
             on_editScript();
@@ -621,7 +621,7 @@ void MainWindow::on_action_Get_examples_triggered()
         profilesIterator.next();
 
         //create destination directory
-        QDir destinationDirectory(timeIntervals->scriptsDirectory() + profilesIterator.fileName());
+        QDir destinationDirectory(timeIntervals->getProfilesDirectory() + profilesIterator.fileName());
         if (destinationDirectory.exists()){
             // remove existing scripts
             QRegExp regex("(col|row)-(\\d+)");
@@ -654,13 +654,13 @@ void MainWindow::on_actionExport_triggered()
 {
     QString zipFileName = QFileDialog::getSaveFileName(
                 this,
-                tr("Export profile ") + timeIntervals->scriptsProfile(),
-                timeIntervals->scriptsProfile() + ".zip",
+                tr("Export profile ") + timeIntervals->getScriptsProfile(),
+                timeIntervals->getScriptsProfile() + ".zip",
                 tr("Archive (*.zip)"));
     if (!zipFileName.isEmpty()){
         zipFile archive = zipOpen(zipFileName.toStdString().c_str(), APPEND_STATUS_CREATE);
         if (archive != NULL){
-            QDirIterator scriptsIterator(timeIntervals->scriptsDirectory() + "/" + timeIntervals->scriptsProfile());
+            QDirIterator scriptsIterator(timeIntervals->getProfilesDirectory() + "/" + timeIntervals->getScriptsProfile());
             while (scriptsIterator.hasNext()) {
                 scriptsIterator.next();
                 if (scriptsIterator.fileInfo().isFile()){
@@ -669,7 +669,7 @@ void MainWindow::on_actionExport_triggered()
                         long size = file.size();
                         char *buffer = (char *)malloc(size);
                         file.read(buffer, size);
-                        QString filename = timeIntervals->scriptsProfile() + "/" + scriptsIterator.fileInfo().fileName();
+                        QString filename = timeIntervals->getScriptsProfile() + "/" + scriptsIterator.fileInfo().fileName();
                         zip_fileinfo zfi = { 0, 0, 0, 0, 0, 0, 0, 0, 0 };
                         if (ZIP_OK == zipOpenNewFileInZip(archive, filename.toStdString().c_str(), &zfi, NULL, 0, NULL, 0, NULL, Z_DEFLATED, Z_DEFAULT_COMPRESSION))
                         {
@@ -719,7 +719,7 @@ void MainWindow::on_actionImport_triggered()
                 QString profile = rootRx.cap(1);
                 if (firstProfile.isEmpty()){
                     firstProfile = profile;
-                    firstProfileDirectory.setPath(timeIntervals->scriptsDirectory() + profile);
+                    firstProfileDirectory.setPath(timeIntervals->getProfilesDirectory() + profile);
                     if (firstProfileDirectory.exists()){
                         QMessageBox msgBox;
                         msgBox.setText(tr("Import will overwrite profile %1").arg(profile));
@@ -774,7 +774,7 @@ void MainWindow::on_actionImport_triggered()
                 if (action->isChecked()) action->setChecked(false);
             }
         }
-        timeIntervals->loadScriptProfile(firstProfile, timeIntervals->scriptsDirectory());
+        timeIntervals->loadScriptProfile(firstProfile, timeIntervals->getProfilesDirectory());
     }
 
 closeZip:
