@@ -193,7 +193,7 @@ void MainWindow::on_actionOpen_triggered()
         setWindowTitle(fileName);
     }
 
-    ui->timeHorizontalSlider->setMaximum(videoPlayer.streamDuration());
+    ui->timeHorizontalSlider->setMaximum(videoPlayer.getStreamDuration());
 
     QVariant data = timeIntervals->data(timeIntervals->index(0, 0), Qt::UserRole);
     if (data.isValid()){
@@ -209,19 +209,19 @@ void MainWindow::on_actionOpen_triggered()
     videoPlayer.readNextFrame();
     QTime formatDurationTime(0,0,0);
     statusBar()->showMessage(QString(tr("%1 fps, duration: %2"))
-                             .arg(videoPlayer.framerate())
-                             .arg(formatDurationTime.addSecs(videoPlayer.durationSeconds()).toString("hh:mm:ss.zzz")));
+                             .arg(videoPlayer.getFramerate())
+                             .arg(formatDurationTime.addSecs(videoPlayer.getDurationSeconds()).toString("hh:mm:ss.zzz")));
 }
 
 void MainWindow::showCurrentFrame(bool updateSlider){
-    VideoImage *currentImage = videoPlayer.currentImage();
+    VideoImage *currentImage = videoPlayer.getCurrentImage();
     if (currentImage != NULL){
         ui->videoLabel->setImage(currentImage->image);
 
         // update slider
         if (updateSlider){
-            int64_t timestamp = av_q2d(av_div_q(currentImage->pts, videoPlayer.timebase()));
-            ui->timeHorizontalSlider->setValue(timestamp - videoPlayer.startTime());
+            int64_t timestamp = av_q2d(av_div_q(currentImage->pts, videoPlayer.getTimebase()));
+            ui->timeHorizontalSlider->setValue(timestamp - videoPlayer.getStartTime());
         }
 
         // update selected cell in intervals table
@@ -236,8 +236,8 @@ void MainWindow::showCurrentFrame(bool updateSlider){
 
         QTime formatDurationTime(0,0,0);
         statusBar()->showMessage(QString(tr("%1 fps, duration: %2, pts: %3"))
-                                 .arg(videoPlayer.framerate())
-                                 .arg(formatDurationTime.addSecs(videoPlayer.durationSeconds()).toString("hh:mm:ss.zzz"))
+                                 .arg(videoPlayer.getFramerate())
+                                 .arg(formatDurationTime.addSecs(videoPlayer.getDurationSeconds()).toString("hh:mm:ss.zzz"))
                                  .arg(av_q2d(currentImage->pts)));
     }
 }
@@ -277,9 +277,9 @@ void MainWindow::on_timeHorizontalSlider_sliderMoved(int position)
 {
     if(videoPlayer.isEmpty()) return;
 
-    int64_t streamPosition = position + videoPlayer.startTime();
+    int64_t streamPosition = position + videoPlayer.getStartTime();
 
-    videoPlayer.seek(av_mul_q(av_make_q(streamPosition, 1), videoPlayer.timebase()), true);
+    videoPlayer.seek(av_mul_q(av_make_q(streamPosition, 1), videoPlayer.getTimebase()), true);
     showCurrentFrame(false);
 }
 
@@ -328,7 +328,7 @@ void MainWindow::on_selectionChanged(const QItemSelection & selected, const QIte
         }
         else{
             // fill empty cell with current image timestamp
-            VideoImage *currentImage = videoPlayer.currentImage();
+            VideoImage *currentImage = videoPlayer.getCurrentImage();
             if (currentImage != NULL){
                 IntervalTimestamp currentTimestamp;
                 currentTimestamp.pts = currentImage->pts;

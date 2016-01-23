@@ -7,6 +7,10 @@ namespace Ui {
 class ReadMe;
 }
 
+/**
+ * @brief The ReadMe class
+ * Dialog to show readme
+ */
 class ReadMe : public QDialog
 {
     Q_OBJECT

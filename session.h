@@ -4,6 +4,10 @@
 #include <QObject>
 #include <QDir>
 
+/**
+ * @brief The Session class
+ * Session class store and restore last opened video
+ */
 class Session : public QObject
 {
     Q_OBJECT
@@ -21,13 +25,34 @@ private:
 public:
     explicit Session(QObject *parent = 0);
 
+    /**
+     * @brief opennedVideo
+     * @return openned vide file name
+     */
     QString opennedVideo();
+
+    /**
+     * @brief lastVideoDirectory
+     * @return video directory
+     */
     QString lastVideoDirectory();
 
+    /**
+     * @brief save profile
+     */
     void save();
+
+    /**
+     * @brief load profile
+     */
     void load();
 
 //public Q_SLOTS:
+    /**
+     * @brief setOpennedVideo
+     * Set openned video file name to ssession
+     * @param filename
+     */
     void setOpennedVideo(const QString &filename);
 
 signals:

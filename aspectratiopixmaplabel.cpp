@@ -14,7 +14,6 @@ void AspectRatioPixmapLabel::setPixmap ( const QPixmap & p)
     QLabel::setPixmap(p);
 }
 
-// supply full image for better scaling
 void AspectRatioPixmapLabel::setImage ( QImage *i )
 {
     img = i;

@@ -3,6 +3,10 @@
 
 #include <QObject>
 
+/**
+ * @brief The NavigationEventFilter class
+ * Keyboard press filter that filter cursor keys to suppress standard functions and allow custom key functions
+ */
 class NavigationEventFilter : public QObject
 {
     Q_OBJECT

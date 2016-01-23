@@ -7,6 +7,10 @@
 #include "timeinterval.h"
 #include "tablescripts.h"
 
+/**
+ * @brief The TimeIntervalsModel class
+ * Model to fill TableView with time intervals with intervals start, stop, duration and profile script values
+ */
 class TimeIntervalsModel : public QAbstractTableModel
 {
     Q_OBJECT
@@ -25,6 +29,7 @@ public:
     bool insertColumns(int position, int columns, const QModelIndex &index=QModelIndex());
     bool removeColumns(int position, int columns, const QModelIndex &index=QModelIndex());
     bool setData(const QModelIndex &index, const QVariant &value, int role);
+
     void saveIntervals(QString fileName);
     void loadIntervals(QString fileName);
     void clear();

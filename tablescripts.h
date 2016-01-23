@@ -8,6 +8,10 @@
 #define DEFAULT_PROFILE "default"
 #define DEFAULT_SCRIPTS_PATH "/.VideoTimeMeasure/scripts/"
 
+/**
+ * @brief The TableScripts class
+ * Class containg cripts for table cells, rows and columns
+ */
 class TableScripts
 {
 

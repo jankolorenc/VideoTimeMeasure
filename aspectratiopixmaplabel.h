@@ -5,11 +5,21 @@
 #include <QPixmap>
 #include <QResizeEvent>
 
+/**
+ * @brief The AspectRatioPixmapLabel class
+ *
+ * Image label That keeps aspect ration when scaling
+ */
 class AspectRatioPixmapLabel : public QLabel
 {
     Q_OBJECT
 public:
     explicit AspectRatioPixmapLabel(QWidget *parent = 0);
+    /**
+     * @brief compute height fo desired width
+     * @param width
+     * @return height for specified width
+     */
     virtual int heightForWidth( int width ) const;
     virtual QSize sizeHint() const;
     void setImage (QImage *);

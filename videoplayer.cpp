@@ -55,7 +55,7 @@ VideoPlayer::VideoPlayer(QObject *parent) :
 }
 
 VideoPlayer::~VideoPlayer(){
-    freeDecodingFrameBuffers();
+    freeDecodingBuffers();
     closeVideoFile();
 }
 
@@ -107,7 +107,7 @@ bool VideoPlayer::loadFile(QString fileName){
     pCodecCtx->get_buffer = our_get_buffer;
     pCodecCtx->release_buffer = our_release_buffer;
 
-    allocateDecodingFrameBuffers();
+    allocateDecodingBuffers();
 
     return TRUE;
 }
@@ -125,7 +125,7 @@ void VideoPlayer::closeVideoFile(){
     }
 }
 
-void VideoPlayer::allocateDecodingFrameBuffers(){
+void VideoPlayer::allocateDecodingBuffers(){
 
     for(int i = 0; i < IMAGES_BUFFER_SIZE; i++){
         if (imagesBuffer[i].image != NULL){
@@ -167,7 +167,7 @@ void VideoPlayer::allocateDecodingFrameBuffers(){
     avpicture_fill((AVPicture *)pFrameRGB, buffer, PIX_FMT_RGB24, pCodecCtx->width, pCodecCtx->height);
 }
 
-void VideoPlayer::freeDecodingFrameBuffers(){
+void VideoPlayer::freeDecodingBuffers(){
     if (sws_ctx != NULL){
         sws_freeContext(sws_ctx);
         sws_ctx = NULL;
@@ -329,41 +329,41 @@ bool VideoPlayer::isStopReached()
 
 void VideoPlayer::clearState(){
     closeVideoFile();
-    freeDecodingFrameBuffers();
+    freeDecodingBuffers();
     imagesBufferCurrent = imagesBufferNewest = imagesBufferOldest = -1;
     backSeekFactor = 1;
     stopPlayerPts = av_make_q(INT_MAX, 1);
 }
 
-int64_t VideoPlayer::streamDuration()
+int64_t VideoPlayer::getStreamDuration()
 {
     if (isEmpty()) return 0;
     return pFormatCtx->streams[videoStream]->duration;
 }
 
-double VideoPlayer::framerate()
+double VideoPlayer::getFramerate()
 {
     if (isEmpty()) return 0;
     return av_q2d(pFormatCtx->streams[videoStream]->r_frame_rate);
 }
 
-double VideoPlayer::durationSeconds()
+double VideoPlayer::getDurationSeconds()
 {
     if (isEmpty()) return 0;
     return pFormatCtx->duration * av_q2d(AV_TIME_BASE_Q);
 }
 
-VideoImage *VideoPlayer::currentImage(){
+VideoImage *VideoPlayer::getCurrentImage(){
     if (imagesBufferCurrent == -1 || imagesBuffer[imagesBufferCurrent].image == NULL) return NULL;
     return imagesBuffer + imagesBufferCurrent;
 }
 
-int64_t VideoPlayer::startTime(){
+int64_t VideoPlayer::getStartTime(){
     if (isEmpty()) return 0;
     return pFormatCtx->streams[videoStream]->start_time;
 }
 
-AVRational VideoPlayer::timebase(){
+AVRational VideoPlayer::getTimebase(){
     if (isEmpty()) return av_make_q(0, 1);
     return pFormatCtx->streams[videoStream]->time_base;
 }
@@ -402,7 +402,7 @@ void VideoPlayer::play(IntervalTimestamp *stop, int selectCellRow, int selectCel
     else stopPlayerPts = av_make_q(INT_MAX, 1 );
     this->selectCellRow = selectCellRow;
     this->selectCellColumn = selectCellColumn;
-    double timeout = 1 / framerate() * 1000;
+    double timeout = 1 / getFramerate() * 1000;
     playTimer.start(timeout);
 }
 

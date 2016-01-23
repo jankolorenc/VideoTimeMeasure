@@ -12,8 +12,16 @@ extern "C" {
 }
 #endif
 
+/**
+  * Image with timestamp
+ */
 typedef struct VideoImage {
     QImage *image;
+
+    /**
+     * @brief pts
+     * Timestamp in FFMpeg pts
+     */
     AVRational pts;
 } VideoImage;
 

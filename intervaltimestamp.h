@@ -11,8 +11,21 @@ extern "C" {
 }
 #endif
 
+/**
+  * Timestamp with validity flag
+  * Mainly used as interval start or stop time
+*/
 typedef struct IntervalTimestamp {
+    /**
+     * @brief pts
+     * Timestamp in FFMpeg pts
+     */
     AVRational pts;
+
+    /**
+     * @brief isValid
+     * Validity flag
+     */
     bool isValid;
 } IntervalTimestamp;
 
