@@ -42,7 +42,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->intervalsTableView->setModel(timeIntervals);
     ui->intervalsTableView->horizontalHeader()->setResizeMode(QHeaderView::Stretch);
 
-    connect(&videoPlayer, SIGNAL(showCurrentFrame()), this, SLOT(showCurrentFrame()));
+    connect(&videoPlayer, SIGNAL(showCurrentPlayerImage()), this, SLOT(showCurrentPlayerImage()));
     connect(&videoPlayer, SIGNAL(stopped(int,int)), this, SLOT(videoPlayerStopped(int,int)));
 
     QShortcut* openFileShortcut = new QShortcut(QKeySequence(QKeySequence::Open), this);
@@ -203,7 +203,7 @@ void MainWindow::on_actionOpen_triggered()
 
     // current image
     if (videoPlayer.readNextFrame()){
-        showCurrentFrame();
+        showCurrentPlayerImage();
     }
     //next image
     videoPlayer.readNextFrame();
@@ -213,7 +213,7 @@ void MainWindow::on_actionOpen_triggered()
                              .arg(formatDurationTime.addSecs(videoPlayer.getDurationSeconds()).toString("hh:mm:ss.zzz")));
 }
 
-void MainWindow::showCurrentFrame(bool updateSlider){
+void MainWindow::showCurrentPlayerImage(bool updateSlider){
     VideoImage *currentImage = videoPlayer.getCurrentImage();
     if (currentImage != NULL){
         ui->videoLabel->setImage(currentImage->image);
@@ -280,7 +280,7 @@ void MainWindow::on_timeHorizontalSlider_sliderMoved(int position)
     int64_t streamPosition = position + videoPlayer.getStartTime();
 
     videoPlayer.seek(av_mul_q(av_make_q(streamPosition, 1), videoPlayer.getTimebase()), true);
-    showCurrentFrame(false);
+    showCurrentPlayerImage(false);
 }
 
 void MainWindow::on_selectNextCell()
@@ -324,7 +324,7 @@ void MainWindow::on_selectionChanged(const QItemSelection & selected, const QIte
             // jump to selected timestamp
             stopPlayer();
             videoPlayer.seek(timestamp.pts, true);
-            showCurrentFrame();
+            showCurrentPlayerImage();
         }
         else{
             // fill empty cell with current image timestamp
