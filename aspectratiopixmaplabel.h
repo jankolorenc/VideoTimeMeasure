@@ -15,14 +15,21 @@ class AspectRatioPixmapLabel : public QLabel
     Q_OBJECT
 public:
     explicit AspectRatioPixmapLabel(QWidget *parent = 0);
+
     /**
      * @brief compute height fo desired width
      * @param width
      * @return height for specified width
      */
     virtual int heightForWidth( int width ) const;
+
     virtual QSize sizeHint() const;
+
+    /**
+     * @brief set image
+     */
     void setImage (QImage *);
+
 signals:
 
 public slots:
