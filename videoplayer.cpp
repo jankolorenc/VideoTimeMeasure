@@ -271,13 +271,17 @@ void VideoPlayer::bufferCurrentFrame(){
 
 void VideoPlayer::seek(AVRational targetPts, bool exactSeek){
     //limit backseek factor for case when ffmpeg cannot seek
-    while(backSeekFactor < MAX_BACK_SEEK_FACTOR){
+    bool lastSeekTry = false;
+    while(backSeekFactor < MAX_BACK_SEEK_FACTOR && !lastSeekTry){
         AVRational backSeekDuration;
         if (exactSeek) backSeekDuration = av_div_q(av_make_q(BACK_SEEK_FRAMES * backSeekFactor, 1), pFormatCtx->streams[videoStream]->r_frame_rate);
         else backSeekDuration = av_make_q(0, 1);
 
         int64_t seekTimestamp = av_q2d(av_div_q(av_sub_q(targetPts, backSeekDuration), pFormatCtx->streams[videoStream]->time_base));
-        if (seekTimestamp < 0) seekTimestamp = 0;
+        if (seekTimestamp <= 0){
+            seekTimestamp = 0;
+            lastSeekTry = true;
+        }
 
         int result = av_seek_frame(pFormatCtx, videoStream, seekTimestamp, AVSEEK_FLAG_BACKWARD);
         if (result >= 0){
@@ -299,7 +303,6 @@ void VideoPlayer::seek(AVRational targetPts, bool exactSeek){
             }
             else{
                 readNextFrame();
-                readNextFrame();
                 break;
             }
         }
@@ -311,13 +314,16 @@ void VideoPlayer::seek(AVRational targetPts, bool exactSeek){
 
 bool VideoPlayer::stepForward(int jumpImages)
 {
-    for(int i = 0; i < jumpImages; i++)
-        if (imagesBufferCurrent != -1 && imagesBufferCurrent != imagesBufferNewest){
-            imagesBufferCurrent = (imagesBufferCurrent + 1) % IMAGES_BUFFER_SIZE;
-            if (i == jumpImages - 1) showCurrentFrame();
-            if (imagesBufferCurrent == imagesBufferNewest) readNextFrame();
+    if (imagesBufferCurrent == -1) return false;
+
+    for(int i = 0; i < jumpImages; i++){
+        if (imagesBufferCurrent == imagesBufferNewest){
+            if (!readNextFrame()) return false;
         }
-        else return false;
+        imagesBufferCurrent = (imagesBufferCurrent + 1) % IMAGES_BUFFER_SIZE;
+    }
+
+    showCurrentFrame();
 
     return true;
 }
@@ -372,16 +378,24 @@ bool VideoPlayer::stepReverse(int jumpImages)
 {
     if (isEmpty()) return false;
 
-    for(int i = 0; i < jumpImages; i++){
-        if (imagesBufferCurrent == -1) return false;
+    if (imagesBufferCurrent == -1) return false;
+
+    for(int i = jumpImages; i > 0; i--){
         if (imagesBufferCurrent != imagesBufferOldest){
             imagesBufferCurrent = (imagesBufferCurrent - 1 + IMAGES_BUFFER_SIZE) % IMAGES_BUFFER_SIZE;
         }
         else{
             AVRational start_time = av_mul_q(av_make_q(pFormatCtx->streams[videoStream]->start_time, 1), pFormatCtx->streams[videoStream]->time_base);
-            if (av_cmp_q(imagesBuffer[imagesBufferCurrent].pts, start_time) == 1){
-                seek(imagesBuffer[imagesBufferCurrent].pts, true);
+            if (av_cmp_q(imagesBuffer[imagesBufferCurrent].pts, start_time) <= 0) return false;
+            AVRational frameDuration = av_div_q(av_div_q(av_make_q(1, 1), pFormatCtx->streams[videoStream]->time_base), pFormatCtx->streams[videoStream]->r_frame_rate);
+            AVRational target = av_sub_q(imagesBuffer[imagesBufferCurrent].pts, av_mul_q(av_make_q(i, 1), av_mul_q(frameDuration, pFormatCtx->streams[videoStream]->time_base)));
+            bool lastSeekTry = false;
+            if (av_cmp_q(target, start_time) == -1){
+                target = start_time;
+                lastSeekTry = true;
             }
+            seek(target, true);
+            if (lastSeekTry) break;
         }
     }
     showCurrentFrame();

@@ -70,6 +70,8 @@ private:
      */
     QAction *registerScriptProfile(QString name);
 
+    void showCurrentPlayerImage(bool updateSlider = true);
+
 private slots:
 
     /**
@@ -187,7 +189,7 @@ private slots:
      */
     void on_intervalsTableView_doubleClicked(const QModelIndex &index);
 
-    void showCurrentPlayerImage(bool updateSlider = true);
+    void on_showCurrentFrame();
 
     /**
      * @brief make actions when player stopped

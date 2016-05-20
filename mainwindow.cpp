@@ -42,7 +42,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->intervalsTableView->setModel(timeIntervals);
     ui->intervalsTableView->horizontalHeader()->setResizeMode(QHeaderView::Stretch);
 
-    connect(&videoPlayer, SIGNAL(showCurrentPlayerImage()), this, SLOT(showCurrentPlayerImage()));
+    connect(&videoPlayer, SIGNAL(showCurrentFrame()), this, SLOT(on_showCurrentFrame()));
     connect(&videoPlayer, SIGNAL(stopped(int,int)), this, SLOT(videoPlayerStopped(int,int)));
 
     QShortcut* openFileShortcut = new QShortcut(QKeySequence(QKeySequence::Open), this);
@@ -202,15 +202,16 @@ void MainWindow::on_actionOpen_triggered()
     }
 
     // current image
-    if (videoPlayer.readNextFrame()){
-        showCurrentPlayerImage();
-    }
-    //next image
-    videoPlayer.readNextFrame();
+    if (videoPlayer.readNextFrame()) showCurrentPlayerImage();
+
     QTime formatDurationTime(0,0,0);
     statusBar()->showMessage(QString(tr("%1 fps, duration: %2"))
                              .arg(videoPlayer.getFramerate())
                              .arg(formatDurationTime.addSecs(videoPlayer.getDurationSeconds()).toString("hh:mm:ss.zzz")));
+}
+
+void MainWindow::on_showCurrentFrame(){
+    this->showCurrentPlayerImage();
 }
 
 void MainWindow::showCurrentPlayerImage(bool updateSlider){
@@ -254,7 +255,6 @@ void MainWindow::startPlayer(IntervalTimestamp *stop, int selectCellRow, int sel
 }
 
 void MainWindow::stopPlayer(){
-    ui->playPausePushButton->setIcon(QIcon(":/resources/graphics/play.png"));
     videoPlayer.stop();
 }
 
@@ -606,6 +606,7 @@ void MainWindow::videoPlayerStopped(int selectCellRow, int selectCellColumn){
                     ui->intervalsTableView->model()->index(selectCellRow, selectCellColumn),
                     QItemSelectionModel::SelectCurrent);
     }
+    ui->playPausePushButton->setIcon(QIcon(":/resources/graphics/play.png"));
 }
 
 void MainWindow::on_nextCellPushButton_clicked()
