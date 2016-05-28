@@ -8,24 +8,34 @@ extern "C" {
     #include <libavformat/avformat.h>
     #include <libavcodec/avcodec.h>
     #include <libswscale/swscale.h>
+    #include <libavutil/pixfmt.h>
+    #include <libavutil/imgutils.h>
     #ifdef __cplusplus
 }
 #endif
 
 uint64_t global_video_pkt_pts = AV_NOPTS_VALUE;
 
-int our_get_buffer(struct AVCodecContext *c, AVFrame *pic) {
-    int ret = avcodec_default_get_buffer(c, pic);
+//int our_get_buffer(struct AVCodecContext *c, AVFrame *pic) {
+//    int ret = avcodec_default_get_buffer(c, pic);
+//    uint64_t *pts = (uint64_t *)av_malloc(sizeof(uint64_t));
+//    *pts = global_video_pkt_pts;
+//    pic->opaque = pts;
+//    return ret;
+//}
+
+int our_get_buffer(struct AVCodecContext *c, AVFrame *pic, int flags) {
+    int ret = avcodec_default_get_buffer2(c, pic, flags);
     uint64_t *pts = (uint64_t *)av_malloc(sizeof(uint64_t));
     *pts = global_video_pkt_pts;
     pic->opaque = pts;
     return ret;
 }
 
-void our_release_buffer(struct AVCodecContext *c, AVFrame *pic) {
-    if(pic) av_freep(&pic->opaque);
-    avcodec_default_release_buffer(c, pic);
-}
+//void our_release_buffer(struct AVCodecContext *c, AVFrame *pic) {
+//    if(pic) av_freep(&pic->opaque);
+//    avcodec_default_release_buffer(c, pic);
+//}
 
 VideoPlayer::VideoPlayer(QObject *parent) :
     QObject(parent)
@@ -104,8 +114,9 @@ bool VideoPlayer::loadFile(QString fileName){
         return FALSE;
     }
 
-    pCodecCtx->get_buffer = our_get_buffer;
-    pCodecCtx->release_buffer = our_release_buffer;
+    //pCodecCtx->get_buffer = our_get_buffer;
+    //pCodecCtx->release_buffer = our_release_buffer;
+    pCodecCtx->get_buffer2 = our_get_buffer;
 
     allocateDecodingBuffers();
 
@@ -139,14 +150,14 @@ void VideoPlayer::allocateDecodingBuffers(){
     imagesBufferCurrent = -1;
 
     // Allocate video frame
-    pFrame=avcodec_alloc_frame();
+    pFrame=av_frame_alloc();
     if(pFrame==NULL){
         // showError(tr("Couldn't not allocate frame"));
         return;
     }
 
     // Allocate an AVFrame structure
-    pFrameRGB=avcodec_alloc_frame();
+    pFrameRGB=av_frame_alloc();
     if(pFrameRGB==NULL){
         // showError(tr("Couldn't not allocate RGB frame"));
         return;
@@ -154,17 +165,17 @@ void VideoPlayer::allocateDecodingBuffers(){
 
     int numBytes;
     // Determine required buffer size and allocate buffer
-    numBytes=avpicture_get_size(PIX_FMT_RGB24, pCodecCtx->width,
-                                pCodecCtx->height);
+    numBytes=av_image_get_buffer_size(AV_PIX_FMT_RGB24 , pCodecCtx->width,
+                                pCodecCtx->height, 1);
     buffer=(uint8_t *)av_malloc(numBytes*sizeof(uint8_t));
 
     sws_ctx = sws_getContext (pCodecCtx->width, pCodecCtx->height, pCodecCtx->pix_fmt, pCodecCtx->width,
-                              pCodecCtx->height, PIX_FMT_RGB24, SWS_BILINEAR, NULL, NULL, NULL);
+                              pCodecCtx->height, AV_PIX_FMT_RGB24 , SWS_BILINEAR, NULL, NULL, NULL);
 
     // Assign appropriate parts of buffer to image planes in pFrameRGB
     // Note that pFrameRGB is an AVFrame, but AVFrame is a superset
     // of AVPicture
-    avpicture_fill((AVPicture *)pFrameRGB, buffer, PIX_FMT_RGB24, pCodecCtx->width, pCodecCtx->height);
+    av_image_fill_arrays(pFrameRGB->data, pFrameRGB->linesize, buffer, AV_PIX_FMT_RGB24, pCodecCtx->width, pCodecCtx->height, 1);
 }
 
 void VideoPlayer::freeDecodingBuffers(){
@@ -220,7 +231,8 @@ bool VideoPlayer::readNextFrame(){
 
             // Decode video frame
             avcodec_decode_video2(pCodecCtx, pFrame, &frameFinished, &packet);
-            if(packet.dts == AV_NOPTS_VALUE && pFrame->opaque && *(uint64_t*)pFrame->opaque != AV_NOPTS_VALUE) {
+            if(packet.dts == (int64_t)AV_NOPTS_VALUE && pFrame->opaque
+                    && *(uint64_t*)pFrame->opaque != (uint64_t)AV_NOPTS_VALUE) {
                 pts = av_make_q(*(uint64_t *)pFrame->opaque, 1);
             } else if(packet.dts != AV_NOPTS_VALUE) {
                 pts = av_make_q(packet.dts, 1);
@@ -230,7 +242,7 @@ bool VideoPlayer::readNextFrame(){
             pts = av_mul_q(pts, pFormatCtx->streams[videoStream]->time_base);
         }
         // Free the packet that was allocated by av_read_frame
-        av_free_packet(&packet);
+        av_packet_unref(&packet);
         if (frameFinished){
             pts = synchronizeVideo(pFrame, pts);
             bufferCurrentFrame();

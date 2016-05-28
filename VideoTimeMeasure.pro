@@ -56,7 +56,7 @@ win32: LIBS += -lvfw32 -lbz2 -liconv -lmp3lame -lopencore-amrwb -lopencore-amrnb
  -lvorbis -lvorbisenc -lvorbisfile -lvpx -lx264 -lxvidcore -lbluray -logg -lpthread -lboost_system-mt \
  -lboost_filesystem-mt  -lvo-aacenc -lvo-amrwbenc -lswresample -lxml2 -lfreetype -lharfbuzz -lglib-2.0 -lintl \
  -lgnutls -lnettle -lhogweed -liconv -lcrypt32 \
- -lgmp
+ -lgmp -lidn
 
 RESOURCES += \
     Images.qrc \
