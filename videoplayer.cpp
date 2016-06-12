@@ -14,29 +14,6 @@ extern "C" {
 }
 #endif
 
-uint64_t global_video_pkt_pts = AV_NOPTS_VALUE;
-
-//int our_get_buffer(struct AVCodecContext *c, AVFrame *pic) {
-//    int ret = avcodec_default_get_buffer(c, pic);
-//    uint64_t *pts = (uint64_t *)av_malloc(sizeof(uint64_t));
-//    *pts = global_video_pkt_pts;
-//    pic->opaque = pts;
-//    return ret;
-//}
-
-int our_get_buffer(struct AVCodecContext *c, AVFrame *pic, int flags) {
-    int ret = avcodec_default_get_buffer2(c, pic, flags);
-    uint64_t *pts = (uint64_t *)av_malloc(sizeof(uint64_t));
-    *pts = global_video_pkt_pts;
-    pic->opaque = pts;
-    return ret;
-}
-
-//void our_release_buffer(struct AVCodecContext *c, AVFrame *pic) {
-//    if(pic) av_freep(&pic->opaque);
-//    avcodec_default_release_buffer(c, pic);
-//}
-
 VideoPlayer::VideoPlayer(QObject *parent) :
     QObject(parent)
 {
@@ -113,10 +90,6 @@ bool VideoPlayer::loadFile(QString fileName){
         //showError(tr("Could not open codec"));
         return FALSE;
     }
-
-    //pCodecCtx->get_buffer = our_get_buffer;
-    //pCodecCtx->release_buffer = our_release_buffer;
-    pCodecCtx->get_buffer2 = our_get_buffer;
 
     allocateDecodingBuffers();
 
@@ -199,23 +172,6 @@ void VideoPlayer::freeDecodingBuffers(){
     }
 }
 
-AVRational VideoPlayer::synchronizeVideo(AVFrame *src_frame, AVRational pts) {
-    AVRational frame_delay;
-    if(pts.num != 0) {
-        /* if we have pts, set video clock to it */
-        video_clock = pts;
-    } else {
-        /* if we aren't given a pts, set it to the clock */
-        pts = video_clock;
-    }
-    /* update the video clock */
-    frame_delay = pFormatCtx->streams[videoStream]->codec->time_base;
-    /* if we are repeating a frame, adjust clock accordingly */
-    frame_delay = av_add_q(frame_delay, av_mul_q(av_make_q(src_frame->repeat_pict, 1), av_mul_q(frame_delay, av_make_q(1, 2))));
-    video_clock = av_add_q(video_clock, frame_delay);
-    return pts;
-}
-
 bool VideoPlayer::readNextFrame(){
     if (pFormatCtx == NULL) return FALSE;
 
@@ -224,27 +180,14 @@ bool VideoPlayer::readNextFrame(){
 
     while(av_read_frame(pFormatCtx, &packet)>=0) {
         if(packet.stream_index==videoStream) {
-            pts = av_make_q(0, 1);
-            // Save global pts to be stored in pFrame in first call
-            global_video_pkt_pts = packet.pts;
             // Is this a packet from the video stream?
 
             // Decode video frame
             avcodec_decode_video2(pCodecCtx, pFrame, &frameFinished, &packet);
-            if(packet.dts == (int64_t)AV_NOPTS_VALUE && pFrame->opaque
-                    && *(uint64_t*)pFrame->opaque != (uint64_t)AV_NOPTS_VALUE) {
-                pts = av_make_q(*(uint64_t *)pFrame->opaque, 1);
-            } else if(packet.dts != AV_NOPTS_VALUE) {
-                pts = av_make_q(packet.dts, 1);
-            } else {
-                pts = av_make_q(0, 1);
-            }
-            pts = av_mul_q(pts, pFormatCtx->streams[videoStream]->time_base);
         }
         // Free the packet that was allocated by av_read_frame
         av_packet_unref(&packet);
         if (frameFinished){
-            pts = synchronizeVideo(pFrame, pts);
             bufferCurrentFrame();
             break;
         }
@@ -275,7 +218,7 @@ void VideoPlayer::bufferCurrentFrame(){
                pCodecCtx->width*3);
     }
 
-    imagesBuffer[imagesBufferNewest].pts = pts;
+    imagesBuffer[imagesBufferNewest].pts = av_mul_q(av_make_q(pFrame->pkt_pts, 1), pFormatCtx->streams[videoStream]->time_base); //or av_frame_get_best_effort_timestamp(pFrame);
 
     if (imagesBufferCurrent == -1) imagesBufferCurrent = imagesBufferNewest;
     if (imagesBufferOldest == -1) imagesBufferOldest = imagesBufferNewest;
@@ -300,7 +243,6 @@ void VideoPlayer::seek(AVRational targetPts, bool exactSeek){
             avcodec_flush_buffers(pFormatCtx->streams[videoStream]->codec);
             // flush imagesBuffer
             imagesBufferCurrent = imagesBufferNewest = imagesBufferOldest = -1;
-            video_clock = av_make_q(0, 1);
 
             // read and buffer previous images
             if (exactSeek){

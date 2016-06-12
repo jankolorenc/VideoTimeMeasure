@@ -40,16 +40,6 @@ private:
     struct SwsContext *sws_ctx;
 
     /**
-     * @brief current pts in FFMpeg units
-     */
-    AVRational pts;
-
-    /**
-     * @brief current video clock in FFMpeg units
-     */
-    AVRational video_clock;
-
-    /**
      * @brief multiplier of BACK_SEEK_FRAMES to jump before seeked time.
      * It is estimation of GOP so seek jumps to iframe before seeked time
      */
@@ -107,14 +97,6 @@ private:
      * @brief deallocate decoding buffers
      */
     void freeDecodingBuffers();
-
-    /**
-     * @brief synchronize pts with video clock
-     * @param src_frame current frame
-     * @param pts
-     * @return
-     */
-    AVRational synchronizeVideo(AVFrame *src_frame, AVRational pts);
 
     /**
      * @brief save current frame to images buffer
