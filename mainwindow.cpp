@@ -21,6 +21,7 @@
 #include "readme.h"
 #include <minizip/zip.h>
 #include <minizip/unzip.h>
+#include <QUrl>
 
 Q_DECLARE_METATYPE(IntervalTimestamp)
 
@@ -168,10 +169,7 @@ void MainWindow::showError(QString text){
     msgBox.exec();
 }
 
-void MainWindow::on_actionOpen_triggered()
-{
-    QString fileName = QFileDialog::getOpenFileName(this, tr("Open File"), session.lastVideoDirectory(), tr("Files (*.*)"));
-    if (fileName.isEmpty()) return;
+void MainWindow::openFile(QString fileName){
 
     videoPlayer.clearState();
     saveIntervals();
@@ -208,6 +206,14 @@ void MainWindow::on_actionOpen_triggered()
     statusBar()->showMessage(QString(tr("%1 fps, duration: %2"))
                              .arg(videoPlayer.getFramerate())
                              .arg(formatDurationTime.addSecs(videoPlayer.getDurationSeconds()).toString("hh:mm:ss.zzz")));
+}
+
+void MainWindow::on_actionOpen_triggered()
+{
+    QString fileName = QFileDialog::getOpenFileName(this, tr("Open File"), session.lastVideoDirectory(), tr("Files (*.*)"));
+    if (fileName.isEmpty()) return;
+
+    openFile(fileName);
 }
 
 void MainWindow::on_showCurrentFrame(){
@@ -782,3 +788,25 @@ closeZip:
     unzClose(archive);
 }
 
+void MainWindow::dragEnterEvent(QDragEnterEvent *event)
+ {
+     if (event->mimeData()->hasFormat("text/uri-list"))
+         event->acceptProposedAction();
+ }
+
+void MainWindow::dropEvent(QDropEvent *event)
+ {
+    QList<QUrl> urls = event->mimeData()->urls();
+    for (int i = 0; i < urls.length(); i++)
+    {
+        if (urls[i].isLocalFile()){
+            QString fileName = urls[i].toLocalFile();
+            if (QFile::exists(fileName)){
+                openFile(fileName);
+                return;
+            }
+        }
+    }
+
+     event->acceptProposedAction();
+ }

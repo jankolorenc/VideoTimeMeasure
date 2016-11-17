@@ -72,6 +72,8 @@ private:
 
     void showCurrentPlayerImage(bool updateSlider = true);
 
+    void openFile(QString fileName);
+
 private slots:
 
     /**
@@ -219,6 +221,10 @@ private slots:
      * @brief import scripts profile
      */
     void on_actionImport_triggered();
+
+protected:
+     void dragEnterEvent(QDragEnterEvent *event);
+     void dropEvent(QDropEvent *event);
 };
 
 #endif // MAINWINDOW_H
