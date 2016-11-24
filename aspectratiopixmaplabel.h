@@ -37,7 +37,7 @@ public slots:
     void resizeEvent(QResizeEvent *);
 private:
     QPixmap pix;
-    QImage *img;
+    QImage *img = NULL;
 };
 
 #endif // ASPECTRATIOPIXMAPLABEL_H
