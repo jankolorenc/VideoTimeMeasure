@@ -218,7 +218,7 @@ void VideoPlayer::bufferCurrentFrame(){
                pCodecCtx->width*3);
     }
 
-    imagesBuffer[imagesBufferNewest].pts = av_mul_q(av_make_q(pFrame->pkt_pts, 1), pFormatCtx->streams[videoStream]->time_base); //or av_frame_get_best_effort_timestamp(pFrame);
+    imagesBuffer[imagesBufferNewest].pts = av_mul_q(av_make_q(pFrame->pts, 1), pFormatCtx->streams[videoStream]->time_base); //or av_frame_get_best_effort_timestamp(pFrame);
 
     if (imagesBufferCurrent == -1) imagesBufferCurrent = imagesBufferNewest;
     if (imagesBufferOldest == -1) imagesBufferOldest = imagesBufferNewest;
