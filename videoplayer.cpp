@@ -54,12 +54,12 @@ bool VideoPlayer::loadFile(QString fileName){
         char error_string[200];
         av_strerror(result, error_string, 200);
         //showError(tr("Couldn't open file %1: %2").arg(fileName).arg(QString(error_string)));
-        return FALSE;
+        return false;
     }
 
     if(avformat_find_stream_info(pFormatCtx, options)<0){
         //showError(tr("Couldn't find stream information in video"));
-        return FALSE;
+        return false;
     }
 
     av_dump_format(pFormatCtx, 0, fileNameByteArray.data(), 0);
@@ -73,7 +73,7 @@ bool VideoPlayer::loadFile(QString fileName){
         }
     if(videoStream==-1){
         //showError(tr("Didn't find a video stream"));
-        return FALSE;
+        return false;
     }
 
     // Get a pointer to the codec context for the video stream
@@ -83,17 +83,17 @@ bool VideoPlayer::loadFile(QString fileName){
     pCodec=avcodec_find_decoder(pCodecCtx->codec_id);
     if(pCodec==NULL) {
         //showError(tr("Unsupported codec"));
-        return FALSE;
+        return false;
     }
     // Open codec
     if(avcodec_open2(pCodecCtx, pCodec, options)<0){
         //showError(tr("Could not open codec"));
-        return FALSE;
+        return false;
     }
 
     allocateDecodingBuffers();
 
-    return TRUE;
+    return true;
 }
 
 void VideoPlayer::closeVideoFile(){
@@ -173,7 +173,7 @@ void VideoPlayer::freeDecodingBuffers(){
 }
 
 bool VideoPlayer::readNextFrame(){
-    if (pFormatCtx == NULL) return FALSE;
+    if (pFormatCtx == NULL) return false;
 
     AVPacket packet;
     int frameFinished = 0;

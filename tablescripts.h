@@ -85,7 +85,7 @@ public:
      * @param exact if false, whole column script then whole row script is returned when cell contain no script
      * @return
      */
-    QString getScript(int row, int column, bool exact = FALSE) const;
+    QString getScript(int row, int column, bool exact = false) const;
 
     /**
      * @brief set script to specified cell.

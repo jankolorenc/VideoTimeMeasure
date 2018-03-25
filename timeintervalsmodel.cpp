@@ -375,7 +375,7 @@ QScriptValue TimeIntervalsModel::getValue(int row, int column) const
 
 QScriptValue TimeIntervalsModel::printf(QString format, float value){
     QString str;
-    str.sprintf(format.toAscii(),value);
+    str.sprintf(format.toUtf8(),value);
     return str;
 }
 

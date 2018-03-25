@@ -22,6 +22,7 @@
 #include <minizip/zip.h>
 #include <minizip/unzip.h>
 #include <QUrl>
+#include <QtWidgets>
 
 Q_DECLARE_METATYPE(IntervalTimestamp)
 
@@ -41,7 +42,7 @@ MainWindow::MainWindow(QWidget *parent) :
     NavigationEventFilter *navigationEventFilter = new NavigationEventFilter(this);
     ui->intervalsTableView->installEventFilter(navigationEventFilter);
     ui->intervalsTableView->setModel(timeIntervals);
-    ui->intervalsTableView->horizontalHeader()->setResizeMode(QHeaderView::Stretch);
+    ui->intervalsTableView->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
 
     connect(&videoPlayer, SIGNAL(showCurrentFrame()), this, SLOT(on_showCurrentFrame()));
     connect(&videoPlayer, SIGNAL(stopped(int,int)), this, SLOT(videoPlayerStopped(int,int)));
@@ -137,7 +138,7 @@ QAction* MainWindow::registerScriptProfile(QString name){
     }
     {
         QAction *action = ui->menuScriptProfiles->addAction(name);
-        action->setCheckable(TRUE);
+        action->setCheckable(true);
         connect(action, SIGNAL(triggered(bool)), SLOT(on_actionProfile_triggered(bool)));
         scriptProfilesActionGroup->addAction(action);
         return action;
@@ -562,7 +563,7 @@ void MainWindow::on_actionNew_triggered()
                 if (timeIntervals->editingTableScripts) ui->actionDelete->setEnabled(true);
                 timeIntervals->loadScriptProfile(newProfileName, timeIntervals->getProfilesDirectory());
                 QAction *action = registerScriptProfile(newProfileName);
-                if (action != NULL) action->setCheckable(TRUE);
+                if (action != NULL) action->setCheckable(true);
             }
         }
         else showError(tr("Invalid profile name"));
@@ -646,7 +647,7 @@ void MainWindow::on_action_Get_examples_triggered()
         }
 
         QAction *action = registerScriptProfile(profilesIterator.fileName());
-        if (action != NULL) action->setCheckable(TRUE);
+        if (action != NULL) action->setCheckable(true);
     }
 }
 
