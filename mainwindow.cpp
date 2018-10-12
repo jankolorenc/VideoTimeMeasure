@@ -89,7 +89,8 @@ MainWindow::MainWindow(QWidget *parent) :
                                           .arg(ui->nextCellPushButton->toolTip())
                                           .arg(forwardJumpShortcut->key().toString()));
 
-    QShortcut* nextTimestampShortcut = new QShortcut(QKeySequence(QKeySequence::InsertParagraphSeparator), this);
+    //QShortcut* nextTimestampShortcut = new QShortcut(QKeySequence(QKeySequence::InsertParagraphSeparator), this);
+    QShortcut* nextTimestampShortcut = new QShortcut(QKeySequence(Qt::Key_Return), this);
     connect(nextTimestampShortcut, SIGNAL(activated()), this, SLOT(on_selectNextCell()));
     ui->nextCellPushButton->setToolTip(QString("%1 [%2]")
                                        .arg(ui->nextCellPushButton->toolTip())
