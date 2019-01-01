@@ -1,6 +1,6 @@
 if (row < intervals){
     deduction = duration * 2.5;
-    result = (deduction > 0.5) ? 0.5 : (Math.round(deduction * 10) / 10);
+    result = (deduction > 1.0) ? 1.0 : (Math.round(deduction * 100) / 100);
 }
 else{
     if (row == intervals){
