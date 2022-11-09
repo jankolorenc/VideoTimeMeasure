@@ -67,7 +67,7 @@ bool VideoPlayer::loadFile(QString fileName){
     // Find the first video stream
     videoStream=-1;
     for(uint i=0; i<pFormatCtx->nb_streams; i++)
-        if(pFormatCtx->streams[i]->codec->codec_type==AVMEDIA_TYPE_VIDEO) {
+        if(pFormatCtx->streams[i]->codecpar->codec_type==AVMEDIA_TYPE_VIDEO) {
             videoStream=i;
             break;
         }
@@ -76,15 +76,20 @@ bool VideoPlayer::loadFile(QString fileName){
         return false;
     }
 
-    // Get a pointer to the codec context for the video stream
-    pCodecCtx=pFormatCtx->streams[videoStream]->codec;
-
     // Find the decoder for the video stream
-    pCodec=avcodec_find_decoder(pCodecCtx->codec_id);
+    pCodec=avcodec_find_decoder(pFormatCtx->streams[videoStream]->codecpar->codec_id);
     if(pCodec==NULL) {
         //showError(tr("Unsupported codec"));
         return false;
     }
+    if (pCodecCtx != NULL){
+        avcodec_free_context(&pCodecCtx);
+        pCodecCtx = NULL;
+    }
+    pCodecCtx=avcodec_alloc_context3(pCodec);
+    avcodec_parameters_to_context(pCodecCtx, pFormatCtx->streams[videoStream]->codecpar);
+    avcodec_open2(pCodecCtx, pCodec,NULL);
+
     // Open codec
     if(avcodec_open2(pCodecCtx, pCodec, options)<0){
         //showError(tr("Could not open codec"));
@@ -182,8 +187,10 @@ bool VideoPlayer::readNextFrame(){
         if(packet.stream_index==videoStream) {
             // Is this a packet from the video stream?
 
-            // Decode video frame
-            avcodec_decode_video2(pCodecCtx, pFrame, &frameFinished, &packet);
+            int ret = avcodec_receive_frame(pCodecCtx, pFrame);
+            if (ret == 0) frameFinished = 1;
+            if (ret == AVERROR(EAGAIN)) ret = 0;
+            if (ret == 0) ret = avcodec_send_packet(pCodecCtx, &packet);
         }
         // Free the packet that was allocated by av_read_frame
         av_packet_unref(&packet);
@@ -240,7 +247,8 @@ void VideoPlayer::seek(AVRational targetPts, bool exactSeek){
 
         int result = av_seek_frame(pFormatCtx, videoStream, seekTimestamp, AVSEEK_FLAG_BACKWARD);
         if (result >= 0){
-            avcodec_flush_buffers(pFormatCtx->streams[videoStream]->codec);
+            //avcodec_flush_buffers(pFormatCtx->streams[videoStream]->codec);
+            avcodec_flush_buffers(pCodecCtx);
             // flush imagesBuffer
             imagesBufferCurrent = imagesBufferNewest = imagesBufferOldest = -1;
 

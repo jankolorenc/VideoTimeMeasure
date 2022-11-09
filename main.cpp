@@ -13,8 +13,6 @@ extern "C" {
 
 int main(int argc, char *argv[])
 {
-    av_register_all();
-
     QApplication a(argc, argv);
     MainWindow w;
     w.show();
