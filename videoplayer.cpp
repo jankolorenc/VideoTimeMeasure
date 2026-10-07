@@ -104,7 +104,7 @@ bool VideoPlayer::loadFile(QString fileName){
 void VideoPlayer::closeVideoFile(){
     // Close the codec
     if (pCodecCtx != NULL){
-        avcodec_close(pCodecCtx);
+        avcodec_free_context(&pCodecCtx);
         pCodecCtx = NULL;
     }
     // Close the video file

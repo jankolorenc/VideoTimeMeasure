@@ -32,7 +32,7 @@ private:
     AVDictionary **options;
     AVFormatContext *pFormatCtx;
     AVCodecContext *pCodecCtx;
-    AVCodec *pCodec;
+    const AVCodec *pCodec;
     int videoStream;
     AVFrame *pFrame;
     AVFrame *pFrameRGB;

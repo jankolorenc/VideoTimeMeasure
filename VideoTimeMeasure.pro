@@ -50,7 +50,7 @@ FORMS    += mainwindow.ui \
 }
 
 unix|win32: LIBS += -lm -lz -lswscale -lavformat -lavcodec -lavutil -lminizip
-unix: LIBS += -lboost_system -lboost_filesystem
+unix: LIBS += -lboost_filesystem
 
 win32: LIBS += -lvfw32 -lbz2 -liconv -lmp3lame -lopencore-amrwb -lopencore-amrnb -lopus -lspeex -ltheora \
  -lvorbis -lvorbisenc -lvorbisfile -lvpx -lx264 -lxvidcore -lbluray -logg -lpthread -lboost_system-mt \
