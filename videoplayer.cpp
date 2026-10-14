@@ -26,6 +26,7 @@ VideoPlayer::VideoPlayer(QObject *parent) :
     pFrameRGB = NULL;
     buffer = NULL;
     sws_ctx = NULL;
+    decoderFlushed = false;
 
     imagesBufferOldest = -1;
     imagesBufferNewest = -1;
@@ -47,6 +48,7 @@ VideoPlayer::~VideoPlayer(){
 }
 
 bool VideoPlayer::loadFile(QString fileName){
+    decoderFlushed = false;
     // Open video file
     QByteArray fileNameByteArray = fileName.toLocal8Bit();
     int result = avformat_open_input(&pFormatCtx,fileNameByteArray.data(), NULL, options);
@@ -88,9 +90,6 @@ bool VideoPlayer::loadFile(QString fileName){
     }
     pCodecCtx=avcodec_alloc_context3(pCodec);
     avcodec_parameters_to_context(pCodecCtx, pFormatCtx->streams[videoStream]->codecpar);
-    avcodec_open2(pCodecCtx, pCodec,NULL);
-
-    // Open codec
     if(avcodec_open2(pCodecCtx, pCodec, options)<0){
         //showError(tr("Could not open codec"));
         return false;
@@ -178,29 +177,34 @@ void VideoPlayer::freeDecodingBuffers(){
 }
 
 bool VideoPlayer::readNextFrame(){
-    if (pFormatCtx == NULL) return false;
+    if (pFormatCtx == NULL || pCodecCtx == NULL) return false;
 
-    AVPacket packet;
-    int frameFinished = 0;
-
-    while(av_read_frame(pFormatCtx, &packet)>=0) {
-        if(packet.stream_index==videoStream) {
-            // Is this a packet from the video stream?
-
-            int ret = avcodec_receive_frame(pCodecCtx, pFrame);
-            if (ret == 0) frameFinished = 1;
-            if (ret == AVERROR(EAGAIN)) ret = 0;
-            if (ret == 0) ret = avcodec_send_packet(pCodecCtx, &packet);
-        }
-        // Free the packet that was allocated by av_read_frame
-        av_packet_unref(&packet);
-        if (frameFinished){
+    for (;;) {
+        int ret = avcodec_receive_frame(pCodecCtx, pFrame);
+        if (ret == 0) {
             bufferCurrentFrame();
-            break;
+            return true;
         }
-    }
+        if (ret == AVERROR_EOF) return false;
+        if (ret != AVERROR(EAGAIN)) return false;
 
-    return frameFinished;
+        if (decoderFlushed) return false;
+
+        AVPacket packet;
+        ret = av_read_frame(pFormatCtx, &packet);
+        if (ret < 0) {
+            // Drain delayed frames after the demuxer reaches end of file.
+            ret = avcodec_send_packet(pCodecCtx, NULL);
+            if (ret < 0 && ret != AVERROR_EOF) return false;
+            decoderFlushed = true;
+            continue;
+        }
+
+        if (packet.stream_index == videoStream)
+            ret = avcodec_send_packet(pCodecCtx, &packet);
+        av_packet_unref(&packet);
+        if (ret < 0 && ret != AVERROR(EAGAIN)) return false;
+    }
 }
 
 void VideoPlayer::bufferCurrentFrame(){
@@ -249,6 +253,7 @@ void VideoPlayer::seek(AVRational targetPts, bool exactSeek){
         if (result >= 0){
             //avcodec_flush_buffers(pFormatCtx->streams[videoStream]->codec);
             avcodec_flush_buffers(pCodecCtx);
+            decoderFlushed = false;
             // flush imagesBuffer
             imagesBufferCurrent = imagesBufferNewest = imagesBufferOldest = -1;
 
@@ -300,6 +305,7 @@ void VideoPlayer::clearState(){
     freeDecodingBuffers();
     imagesBufferCurrent = imagesBufferNewest = imagesBufferOldest = -1;
     backSeekFactor = 1;
+    decoderFlushed = false;
     stopPlayerPts = av_make_q(INT_MAX, 1);
 }
 

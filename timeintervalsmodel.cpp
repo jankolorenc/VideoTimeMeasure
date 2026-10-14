@@ -203,15 +203,17 @@ bool TimeIntervalsModel::insertColumns(int position, int columns, const QModelIn
 
 bool TimeIntervalsModel::removeColumns(int position, int columns, const QModelIndex &index)
 {
-    bool result = false;
     Q_UNUSED(index);
+
+    if (position < 0 || columns <= 0 || position + columns > tableScripts.columns)
+        return false;
 
     beginRemoveColumns(QModelIndex(), position, position + columns - 1);
 
     tableScripts.removeColumns(position, columns);
 
     endRemoveColumns();
-    return result;
+    return true;
 }
 
 bool TimeIntervalsModel::setData(const QModelIndex &index, const QVariant &value, int role)

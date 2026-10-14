@@ -675,14 +675,12 @@ void MainWindow::on_actionExport_triggered()
                 if (scriptsIterator.fileInfo().isFile()){
                     QFile file(scriptsIterator.fileInfo().absoluteFilePath());
                     if (file.open(QFile::ReadOnly)){
-                        long size = file.size();
-                        char *buffer = (char *)malloc(size);
-                        file.read(buffer, size);
+                        QByteArray buffer = file.readAll();
                         QString filename = timeIntervals->getScriptsProfile() + "/" + scriptsIterator.fileInfo().fileName();
                         zip_fileinfo zfi = { 0, 0, 0, 0, 0, 0, 0, 0, 0 };
                         if (ZIP_OK == zipOpenNewFileInZip(archive, filename.toStdString().c_str(), &zfi, NULL, 0, NULL, 0, NULL, Z_DEFLATED, Z_DEFAULT_COMPRESSION))
                         {
-                            zipWriteInFileInZip(archive, buffer, size);
+                            zipWriteInFileInZip(archive, buffer.constData(), buffer.size());
                             zipCloseFileInZip(archive);
                         }
                         file.close();

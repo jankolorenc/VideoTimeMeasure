@@ -38,6 +38,7 @@ private:
     AVFrame *pFrameRGB;
     uint8_t *buffer;
     struct SwsContext *sws_ctx;
+    bool decoderFlushed;
 
     /**
      * @brief multiplier of BACK_SEEK_FRAMES to jump before seeked time.
